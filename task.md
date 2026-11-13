@@ -255,10 +255,10 @@ Buat task untuk:
 - [x] ANA-004 — Activity Diagram pemesanan custom.
 - [x] ANA-005 — Activity Diagram pembayaran.
 - [x] ANA-006 — Activity Diagram pembatalan.
-- [ ] ANA-007 — Sequence Diagram pemesanan.
-- [ ] ANA-008 — Sequence Diagram pembayaran.
-- [ ] ANA-009 — Sequence Diagram pengelolaan pesanan.
-- [ ] ANA-010 — Validasi seluruh diagram.
+- [x] ANA-007 — Sequence Diagram pemesanan.
+- [x] ANA-008 — Sequence Diagram pembayaran.
+- [x] ANA-009 — Sequence Diagram pengelolaan pesanan.
+- [x] ANA-010 — Validasi seluruh diagram.
 
 Diagram tambahan dapat dibuat jika diperlukan dan disepakati.
 
@@ -266,9 +266,9 @@ Diagram tambahan dapat dibuat jika diperlukan dan disepakati.
 
 Buat task untuk:
 
-- [ ] ARC-001 — Menentukan Three-Layer Architecture.
-- [ ] ARC-002 — Membuat High-Level Architecture Diagram.
-- [ ] ARC-003 — Membuat Component Diagram.
+- [x] ARC-001 — Menentukan Three-Layer Architecture.
+- [x] ARC-002 — Membuat High-Level Architecture Diagram.
+- [x] ARC-003 — Membuat Component Diagram.
 - [ ] ARC-004 — Menentukan Application Modules.
 - [ ] ARC-005 — Menentukan Routing Architecture.
 - [ ] ARC-006 — Menentukan Controller Responsibilities.

@@ -26,3 +26,11 @@
 26. lanjutkan ketahap dua lima
 27. lanjutkan ketahap dua enam
 28. lanjutkan ketahap dua tujuh
+29. lanjutkan ketahap dua delapan
+30. lanjutkan ketahap tiga puluh
+31. lanjutkan ketahap tiga puluh satu
+32. lanjutkan ketahap tiga puluh dua
+33. lanjutkan ketahap tiga puluh tiga
+34. lanjutkan ketahap tiga puluh empat
+35. lanjutkan ketahap tiga puluh lima
+36. 
