@@ -33,4 +33,6 @@
 33. lanjutkan ketahap tiga puluh tiga
 34. lanjutkan ketahap tiga puluh empat
 35. lanjutkan ketahap tiga puluh lima
-36. 
+36. lanjutkan ketahap dua enam
+37. lanjutkan ketahap dua tujuh
+36. selesaikan semua yang membuat md dalam prompt folder disini, yang codingan nanti aja
