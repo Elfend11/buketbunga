@@ -1,388 +1,444 @@
-# SEQUENCE DIAGRAM PENGELOLAAN PESANAN & SIKLUS STATUS (ORDER MANAGEMENT & LIFECYCLE SEQUENCE DIAGRAM)
+<<<<<<< HEAD
+# SEQUENCE DIAGRAM PENGELOLAAN ETALASE PRODUK, GALERI, DAN PENGATURAN BISNIS OLEH ADMIN
+=======
+# SEQUENCE DIAGRAM PENGELOLAAN MASTER KATALOG, KATEGORI, DAN ADD-ON OLEH ADMIN
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 ## BLOOMÉ — Flowers & Stories
 **Task ID:** ANA-009  
 **Fase:** Phase 2 — System Analysis and Design (Sub-fase 5.2 System Modeling)  
 **Penanggung Jawab:** Jayanti Firdasari (Lead System Analyst & Project Manager)  
-**Tanggal Penyusunan:** 13 November 2026  
+<<<<<<< HEAD
+**Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dependensi:** ANA-006 — Activity Diagram Pembatalan, ANA-007 — Sequence Diagram Pemesanan, ANA-008 — Sequence Diagram Pembayaran, ARC-001 — Three-Layer Architecture  
+**Dependensi:** ANA-001, ANA-002, ARC-001 (Three-Layer Architecture), ARC-005 (Routing Architecture)  
+=======
+**Tanggal Penyusunan:** 13 November 2026 (Revisi Final: 20 November 2026)  
+**Status Task:** Completed Final (`[x]`)  
+**Dependensi:** ANA-001, ANA-002, ANA-006 (Selesai Final)  
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 
 ---
 
-## 1. Ringkasan Eksekutif & Tujuan Pemodelan
+## 1. Ringkasan Eksekutif & Karakteristik Alur
 
-Pemodelan Sequence Diagram Pengelolaan Pesanan dan Siklus Status (Task ANA-009) disusun untuk menggambarkan interaksi temporal antar-objek dalam pengelolaan siklus hidup pesanan (*order lifecycle*), transisi status berbasis *Finite State Machine* (FSM), serta mekanisme penanganan permohonan pembatalan oleh pemilik usaha pada website **BLOOMÉ — Flowers & Stories**.
+<<<<<<< HEAD
+Pemodelan Sequence Diagram Pengelolaan Etalase dan Pengaturan Toko oleh Admin (Task ANA-009) disusun untuk menggambarkan interaksi temporal antar-objek (*message exchange lifecycle*) dalam modul administrasi website **BLOOMÉ — Flowers & Stories**. Pemodelan ini menerapkan arsitektur tiga lapis (*Three-Layer Architecture*) Laravel untuk memastikan pemisahan tanggung jawab yang bersih antara View, Controller/Service, dan Eloquent Data Layer.
 
-Sesuai spesifikasi arsitektur proyek (Section 10 `architecture.md`) dan kebutuhan fungsional admin (**UC-14, UC-18, UC-19**), diagram ini memodelkan:
-1. **Siklus Pemrosesan & Pengiriman (*Production & Delivery Lifecycle*):** Transisi status saat admin memulai perangkaian bunga segar di butik (`ST-05 Pembayaran Dikonfirmasi` $\rightarrow$ `ST-06 Pesanan Diproses`) hingga pesanan siap dikirim atau dijemput (`ST-06` $\rightarrow$ `ST-07 Pesanan Dikirim / Siap Diambil`).
-2. **Evaluasi & Penanganan Pembatalan (*Cancellation Evaluation & Decision Lifecycle*):** Proses audit saat pelanggan mengajukan pembatalan sebelum bunga dirangkai fisik, peninjauan alasan oleh admin, pengambilan keputusan persetujuan (*approval*) atau penolakan (*rejection*), serta pencatatan jejak audit kronologis yang permanen.
+Berdasarkan kesepakatan arsitektur terbaru (v1.1), **website BLOOMÉ tidak mengelola mesin status transaksi (`ST-01 s/d ST-08`), antrean pemesanan transaksi, maupun permohonan pembatalan**. Seluruh operasional pesanan dan pembayaran ditangani langsung oleh pemilik usaha di WhatsApp. Oleh karena itu, tugas utama administrator di sistem web difokuskan pada:
+1. **Autentikasi Login Administrator Tunggal:** Mekanisme login aman untuk satu akun admin pemilik usaha (Nabila Febriyani) pada tabel `admins`.
+2. **Manajemen Master Produk, Galeri Multi-Foto & Relasi Personalisasi:** Operasi penambahan produk buket baru lengkap dengan unggah beberapa foto ke storage lokal, penanda foto sampul utama (*primary*), serta penautan opsi personalisasi dan add-on yang dibungkus dalam transaksi atomik (`DB::transaction()`).
+3. **Pembaruan Cepat Toggle Ketersediaan Stok:** Perubahan status produk (*Tersedia* / *Habis*) secara instan agar etalase web selalu mutakhir sesuai stok bunga segar di butik.
+4. **Pembaruan Konfigurasi Kontak WhatsApp & Profil Bisnis:** Pengelolaan parameter dinamis pada tabel `business_settings` seperti nomor WhatsApp tujuan pesanan, jam operasional, dan template pesan pembuka.
+5. **Logout Administrator:** Pembersihan data sesi dan pengamanan kembali route admin.
+=======
+Pemodelan Diagram Sekuensial Pengelolaan Master Katalog, Kategori, dan Add-on (Task ANA-009) memetakan interaksi temporal antar-objek dalam eksekusi operasional administrasi oleh pemilik usaha (**Nabila Febriyani**) pada dashboard terproteksi **BLOOMÉ — Flowers & Stories**.
+
+Pada versi lama, berkas ini memodelkan siklus hidup transisi status transaksi pesanan (*ST-05 $\rightarrow$ ST-06 $\rightarrow$ ST-07*) dan persetujuan pembatalan pesanan di website (*Task ANA-009 versi lama*). Karena alur pesanan resmi, pelacakan, dan pembatalan telah dipindahkan sepenuhnya ke WhatsApp, dokumen ini direkonstruksi penuh menjadi **Sequence Diagram Pengelolaan Master Konten Etalase oleh Admin**, mencakup penambahan produk buket, unggah foto, pengubahan ketersediaan stok, dan manajemen tarif add-on.
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 
 ---
 
-## 2. Identifikasi Partisipan & Lifeline Objek
+## 2. Sequence Diagram: Pengelolaan Produk Buket, Foto, & Status Stok
 
+<<<<<<< HEAD
 | Partisipan / Lifeline | Layer Arsitektur | Tipe Komponen | Peran & Tanggung Jawab Utama |
 |---|---|---|---|
-| **Admin (Nabila Febriyani)** | Aktor Internal | Pemilik Usaha / Florist | Memantau antrean pesanan harian, mengubah status tahapan pengerjaan bunga, dan mengambil keputusan pembatalan. |
-| **Customer (Guest)** | Aktor Eksternal | Pelanggan | Memantau perubahan progres pesanan secara *real-time* melalui halaman pelacakan (*order tracking*) atau mengajukan pembatalan. |
-| **Blade Views (`resources/views/`)** | Presentation Layer | UI / View | Menampilkan tabel antrean pesanan (`admin.orders.index`), lembar kerja pesanan (`admin.orders.show`), modal status, dan halaman lacak pelanggan (`order.track`). |
-| **Web Router (`routes/web.php`)** | Application Layer | HTTP Routing | Menerima request HTTP dengan proteksi middleware otentikasi `auth:admin` untuk area dashboard. |
-| **Form Requests (`App\Http\Requests\Admin\`)** | Application Layer | Request Validator | Memvalidasi parameter masukan transisi status (`OrderStatusUpdateRequest`) dan keputusan pembatalan (`CancellationDecisionRequest`). |
-| **Admin Order Controllers** | Application Layer | Controllers | Mengendalikan orkestrasi perubahan status: `Admin\OrderController` dan `Admin\CancellationController`. |
-| **OrderStatusService (`App\Services\`)** | Application Layer | Domain Service | Memvalidasi aturan *State Machine* (apakah transisi status diizinkan) dan mencatat jejak audit ke tabel riwayat. |
-| **Eloquent Models (`App\Models\`)** | Data Layer | ORM Entities | Model `Order`, `OrderStatusHistory`, `Admin`, `Customer`, dan `CustomRequest`. |
-| **MySQL Database Engine** | Data Layer | RDBMS | Menjamin konsistensi status melalui transaksi atomik dan penguncian baris (*pessimistic/optimistic locking*). |
+| **Admin (Nabila Febriyani)** | Aktor Internal | Pengguna | Pemilik usaha yang mengelola katalog, foto produk, opsi variasi, stok bahan, dan nomor WhatsApp toko. |
+| **Blade Admin Views** | Presentation Layer | UI / View | Merender form login (`auth.login`), dashboard ringkasan (`admin.dashboard`), form produk (`admin.products.create`), dan form pengaturan (`admin.settings.index`). |
+| **Web Router (`routes/web.php`)** | Application Layer | HTTP Routing | Mengarahkan rute administratif dengan proteksi middleware otentikasi `auth:admin` dan proteksi CSRF. |
+| **Admin Form Requests** | Application Layer | Request Validator | Memvalidasi kredensial login (`AdminLoginRequest`), data produk & berkas foto (`ProductStoreRequest`), serta validasi nomor telepon (`BusinessSettingsRequest`). |
+| **Admin Controllers** | Application Layer | Controllers | Mengorkestrasi logika bisnis: `Admin\AuthController`, `Admin\ProductController`, dan `Admin\BusinessSettingController`. |
+| **File Storage Subsystem** | Application Layer | File Storage | Menyimpan berkas gambar (JPG/PNG ≤ 2MB) ke folder `storage/app/public/products/` dengan penamaan UUID unik tersanitasi. |
+| **Eloquent Models (`App\Models\`)** | Data Layer | ORM Entities | Objek representasi tabel: `Admin`, `Category`, `Product`, `ProductImage`, `PersonalizationOption`, `AddOn`, dan `BusinessSetting`. |
+| **MySQL Database Engine** | Data Layer | RDBMS | Menjamin konsistensi penyimpanan master data produk dan relasi pivot melalui transaksi atomik InnoDB. |
 
 ---
 
-## 3. Sequence Diagram Siklus Produksi & Pengiriman Buket (Production & Delivery Lifecycle)
-
-Diagram ini menggambarkan interaksi ketika pemilik usaha (Florist) mengelola pesanan yang telah lunas mulai dari tahap perangkaian hingga pesanan siap diserahkan:
+## 3. Sequence Diagram Alur Pengelolaan Etalase oleh Admin
+=======
+Diagram berikut memodelkan dua interaksi utama: (A) Penambahan produk buket baru beserta unggah foto beresolusi tinggi, dan (B) Pembaruan cepat ketersediaan stok produk:
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor A as Admin (Florist)
-    participant V as Blade View (admin/orders)
-    participant R as Web Router (routes/web.php)
-    participant Val as OrderStatusUpdateRequest
-    participant Ctrl as Admin\OrderController
-    participant Svc as OrderStatusService
-    participant Mod as Eloquent Models (Order, StatusHistory)
-    participant DB as MySQL Database
-    actor C as Customer (Guest)
-    participant TrackV as Blade View (order/track)
-
-    %% ==========================================
-    %% TAHAP 1: Memulai Perangkaian Bunga (ST-06)
-    %% ==========================================
-    Note over A,TrackV: TAHAP 1: Transisi Status ST-05 -> ST-06 (Pesanan Mulai Dirangkai)
-    A->>V: Buka Daftar Pesanan Lunas (Filter: ST-05 Pembayaran Dikonfirmasi)
-    activate V
-    V->>Ctrl: GET /admin/orders?status=ST-05
-    activate Ctrl
-    Ctrl->>DB: SELECT * FROM orders WHERE current_status = 'ST-05' ORDER BY delivery_date ASC
-    activate DB
-    DB-->>Ctrl: Daftar pesanan siap diproduksi
-    deactivate DB
-    Ctrl-->>V: Render antrean pesanan siap rangkai
-    deactivate Ctrl
-    V-->>A: Tampilkan pesanan (e.g. Buket "Autumn Romance" - BLM-202611-0001)
-    deactivate V
-
-    A->>V: Klik tombol "Mulai Rangkai Bunga" & Masukkan catatan pengerjaan
-    activate V
-    V->>R: POST /admin/orders/{id}/status (status: 'ST-06', notes: 'Bunga segar mulai dirangkai oleh florist')
-    deactivate V
-    activate R
-    R->>Val: Validasi request transisi status
-    deactivate R
-    activate Val
-    Val-->>Ctrl: Data valid (Validated array)
-    deactivate Val
-    activate Ctrl
-
-    Ctrl->>Svc: canTransition($order->current_status, 'ST-06')
-    activate Svc
-    Svc-->>Ctrl: Transisi legal (True: ST-05 -> ST-06 diperbolehkan)
-    deactivate Svc
-
-    Ctrl->>DB: DB::beginTransaction()
-    activate DB
-
-    Ctrl->>Mod: Order::where('id', $id)->update(['current_status' => 'ST-06'])
-    activate Mod
-    Mod->>DB: UPDATE orders SET current_status = 'ST-06' WHERE id = ?
-    deactivate Mod
-
-    Ctrl->>Svc: recordTransition($order, 'ST-06', 'Bunga segar mulai dirangkai oleh florist', $admin->id)
-    activate Svc
-    Svc->>Mod: OrderStatusHistory::create(order_id, status_code='ST-06', changed_by_admin_id, notes)
-    activate Mod
-    Mod->>DB: INSERT INTO order_status_histories
-    deactivate Mod
-    Svc-->>Ctrl: Audit trail tersimpan
-    deactivate Svc
-
-    Ctrl->>DB: DB::commit()
-    deactivate DB
-
-    Ctrl-->>V: 302 Redirect with Flash Message: "Status berhasil diubah ke: Pesanan Diproses"
-    deactivate Ctrl
-    activate V
-    V-->>A: Tampilkan badge status oranye [ST-06 Pesanan Diproses]
-    deactivate V
-
-    Note over C,TrackV: Pelanggan memantau status pesanan di website
-    C->>TrackV: Buka Halaman Pelacakan (/order/track/BLM-202611-0001)
-    activate TrackV
-    TrackV->>DB: SELECT current_status, delivery_date FROM orders WHERE order_code = ?
-    activate DB
-    DB-->>TrackV: Status aktif 'ST-06'
-    deactivate DB
-    TrackV-->>C: Tampilkan ikon bunga mekar: "Buket Bunga Anda Sedang Dirangkai oleh Florist Kami"
-    deactivate TrackV
-
-    %% ==========================================
-    %% TAHAP 2: Penyelesaian & Pengiriman (ST-07)
-    %% ==========================================
-    Note over A,TrackV: TAHAP 2: Transisi Status ST-06 -> ST-07 (Buket Siap Diambil / Sedang Dikirim)
-    Note over A: Florist selesai merangkai buket dan menyiapkan paket di butik / menyerahkan ke kurir
-
-    A->>V: Klik tombol "Pesanan Selesai / Siap Dikirim"
-    activate V
-    V->>R: POST /admin/orders/{id}/status (status: 'ST-07', notes: 'Buket selesai dirangkai, siap diambil di butik / diantar kurir')
-    deactivate V
-    activate R
-    R->>Val: Validasi request
-    deactivate R
-    activate Val
-    Val-->>Ctrl: Valid
-    deactivate Val
-    activate Ctrl
-
-    Ctrl->>Svc: canTransition('ST-06', 'ST-07')
-    activate Svc
-    Svc-->>Ctrl: Transisi legal (True: ST-06 -> ST-07 diperbolehkan)
-    deactivate Svc
-
-    Ctrl->>DB: DB::beginTransaction()
-    activate DB
-
-    Ctrl->>Mod: Order::where('id', $id)->update(['current_status' => 'ST-07'])
-    activate Mod
-    Mod->>DB: UPDATE orders SET current_status = 'ST-07' WHERE id = ?
-    deactivate Mod
-
-    Ctrl->>Svc: recordTransition($order, 'ST-07', 'Buket selesai dirangkai, siap diambil/diantar', $admin->id)
-    activate Svc
-    Svc->>Mod: OrderStatusHistory::create(order_id, status_code='ST-07', changed_by_admin_id, notes)
-    activate Mod
-    Mod->>DB: INSERT INTO order_status_histories
-    deactivate Mod
-    Svc-->>Ctrl: Audit trail tersimpan
-    deactivate Svc
-
-    Ctrl->>DB: DB::commit()
-    deactivate DB
-
-    Ctrl-->>V: 302 Redirect with Success: "Pesanan siap dikirim / diserahkan."
-    deactivate Ctrl
-    activate V
-    V-->>A: Tampilkan badge status hijau [ST-07 Pesanan Dikirim / Siap Diambil]
-    deactivate V
-
-    C->>TrackV: Refresh Halaman Pelacakan
-    activate TrackV
-    TrackV->>DB: SELECT current_status FROM orders
-    activate DB
-    DB-->>TrackV: Status aktif 'ST-07'
-    deactivate DB
-    TrackV-->>C: Tampilkan ikon kurir/toko: "Pesanan Anda Siap Diambil di Butik atau Sedang Dalam Perjalanan Kurir"
-    deactivate TrackV
-```
-
----
-
-## 4. Sequence Diagram Penanganan Permohonan Pembatalan (Cancellation Handling Lifecycle)
-
-Diagram ini memodelkan interaksi saat pelanggan mengajukan pembatalan dan pemilik usaha mengevaluasi permohonan tersebut sesuai aturan bisnis **BR-013 & BR-014**:
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor C as Customer (Guest)
-    participant TrackV as Blade View (order/track)
-    participant CancelCtrl as CancellationController
-    participant Svc as OrderStatusService
-    participant Mod as Eloquent Models (Order, StatusHistory)
-    participant DB as MySQL Database
+<<<<<<< HEAD
     actor A as Admin (Nabila)
-    participant AdminV as Blade View (admin/cancellations)
-    participant AdminCancelCtrl as Admin\CancellationController
-    participant Val as CancellationDecisionRequest
+    participant V as Blade Admin Views
+    participant R as Web Router (routes/web.php)
+    participant Val as Form Requests (Store/Update)
+    participant Ctrl as Admin Controllers (Auth/Product/Setting)
+    participant Store as File Storage Subsystem (Local Disk)
+    participant Mod as Eloquent Models (Admin, Product, Image, Pivot)
+    participant DB as MySQL Database
 
     %% ==========================================
-    %% FASE 1: Pengajuan Pembatalan Oleh Pemesan
+    %% SKENARIO 1: Autentikasi Login Admin Tunggal
     %% ==========================================
-    Note over C,AdminCancelCtrl: FASE 1: Pengajuan Pembatalan oleh Pelanggan
-    C->>TrackV: Buka Rincian Pesanan (/order/track/{order_code})
-    activate TrackV
-    TrackV->>DB: Periksa status saat ini (e.g. ST-03 Menunggu Pembayaran)
+    Note over A,DB: SKENARIO 1: Autentikasi Login Admin Tunggal Aman (Tabel 'admins')
+    A->>V: Buka URL /admin/login
+    activate V
+    V-->>A: Render Form Login (Email, Password, Token CSRF)
+    deactivate V
+
+    A->>V: Input email (nabila@bloome.com) & kata sandi -> Klik "Masuk"
+    activate V
+    V->>R: POST /admin/login (email, password, _token)
+    activate R
+    R->>Val: Delegasikan validasi kredensial (AdminLoginRequest)
+    activate Val
+    Val-->>Ctrl: Input tervalidasi
+    deactivate Val
+    activate Ctrl
+
+    Ctrl->>Mod: Admin::where('email', $email)->first()
+    activate Mod
+    Mod->>DB: SELECT * FROM admins WHERE email = ? LIMIT 1
     activate DB
-    DB-->>TrackV: Status aktif ST-03
+    DB-->>Mod: Record Admin (Password Hash Bcrypt)
     deactivate DB
-    TrackV-->>C: Tampilkan tombol aktif: [Ajukan Pembatalan]
-    deactivate TrackV
+    Mod-->>Ctrl: Admin instance ($admin)
+    deactivate Mod
 
-    C->>TrackV: Klik "Ajukan Pembatalan" & Isi alasan: "Acara keluarga dibatalkan mendadak"
-    activate TrackV
-    TrackV->>CancelCtrl: POST /order/{order_code}/cancel (reason: 'Acara keluarga dibatalkan')
-    deactivate TrackV
-    activate CancelCtrl
-
-    CancelCtrl->>Svc: canRequestCancellation($order->current_status)
-    activate Svc
-    Note over Svc: Pembatalan hanya boleh jika status BELUM masuk ST-06 (BR-013)
-    Svc-->>CancelCtrl: Diizinkan (Status ST-01 / ST-02 / ST-03 / ST-04)
-    deactivate Svc
-
-    CancelCtrl->>DB: DB::beginTransaction()
-    activate DB
-    CancelCtrl->>Mod: Simpan permohonan pembatalan ke log / flag catatan pesanan
-    CancelCtrl->>Svc: recordTransition($order, $order->current_status, 'Pelanggan mengajukan permohonan pembatalan: Acara keluarga dibatalkan', null)
-    activate Svc
-    Svc->>DB: INSERT INTO order_status_histories
-    deactivate Svc
-    CancelCtrl->>DB: DB::commit()
-    deactivate DB
-
-    CancelCtrl-->>TrackV: 302 Redirect with Info: "Permohonan pembatalan Anda telah dikirim dan sedang ditinjau admin."
-    deactivate CancelCtrl
-    activate TrackV
-    TrackV-->>C: Tampilkan notifikasi: "Menunggu Keputusan Pembatalan Admin"
-    deactivate TrackV
+    Ctrl->>Ctrl: Hash::check($password, $admin->password)
+    alt Kredensial Valid
+        Ctrl->>Ctrl: Auth::guard('admin')->login($admin)
+        Ctrl->>Ctrl: request()->session()->regenerate()
+        Ctrl-->>V: 302 Redirect to /admin/dashboard
+        activate V
+        V-->>A: Tampilkan Dashboard Ringkasan Etalase Digital
+        deactivate V
+    else Kredensial Salah
+        Ctrl-->>V: 302 Redirect Back with Error: "Kredensial tidak valid"
+        activate V
+        V-->>A: Tampilkan alert merah kesalahan login
+        deactivate V
+    end
+    deactivate Ctrl
+    deactivate R
 
     %% ==========================================
-    %% FASE 2: Peninjauan & Keputusan Admin
+    %% SKENARIO 2: Tambah Produk & Galeri Multi-Foto
     %% ==========================================
-    Note over C,AdminCancelCtrl: FASE 2: Peninjauan & Keputusan Pembatalan oleh Admin
-    A->>AdminV: Buka Menu Evaluasi Pembatalan (/admin/cancellations)
-    activate AdminV
-    AdminV->>AdminCancelCtrl: index()
-    deactivate AdminV
-    activate AdminCancelCtrl
-    AdminCancelCtrl->>DB: Query pesanan dengan permohonan pembatalan pending
+    Note over A,DB: SKENARIO 2: Tambah Produk Baru, Upload Galeri & Relasi Personalisasi
+    A->>V: Isi Form Tambah Produk (Nama, Kategori, Harga Dasar, Opsi, Add-on, Unggah Foto)
+    activate V
+    V->>R: POST /admin/products (Multipart FormData)
+    activate R
+    R->>Val: Validasi input data & berkas gambar <= 2MB (ProductStoreRequest)
+    activate Val
+    Val-->>Ctrl: Data produk & array berkas gambar valid
+    deactivate Val
+    activate Ctrl
+
+    Ctrl->>DB: DB::beginTransaction()
     activate DB
-    DB-->>AdminCancelCtrl: Data pesanan & alasan pembatalan
+
+    Note over Ctrl,Mod: 1. Simpan Data Master Produk
+    Ctrl->>Mod: Product::create(category_id, name, slug, base_price, description, is_available=1)
+    activate Mod
+    Mod->>DB: INSERT INTO products ...
+    activate DB
+    DB-->>Mod: Product instance ($product)
     deactivate DB
-    AdminCancelCtrl-->>AdminV: Render daftar permohonan
-    activate AdminV
-    AdminV-->>A: Tampilkan alasan pemesan & status fisik bahan bunga di butik
-    deactivate AdminV
-    deactivate AdminCancelCtrl
+    Mod-->>Ctrl: Return $product
+    deactivate Mod
 
-    Note over A: Admin memeriksa apakah bunga sudah dipotong/dirangkai
+    Note over Ctrl,Store: 2. Upload Berkas Foto & Simpan ke Galeri
+    loop Untuk Setiap Berkas Foto yang Diunggah
+        Ctrl->>Store: storeAs('public/products', $uuidName)
+        activate Store
+        Store-->>Ctrl: Return $path
+        deactivate Store
+        Ctrl->>Mod: ProductImage::create(product_id, image_path, is_primary)
+        activate Mod
+        Mod->>DB: INSERT INTO product_images ...
+        deactivate Mod
+    end
 
-    alt Keputusan A: Pembatalan Disetujui (Approve Cancellation)
-        A->>AdminV: Klik tombol "Setujui Pembatalan"
-        activate AdminV
-        AdminV->>AdminCancelCtrl: POST /admin/orders/{id}/cancellation (decision: 'approve', notes: 'Disetujui: bahan bunga belum diproses')
-        deactivate AdminV
-        activate AdminCancelCtrl
-        AdminCancelCtrl->>Val: Validasi input keputusan
-        activate Val
-        Val-->>AdminCancelCtrl: Valid
-        deactivate Val
+    Note over Ctrl,Mod: 3. Tautkan Opsi Personalisasi & Add-on (Tabel Pivot)
+    Ctrl->>Mod: $product->personalizationOptions()->sync($selectedOptionIds)
+    activate Mod
+    Mod->>DB: INSERT INTO product_personalization_options ...
+    deactivate Mod
 
-        AdminCancelCtrl->>DB: DB::beginTransaction()
+    Ctrl->>Mod: $product->addOns()->sync($selectedAddOnIds)
+    activate Mod
+    Mod->>DB: INSERT INTO product_add_ons ...
+    deactivate Mod
+
+    Ctrl->>DB: DB::commit()
+    deactivate DB
+    Ctrl-->>V: 302 Redirect to /admin/products (Flash Success: "Produk berhasil ditambahkan!")
+    deactivate Ctrl
+    activate V
+    V-->>A: Tampilkan daftar produk dengan buket baru yang langsung tayang
+    deactivate V
+    deactivate R
+
+    %% ==========================================
+    %% SKENARIO 3: Toggle Cepat Ketersediaan Stok
+    %% ==========================================
+    Note over A,DB: SKENARIO 3: Toggle Ketersediaan Stok Produk (In Stock / Out of Stock)
+    A->>V: Klik switch status stok pada tabel produk (is_available = 0)
+=======
+    actor A as Admin (Nabila Febriyani)
+    participant V as Blade View (admin/products)
+    participant R as Web Router (routes/web.php)
+    participant Mdw as AdminAuthMiddleware (auth:admin)
+    participant Req as StoreProductRequest
+    participant Ctrl as Admin\ProductController
+    participant Stor as File Storage (Storage::disk)
+    participant Mod as Eloquent Models (Product, Category)
+    participant DB as MySQL Database
+
+    %% ==========================================
+    %% BAGIAN 1: Penambahan Produk & Unggah Foto
+    %% ==========================================
+    Note over A,DB: BAGIAN 1: Penambahan Produk Katalog Baru & Unggah Foto
+    A->>V: Buka Form Tambah Produk & Isi Data (Nama, Kategori, Harga, Komposisi)
+    A->>V: Unggah Berkas Foto Buket Resmi (JPG/PNG ≤ 5MB)
+    A->>V: Klik Tombol "Simpan Produk"
+    activate V
+    V->>R: POST /admin/products (FormData Multipart Payload)
+    deactivate V
+    activate R
+    R->>Mdw: Verifikasi Sesi Admin Aktif
+    activate Mdw
+    Mdw-->>R: Sesi Sah (Authenticated as Admin)
+    deactivate Mdw
+    R->>Req: Validasi Input & Berkas Foto
+    deactivate R
+    activate Req
+
+    alt Validasi Gagal (Ukuran > 5MB atau Format Bukan Gambar)
+        Req-->>V: 302 Redirect Back with Error Messages
+        activate V
+        V-->>A: Tampilkan pesan galat inline pada form
+        deactivate V
+    else Validasi Berhasil
+        Req->>Ctrl: Form data valid & berkas gambar terverifikasi
+        deactivate Req
+        activate Ctrl
+
+        Ctrl->>Stor: Simpan foto: putFile('products', $imageFile)
+        activate Stor
+        Stor-->>Ctrl: Return $imagePath (UUID sanitized filename)
+        deactivate Stor
+
+        Ctrl->>DB: DB::beginTransaction()
         activate DB
 
-        AdminCancelCtrl->>Mod: Order::update(['current_status' => 'ST-08'])
+        Ctrl->>Mod: Product::create(category_id, name, slug, price, description, image_path, is_available=1)
         activate Mod
-        Mod->>DB: UPDATE orders SET current_status = 'ST-08' WHERE id = ?
+        Mod->>DB: INSERT INTO products
+        DB-->>Mod: Record Produk Baru
+        Mod-->>Ctrl: Instance $product
         deactivate Mod
 
-        AdminCancelCtrl->>Svc: recordTransition($order, 'ST-08', 'Pembatalan disetujui admin: bahan belum diproses', $admin->id)
-        activate Svc
-        Svc->>DB: INSERT INTO order_status_histories (order_id, status_code='ST-08', changed_by_admin_id, notes)
-        deactivate Svc
-
-        AdminCancelCtrl->>DB: DB::commit()
+        Ctrl->>DB: DB::commit()
         deactivate DB
 
-        AdminCancelCtrl-->>AdminV: Flash message: "Pesanan resmi dibatalkan (ST-08)."
-        activate AdminV
-        AdminV-->>A: Tampilkan status [ST-08 Dibatalkan] & info refund manual jika ada dana
-        deactivate AdminV
-        deactivate AdminCancelCtrl
-
-        C->>TrackV: Buka kembali halaman pelacakan
-        activate TrackV
-        TrackV->>DB: SELECT current_status FROM orders
-        activate DB
-        DB-->>TrackV: 'ST-08'
-        deactivate DB
-        TrackV-->>C: Tampilkan status merah: "Pesanan Dibatalkan. Permohonan pembatalan Anda telah disetujui."
-        deactivate TrackV
-
-    else Keputusan B: Pembatalan Ditolak (Reject Cancellation)
-        A->>AdminV: Masukkan alasan penolakan & Klik "Tolak Pembatalan"
-        activate AdminV
-        AdminV->>AdminCancelCtrl: POST /admin/orders/{id}/cancellation (decision: 'reject', notes: 'Ditolak: Bunga segar impor khusus sudah disiapkan')
-        deactivate AdminV
-        activate AdminCancelCtrl
-
-        AdminCancelCtrl->>DB: DB::beginTransaction()
-        activate DB
-        AdminCancelCtrl->>Svc: recordTransition($order, $order->current_status, 'Permohonan pembatalan ditolak: Bunga impor sudah disiapkan', $admin->id)
-        activate Svc
-        Svc->>DB: INSERT INTO order_status_histories
-        deactivate Svc
-        AdminCancelCtrl->>DB: DB::commit()
-        deactivate DB
-
-        AdminCancelCtrl-->>AdminV: Flash message: "Permohonan pembatalan ditolak. Pesanan tetap berjalan."
-        activate AdminV
-        AdminV-->>A: Tampilkan pesanan tetap pada antrean aktif
-        deactivate AdminV
-        deactivate AdminCancelCtrl
-
-        C->>TrackV: Refresh halaman pelacakan
-        activate TrackV
-        TrackV->>DB: Ambil catatan penolakan pembatalan dari order_status_histories
-        activate DB
-        DB-->>TrackV: Riwayat penolakan
-        deactivate DB
-        TrackV-->>C: Tampilkan pesan: "Permohonan pembatalan ditolak: Bunga telah disiapkan. Pesanan tetap diproses."
-        deactivate TrackV
+        Ctrl-->>V: 302 Redirect with Flash: "Produk buket berhasil ditambahkan ke etalase"
+        deactivate Ctrl
+        activate V
+        V-->>A: Produk baru tampil di daftar tabel dashboard & langsung aktif di katalog
+        deactivate V
     end
+
+    %% ==========================================
+    %% BAGIAN 2: Toggle Ketersediaan Stok
+    %% ==========================================
+    Note over A,DB: BAGIAN 2: Pengubahan Cepat Status Stok Produk (In Stock / Out of Stock)
+    A->>V: Klik Sakelar Toggle Ketersediaan pada Baris Produk
+>>>>>>> c202b49 (Revise documentation and initial implementation)
+    activate V
+    V->>R: PATCH /admin/products/{id}/toggle-stock
+    activate R
+    R->>Ctrl: toggleStock($id)
+<<<<<<< HEAD
+    activate Ctrl
+    Ctrl->>Mod: Product::findOrFail($id)
+    activate Mod
+    Mod->>DB: UPDATE products SET is_available = NOT is_available WHERE id = ?
+    activate DB
+    DB-->>Mod: Record updated
+    deactivate DB
+    Mod-->>Ctrl: Product updated
+    deactivate Mod
+    Ctrl-->>V: Return JSON Response {success: true, is_available: 0}
+    deactivate Ctrl
+    V-->>A: Switch berubah visual menjadi 'Habis'; katalog publik langsung update
+    deactivate V
+    deactivate R
+
+    %% ==========================================
+    %% SKENARIO 4: Pengaturan WhatsApp & Profil Toko
+    %% ==========================================
+    Note over A,DB: SKENARIO 4: Pembaruan Nomor WhatsApp Resmi Toko ('business_settings')
+    A->>V: Buka Menu Pengaturan -> Input Nomor WhatsApp Toko (e.g. "6281234567890")
+    activate V
+    V->>R: POST /admin/settings (key-value array)
+    activate R
+    R->>Val: Validasi format nomor telepon internasional (SettingsRequest)
+    activate Val
+    Val-->>Ctrl: Data valid
+    deactivate Val
+    activate Ctrl
+    Ctrl->>Mod: BusinessSetting::updateOrCreate(['key' => 'whatsapp_number'], ['value' => '6281234567890'])
+    activate Mod
+    Mod->>DB: INSERT / UPDATE business_settings WHERE key = 'whatsapp_number'
+    activate DB
+    DB-->>Mod: Setting saved
+    deactivate DB
+    Mod-->>Ctrl: Setting instance
+    deactivate Mod
+    Ctrl-->>V: 302 Redirect with Flash: "Pengaturan berhasil diperbarui!"
+    deactivate Ctrl
+    activate V
+    V-->>A: Tampilkan pesan sukses; seluruh tombol WhatsApp web otomatis mengarah ke nomor baru
+    deactivate V
+    deactivate R
+=======
+    deactivate R
+    activate Ctrl
+
+    Ctrl->>Mod: Product::findOrFail($id)
+    activate Mod
+    Mod->>DB: SELECT * FROM products WHERE id = ?
+    activate DB
+    DB-->>Mod: Instance $product
+    deactivate DB
+    Mod-->>Ctrl: Return $product
+    deactivate Mod
+
+    Ctrl->>Mod: $product->update(['is_available' => !$product->is_available])
+    activate Mod
+    Mod->>DB: UPDATE products SET is_available = 0/1 WHERE id = ?
+    Mod-->>Ctrl: Success
+    deactivate Mod
+
+    Ctrl-->>V: JSON Response: {success: true, is_available: new_status}
+    deactivate Ctrl
+    V-->>A: Indikator status stok berubah secara instan (Badge Merah/Hijau)
+    deactivate V
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 ```
 
 ---
 
-## 5. Spesifikasi State Machine & Guard Conditions Transisi Status
+<<<<<<< HEAD
+## 4. Analisis Integritas Transaksional & Keamanan Panel Admin
 
-Mesin status pesanan diatur secara ketat oleh `OrderStatusService`. Transisi yang melanggar urutan logis otomatis ditolak sistem dengan melempar eksepsi `InvalidStateTransitionException`.
+### 4.1 Integritas Transaksi Multi-Tabel (`DB::transaction()`)
+Penambahan atau pembaruan produk buket melibatkan minimal 4 tabel relasional (`products`, `product_images`, `product_personalization_options`, dan `product_add_ons`). Dengan membungkus seluruh operasi ini dalam blok `DB::transaction()`:
+- Jika salah satu berkas gambar gagal disimpan atau query relasi pivot terputus, sistem secara otomatis melakukan `DB::rollBack()`.
+- Hal ini mencegah terbentuknya data yatim (*orphaned rows*) pada basis data MySQL InnoDB.
 
-| Status Awal (*From*) | Status Tujuan (*To*) | Syarat / *Guard Condition* | Aktor Pengubah |
-|---|---|---|---|
-| **ST-01** (Menunggu Peninjauan) | **ST-02** (Menunggu Persetujuan Harga) | Khusus pesanan tipe `custom` setelah admin mengusulkan harga. | Admin |
-| **ST-01** (Menunggu Peninjauan) | **ST-03** (Menunggu Pembayaran) | Pesanan tipe `catalog` disetujui untuk lanjut pembayaran. | Sistem / Admin |
-| **ST-01** (Menunggu Peninjauan) | **ST-08** (Dibatalkan) | Permintaan ditolak admin atau dibatalkan pemesan. | Admin / Pelanggan |
-| **ST-02** (Menunggu Persetujuan Harga) | **ST-03** (Menunggu Pembayaran) | Pelanggan menyetujui nominal harga yang diusulkan. | Pelanggan |
-| **ST-02** (Menunggu Persetujuan Harga) | **ST-08** (Dibatalkan) | Pelanggan menolak harga usulan admin. | Pelanggan |
-| **ST-03** (Menunggu Pembayaran) | **ST-04** (Menunggu Konfirmasi) | Pelanggan mengklik konfirmasi transfer manual. | Pelanggan |
-| **ST-03** (Menunggu Pembayaran) | **ST-08** (Dibatalkan) | Pelanggan mengajukan pembatalan sebelum transfer. | Pelanggan / Admin |
-| **ST-04** (Menunggu Konfirmasi) | **ST-05** (Pembayaran Dikonfirmasi) | Admin memverifikasi mutasi bank riil sah. | Admin |
-| **ST-04** (Menunggu Konfirmasi) | **ST-03** (Menunggu Pembayaran) | Admin menolak verifikasi karena dana belum masuk / kurang. | Admin |
-| **ST-05** (Pembayaran Dikonfirmasi) | **ST-06** (Pesanan Diproses) | Florist mulai merangkai fisik bunga di butik. | Admin |
-| **ST-06** (Pesanan Diproses) | **ST-07** (Pesanan Dikirim / Siap Diambil) | Rangkaian bunga selesai dan diserahkan ke kurir/butik. | Admin |
-| **ST-05 / ST-06** | **ST-08** (Dibatalkan) | **Dilarang untuk ST-06** (BR-013). Untuk ST-05 hanya jika disetujui langsung oleh admin. | Admin |
-| **ST-07 / ST-08** | *Tidak Ada (Terminal State)* | Status akhir permanen; tidak dapat diubah kembali. | - |
+### 4.2 Keamanan Akun & Proteksi Route Administrator
+1. **Otentikasi Tunggal:** Menggunakan tabel `admins` terisolasi yang hanya memuat 1 akun admin resmi (Nabila Febriyani). Tidak ada pendaftaran akun publik.
+2. **Perlindungan Hash Bcrypt:** Kata sandi disimpan menggunakan fungsi hash Bcrypt dengan *cost factor* standar industri.
+3. **Regenerasi Sesi & CSRF:** Setiap kali admin berhasil login, ID sesi diregenerasi untuk mencegah serangan *Session Fixation*. Semua form POST/PATCH/DELETE diproteksi dengan token CSRF aktif.
+4. **Middleware `auth:admin`:** Seluruh route `/admin/*` diproteksi secara ketat. Percobaan akses langsung tanpa login otomatis dialihkan ke `/admin/login`.
 
 ---
 
-## 6. Matriks Kepatuhan Aturan Bisnis Proyek
+## 5. Kesimpulan & Rekomendasi
 
-| Kode Aturan | Ketentuan Aturan Bisnis | Implementasi pada Sequence Diagram | Status |
-|---|---|---|:---:|
-| **BR-013** | Pembatasan Pengajuan Pembatalan: Pembatalan hanya dapat diajukan sebelum pesanan diproses (maksimal status ST-05). Jika sudah masuk ST-06 (bunga dirangkai), tombol pembatalan dinonaktifkan. | Divalidasi via `canRequestCancellation()` pada pesan 8 di sequence diagram pembatalan. | **Sesuai Penuh** |
-| **BR-014** | Persetujuan Pembatalan Wajib Admin: Pelanggan tidak dapat membatalkan pesanan secara sepihak. Setiap pembatalan wajib melalui evaluasi dan persetujuan admin. | Dimodelkan pada pesan 16–29 di alur pembatalan; status ST-08 hanya ditetapkan setelah admin menekan tombol setuju. | **Sesuai Penuh** |
-| **BR-015** | Transisi Siklus Status Terurut: Sistem melarang loncatan status ilegal (misal langsung dari ST-03 ke ST-06 tanpa pembayaran). | `OrderStatusService` memverifikasi tabel transisi FSM sebelum setiap update status dilakukan. | **Sesuai Penuh** |
-| **BR-018** | Audit Trail Kronologis: Seluruh perubahan status mencatat timestamp, kode status, identitas admin, dan catatan alasan secara permanen di tabel `order_status_histories`. | Dimodelkan pada pesan 11 & 24 di alur produksi dan pesan 23 di alur pembatalan. | **Sesuai Penuh** |
+### 5.1 Status Task ANA-009
+Task **ANA-009 (Sequence Diagram Pengelolaan Etalase & Pengaturan Admin)** telah selesai diselaraskan:
+- Seluruh sequence diagram lama yang memodelkan siklus status pesanan fiktif `ST-01 s/d ST-08`, evaluasi tiket custom, dan approval pembatalan di web telah dieliminasi.
+- Interaksi Three-Layer difokuskan secara presisi pada tanggung jawab riil administrator: login tunggal aman, manajemen produk & kategori, galeri multi-foto, toggle stok instan, dan konfigurasi kontak WhatsApp toko.
+- Kriteria penyelesaian terpenuhi 100%.
+
+### 5.2 Rekomendasi Langkah Berikutnya:
+Melanjutkan ke penyusunan laporan validasi menyeluruh diagram sistem:
+- **`ANA-010 — Laporan validasi seluruh diagram sistem.`**
+=======
+## 3. Sequence Diagram: Pengelolaan Opsi Add-on & Pembaruan Nomor WhatsApp
+
+Diagram berikut memodelkan penambahan master add-on serta pembaruan nomor kontak WhatsApp butik:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor A as Admin (Nabila Febriyani)
+    participant V as Blade View (admin/addons & settings)
+    participant R as Web Router (routes/web.php)
+    participant CtrlAddon as Admin\AddOnController
+    participant CtrlSetting as Admin\SettingController
+    participant Mod as Eloquent Models (AddOn, Setting)
+    participant DB as MySQL Database
+
+    %% ==========================================
+    %% BAGIAN 1: Penambahan Item Add-on Baru
+    %% ==========================================
+    Note over A,DB: BAGIAN 1: Penambahan Opsi Pelengkap / Add-on
+    A->>V: Buka Menu Add-on & Input Data (Nama: "Boneka Teddy", Harga: 35000)
+    A->>V: Klik "Simpan Add-on"
+    activate V
+    V->>R: POST /admin/addons
+    deactivate V
+    activate R
+    R->>CtrlAddon: store(Request $request)
+    deactivate R
+    activate CtrlAddon
+
+    CtrlAddon->>Mod: AddOn::create(name, price, is_active=1)
+    activate Mod
+    Mod->>DB: INSERT INTO add_ons
+    DB-->>Mod: Record Add-on Tersimpan
+    Mod-->>CtrlAddon: Instance $addOn
+    deactivate Mod
+
+    CtrlAddon-->>V: 302 Redirect with Flash: "Item add-on berhasil ditambahkan"
+    deactivate CtrlAddon
+    activate V
+    V-->>A: Item baru langsung muncul di checklist personalisasi pelanggan
+    deactivate V
+
+    %% ==========================================
+    %% BAGIAN 2: Pembaruan Nomor WhatsApp Resmi
+    %% ==========================================
+    Note over A,DB: BAGIAN 2: Pembaruan Nomor WhatsApp Resmi Butik Samarinda
+    A->>V: Buka Pengaturan Bisnis & Input Nomor WhatsApp Baru ("6281234567890")
+    A->>V: Klik "Perbarui Kontak WhatsApp"
+    activate V
+    V->>R: POST /admin/settings/whatsapp
+    deactivate V
+    activate R
+    R->>CtrlSetting: updateWhatsApp(Request $request)
+    deactivate R
+    activate CtrlSetting
+
+    CtrlSetting->>Mod: Setting::updateOrCreate(['key' => 'official_whatsapp'], ['value' => '6281234567890'])
+    activate Mod
+    Mod->>DB: UPDATE / INSERT INTO settings
+    DB-->>Mod: Setting Updated
+    Mod-->>CtrlSetting: Success
+    deactivate Mod
+
+    CtrlSetting-->>V: 302 Redirect with Flash: "Nomor WhatsApp pemesanan berhasil diperbarui"
+    deactivate CtrlSetting
+    activate V
+    V-->>A: Nomor baru aktif di seluruh tautan redirect website pelanggan
+    deactivate V
+```
 
 ---
 
-## 7. Kesimpulan & Rekomendasi
+## 4. Rincian Teknis Komponen & Integritas Data
 
-### 7.1 Status Penyelesaian Task ANA-009
-Task **ANA-009 (Sequence Diagram pengelolaan pesanan)** telah selesai dikerjakan secara tuntas:
-- Siklus hidup pesanan (*Order Lifecycle*) mulai dari transisi produksi (ST-05 $\rightarrow$ ST-06 $\rightarrow$ ST-07) hingga evaluasi pembatalan (ST-08) telah dimodelkan dengan Sequence Diagram berbasis Mermaid.
-- Mekanisme validasi FSM (*Finite State Machine*) dan penegakan aturan bisnis pembatalan (**BR-013 & BR-014**) dimodelkan secara komprehensif.
-- Kriteria penyelesaian (*Definition of Done*) terpenuhi.
+1. **Keamanan Berkas Foto Produk (`storage/app/public/products/`):**
+   - Foto produk divalidasi ketat (ekstensi gambar `.jpg`, `.jpeg`, `.png`, batas ukuran $\le$ 5MB).
+   - Penamaan berkas menggunakan string hash acak untuk mencegah penimpaan berkas (*file overwrite*).
+2. **Ketersediaan Stok Real-Time:**
+   - Perubahan status `is_available` langsung memengaruhi logika tampilan antarmuka publik secara deterministik (jika 0, tombol pemesanan langsung nonaktif).
+3. **Penyimpanan Terpusat Nomor WhatsApp:**
+   - Nomor WhatsApp tujuan tidak di-hardcode pada template Blade, melainkan dimuat secara dinamis dari tabel pengaturan (`settings`), memastikan fleksibilitas operasional jika butik mengganti nomor ponsel.
 
-### 7.2 Rekomendasi Langkah Berikutnya:
-Melanjutkan ke task penutup pada sub-fase 5.2 System Modeling:
-- **`ANA-010 — Validasi seluruh diagram.`**
+---
 
+## 5. Kesimpulan
+Task **ANA-009 (Sequence Diagram Pengelolaan Katalog, Kategori & Add-on Admin)** telah selesai direvisi penuh. Seluruh interaksi objek di ranah admin memodelkan manajemen konten etalase murni tanpa adanya antrean pesanan atau proses pembatalan di website.
+>>>>>>> c202b49 (Revise documentation and initial implementation)

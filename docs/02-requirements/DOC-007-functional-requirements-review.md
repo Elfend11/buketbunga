@@ -1,9 +1,10 @@
-# LAPORAN PENINJAUAN FUNCTIONAL REQUIREMENTS & MATRIKS KETERTELUSURAN (RTM)
+# LAPORAN PENINJAUAN FUNCTIONAL REQUIREMENTS & MATRIKS KETERTELUSURAN (RTM) (v1.1)
 ## BLOOMÉ — Flowers & Stories
 **Task ID:** DOC-007  
 **Fase:** Phase 1 — Project Initiation and Documentation (Sub-fase 4.2 Requirements Documentation)  
 **Penanggung Jawab:** Jayanti Firdasari (Project Manager & System Analyst)  
-**Tanggal Peninjauan:** 13 November 2026  
+**Tanggal Peninjauan Awal:** 13 November 2026  
+**Tanggal Revisi Penyelarasan:** 20 November 2026  
 **Status Task:** Completed (`[x]`)  
 **Dependensi:** DOC-006 — Menyusun `requirement.md` (Selesai)  
 
@@ -13,11 +14,13 @@
 
 Peninjauan Kebutuhan Fungsional (Task DOC-007) dilakukan untuk memvalidasi kelayakan, kelengkapan, ketegasan batasan, serta ketertelusuran (*traceability*) dari seluruh kebutuhan fungsional sistem informasi **BLOOMÉ — Flowers & Stories**.
 
-Hasil peninjauan mengonfirmasi terdapat **17 Kebutuhan Fungsional Utama (FR-001 s/d FR-017)** yang terbagi ke dalam dua domain:
-- **8 Kebutuhan Fungsional Publik / Pelanggan (FR-001 s/d FR-008)**
-- **9 Kebutuhan Fungsional Administrator (FR-009 s/d FR-017)**
+Berdasarkan kesepakatan baseline **v1.1**, sistem web difokuskan sebagai **katalog interaktif dan media konfigurasi personalisasi buket bunga, dengan alur pemesanan dialihkan langsung ke WhatsApp**.
 
-Seluruh kebutuhan fungsional telah terbebas dari ambiguitas, mendukung alur operasional bisnis florist, dan telah dipetakan secara terstruktur ke dalam modul teknis, entitas basis data, serta nomor task implementasi di `task.md`.
+Hasil peninjauan mengonfirmasi terdapat **25 Kebutuhan Fungsional Terpadu (FR-001 s/d FR-025)** yang terbagi ke dalam dua domain:
+- **12 Kebutuhan Fungsional Pelanggan Publik (FR-001 s/d FR-012)**
+- **13 Kebutuhan Fungsional Administrator (FR-013 s/d FR-025)**
+
+Seluruh kebutuhan fungsional telah terbebas dari konsep transaksi checkout dan status order di web yang usang, serta telah dipetakan secara terstruktur ke dalam modul teknis, entitas basis data (10 tabel), dan task implementasi pada `task.md`.
 
 ---
 
@@ -25,14 +28,18 @@ Seluruh kebutuhan fungsional telah terbebas dari ambiguitas, mendukung alur oper
 
 | ID Kebutuhan | Nama Kebutuhan | Deskripsi Fungsional & Kriteria Validasi | Status Kelayakan |
 |---|---|---|:---:|
-| **FR-001** | Halaman Beranda (Homepage) | Menampilkan identitas visual BLOOMÉ, hero section, perkenalan usaha, katalog buket unggulan, banner promosi custom buket, kontak, dan footer. Mendukung aksesibilitas responsif di semua perangkat. | Layak & Jelas |
-| **FR-002** | Katalog Produk | Menampilkan daftar buket aktif dalam format kartu (foto, nama, harga, kategori, ketersediaan). Dilengkapi fitur filtering berbasis kategori tanpa reload lambat. | Layak & Jelas |
-| **FR-003** | Detail Produk | Halaman rincian spesifik satu buket: galeri foto resolusi tinggi, deskripsi bahan/rangkaian, harga tetap, kategori, badge ketersediaan (*Tersedia*/*Habis*), dan CTA tombol pesan langsung. | Layak & Jelas |
-| **FR-004** | Navigasi Kategori | Menampilkan seluruh kategori buket aktif (Buket Bunga, Buket Uang, Buket Snack, dll.) dan memfilter produk sesuai kategori yang dipilih. | Layak & Jelas |
-| **FR-005** | Pemesanan Produk Katalog | Formulir pemesanan buket katalog: input data pemesan (nama, WhatsApp/telepon, alamat pengiriman/penerima), kartu ucapan (*greeting card*), catatan tanggal kebutuhan, dan kalkulasi ringkasan subtotal. Transaksi tersimpan secara konsisten menggunakan *DB Transaction*. | Layak & Jelas |
-| **FR-006** | Pengajuan Buket Custom | Formulir kustomisasi buket personal: input jenis/bahan bunga, kombinasi warna, tema buket, catatan kebutuhan, dan formulir unggah gambar referensi (format JPG/JPEG/PNG, maks 5 MB per berkas). Menghasilkan tiket permintaan kustom (*custom request*). | Layak & Jelas |
-| **FR-007** | Peninjauan & Keputusan Harga Custom | Halaman konfirmasi harga bagi pemesan untuk melihat nominal yang diajukan oleh admin. Menyediakan aksi tegas: menyetujui harga (*Approve*) untuk lanjut ke pembayaran, atau menolak (*Reject*) untuk membatalkan pengajuan. | Layak & Jelas |
-| **FR-008** | Informasi Pembayaran & Konfirmasi | Menampilkan instruksi pembayaran manual (nomor rekening bank dan e-wallet resmi), ringkasan tagihan pesanan, serta halaman konfirmasi pengajuan yang memberikan feedback jelas bahwa pesanan telah diterima sistem. | Layak & Jelas |
+| **FR-001** | Halaman Beranda (Homepage) | Menampilkan identitas visual BLOOMÉ, hero section, perkenalan usaha, etalase buket unggulan, banner promosi buket custom, informasi galeri Samarinda, dan footer. Mendukung aksesibilitas responsif di semua perangkat. | Layak & Jelas |
+| **FR-002** | Katalog Produk Interaktif | Menampilkan daftar buket aktif dalam format kartu grid (foto, nama, harga dasar, kategori, status ketersediaan). Dilengkapi fitur filtering berbasis kategori tanpa reload lambat. | Layak & Jelas |
+| **FR-003** | Filter Kategori Katalog | Menyediakan navigasi tombol/tab kategori (Buket Bunga, Buket Uang, Buket Snack, Buket Boneka) untuk menyaring produk secara cepat di sisi klien/server. | Layak & Jelas |
+| **FR-004** | Halaman Detail Produk | Menampilkan galeri multi-foto buket, deskripsi komposisi bunga/kertas, dimensi perkiraan, harga dasar, badge ketersediaan (*Tersedia*/*Habis*), dan panel konfigurator personalisasi. | Layak & Jelas |
+| **FR-005** | Pemilih Personalisasi Buket | Antarmuka interaktif bagi pelanggan untuk memilih variasi personalisasi buket (warna kertas wrapping, jenis pita satin, dll.) lengkap dengan visual color swatch dan penambahan biaya variasi jika ada. | Layak & Jelas |
+| **FR-006** | Pemilih Item Add-on | Daftar pilihan item tambahan buket (kartu ucapan cetak, boneka wisuda, topper akrilik, lampu LED) beserta rincian penambahan harga satuan yang jelas. | Layak & Jelas |
+| **FR-007** | Input Catatan Khusus & Ucapan | Area teks (*textarea*) bagi pelanggan untuk mencantumkan teks ucapan kartu dan instruksi khusus perangkaian atau tanggal kebutuhan buket di Samarinda. | Layak & Jelas |
+| **FR-008** | Ringkasan Pilihan & Estimasi Harga | Kartu ringkasan interaktif yang menghitung estimasi total harga secara *real-time* di browser ($Total = Base + Variations + AddOns$) dengan teks disclaimer yang transparan. | Layak & Jelas |
+| **FR-009** | Generator Pesan Pemesanan WhatsApp | Menyusun seluruh preferensi buket pilihan pelanggan menjadi draf teks terstruktur dan membuka tautan URL Scheme resmi toko (`https://wa.me/...`) saat tombol "Pesan via WhatsApp" diklik. | Layak & Jelas |
+| **FR-010** | Ketentuan Pemesanan Multi-Buket | Opsi penampungan beberapa jenis buket ke dalam satu pesan pemesanan WhatsApp **[Perlu Konfirmasi Owner]**. | Menunggu Konfirmasi |
+| **FR-011** | Konsultasi Buket Custom via WhatsApp | Halaman/seksi khusus Custom Bouquet yang menjelaskan layanan rancang bebas beserta tombol CTA "Konsultasi Desain Custom via WhatsApp" dengan template teks pembuka. | Layak & Jelas |
+| **FR-012** | Informasi Kontak & Profil Usaha | Menampilkan profil butik, jam operasional, alamat fisik Jalan Cipto Mangunkusumo Samarinda, dan tautan media sosial resmi. | Layak & Jelas |
 
 ---
 
@@ -40,63 +47,73 @@ Seluruh kebutuhan fungsional telah terbebas dari ambiguitas, mendukung alur oper
 
 | ID Kebutuhan | Nama Kebutuhan | Deskripsi Fungsional & Kriteria Validasi | Status Kelayakan |
 |---|---|---|:---:|
-| **FR-009** | Autentikasi Admin | Login satu pintu admin menggunakan email dan password terenkripsi (Bcrypt/Argon2), proteksi CSRF token, pengalihan otomatis (*middleware*) bila diakses tanpa autentikasi, dan fitur logout aman. | Layak & Jelas |
-| **FR-010** | Dashboard Utama Admin | Menampilkan kartu metrik ringkasan: Total Pesanan Masuk, Pesanan Menunggu Pembayaran, Pesanan Sedang Diproses, Permintaan Custom Baru, dan tabel 5-10 aktivitas transaksi terbaru. | Layak & Jelas |
-| **FR-011** | Manajemen Kategori | Operasi CRUD (Create, Read, Update, Delete) kategori produk buket, validasi keunikan nama kategori, dan pencegahan penghapusan kategori yang masih digunakan oleh produk aktif. | Layak & Jelas |
-| **FR-012** | Manajemen Produk Katalog | Operasi CRUD produk buket: unggah foto produk ke local disk storage yang terproteksi, pengaturan nama, deskripsi, harga (format IDR), relasi kategori, dan toggle status ketersediaan (*In Stock* / *Out of Stock*). | Layak & Jelas |
-| **FR-013** | Pengelolaan Pesanan | Menampilkan antrean seluruh pesanan masuk dengan fitur filter status (8 status), pencarian kode pesanan, rincian data pelanggan, daftar item, kartu ucapan, dan tanggal pengiriman. | Layak & Jelas |
-| **FR-014** | Manajemen Permintaan Custom | Meninjau rincian spesifikasi custom dari pelanggan, pratinjau berkas foto referensi yang diunggah, formulir input penentuan harga usulan oleh admin, serta pelacakan status respon pelanggan. | Layak & Jelas |
-| **FR-015** | Verifikasi Pembayaran Manual | Daftar catatan pembayaran pesanan, peninjauan metode transfer (bank / e-wallet), tombol konfirmasi verifikasi manual untuk mengubah status pembayaran menjadi lunas (*Paid*). | Layak & Jelas |
-| **FR-016** | Pengelolaan Siklus Status Pesanan | Pembaruan status pesanan mematuhi aturan transisi 8 status: *Pending* → *Awaiting Payment* → *Paid* → *In Process* → *Ready* → *Delivered* → *Completed* (atau *Cancelled*). Setiap perubahan status otomatis tercatat di tabel riwayat histori (*order_status_histories*). | Layak & Jelas |
-| **FR-017** | Manajemen Pengajuan Pembatalan | Menerima permohonan pembatalan dari pelanggan beserta alasannya, menyediakan aksi persetujuan (*Approve*) atau penolakan (*Reject*) dengan validasi status pesanan saat ini. | Layak & Jelas |
+| **FR-013** | Otentikasi Login Admin | Login satu pintu admin menggunakan email dan password terenkripsi (Bcrypt/Argon2id), proteksi CSRF token, dan middleware guard `auth:admin`. | Layak & Jelas |
+| **FR-014** | Logout Admin | Mengakhiri sesi otentikasi admin secara aman, meregenerasi session ID, dan mengarahkan kembali ke formulir login. | Layak & Jelas |
+| **FR-015** | Dashboard Overview Etalase | Menampilkan kartu metrik ringkasan: Total Produk Aktif, Produk Habis/Slot Penuh, Total Kategori, dan Total Add-on Aktif. | Layak & Jelas |
+| **FR-016** | Manajemen Kategori (CRUD) | Operasi Create, Read, Update, Delete kategori buket, generator slug otomatis, dan proteksi penghapusan kategori yang masih menaungi produk aktif. | Layak & Jelas |
+| **FR-017** | Manajemen Produk Katalog (CRUD) | Operasi Create, Read, Update, Delete master produk buket: upload foto utama, penetapan nama, slug, harga dasar, deskripsi, dan relasi kategori. | Layak & Jelas |
+| **FR-018** | Toggle Ketersediaan Produk | Mengubah status ketersediaan buket (*Tersedia* / *Habis/Slot Penuh*) secara instan yang langsung berdampak pada tampilan lencana dan tombol pesan di katalog publik. | Layak & Jelas |
+| **FR-019** | Manajemen Galeri Multi-Foto | Mengunggah multi-foto pendukung produk buket ke storage lokal, mengatur urutan tampil (*sort order*), dan menghapus foto galeri. | Layak & Jelas |
+| **FR-020** | Manajemen Opsi Personalisasi | Operasi CRUD grup opsi personalisasi (misal: *Warna Kertas Wrapping*, *Warna Pita*) dan penentuan tipe kontrol UI (`select`, `radio`, `color_swatch`). | Layak & Jelas |
+| **FR-021** | Manajemen Nilai Variasi Personalisasi | Operasi CRUD nilai variasi spesifik, penetapan kode warna HEX untuk swatch, biaya tambahan variasi jika ada, dan status ketersediaan variasi. | Layak & Jelas |
+| **FR-022** | Penetapan Personalisasi ke Produk | Antarmuka pemilihan opsi personalisasi mana saja yang aktif dan berlaku untuk produk buket tertentu. | Layak & Jelas |
+| **FR-023** | Manajemen Item Add-on (CRUD) | Operasi CRUD master item tambahan buket (nama, harga satuan, deskripsi, thumbnail) dan pengaturan status ketersediaan item. | Layak & Jelas |
+| **FR-024** | Penetapan Add-on ke Produk | Mengonfigurasi pilihan item add-on yang diizinkan untuk dipilih pada produk buket tertentu. | Layak & Jelas |
+| **FR-025** | Manajemen Pengaturan Bisnis & WhatsApp | Mengelola data konfigurasi dinamis toko pada basis data: nomor WhatsApp resmi tujuan pemesanan, jam kerja operasional, dan alamat toko di Samarinda. | Layak & Jelas |
 
 ---
 
-## 4. Requirements Traceability Matrix (RTM)
+## 4. Requirements Traceability Matrix (RTM v1.1)
 
-Matriks ketertelusuran memastikan bahwa setiap kebutuhan fungsional memiliki pemetaan konkret ke entitas basis data, layer implementasi MVC Laravel, dan task checklist di `task.md`:
+Matriks ketertelusuran memastikan bahwa setiap kebutuhan fungsional memiliki pemetaan konkret ke entitas basis data (10 tabel), controller/view Blade Laravel, serta nomor task implementasi di `task.md`:
 
-| Req ID | Aktor | Entitas Database Terkait | Controller & View Terkait | Task Implementasi Backend | Task Implementasi Frontend |
+| Req ID | Aktor | Entitas Database Terkait | Controller & View Terkait | Task Backend | Task Frontend |
 |---|---|---|---|---|---|
-| **FR-001** | Customer | `products`, `categories` | `HomeController` (`home.blade.php`) | BE-026, BE-039 | FE-019 |
-| **FR-002** | Customer | `products`, `categories` | `CatalogController` (`catalog.blade.php`) | BE-026, BE-040 | FE-020 |
-| **FR-003** | Customer | `products`, `categories` | `CatalogController` (`product-detail.blade.php`) | BE-026, BE-040 | FE-021 |
-| **FR-004** | Customer | `categories` | `CatalogController` (`catalog.blade.php`) | BE-019, BE-026 | FE-011, FE-020 |
-| **FR-005** | Customer | `customers`, `orders`, `order_details` | `OrderController` (`order-form.blade.php`) | BE-035, BE-041 s/d BE-046 | FE-022, FE-025 |
-| **FR-006** | Customer | `customers`, `custom_requests`, `custom_references` | `CustomBouquetController` (`custom-form.blade.php`) | BE-047 s/d BE-054 | FE-023, FE-024 |
-| **FR-007** | Customer | `custom_requests`, `orders` | `CustomBouquetController` (`custom-review.blade.php`) | BE-058, BE-059 | FE-025, FE-027 |
-| **FR-008** | Customer | `orders`, `payments` | `PaymentController` (`payment-info.blade.php`) | BE-068, BE-069 | FE-026, FE-027 |
-| **FR-009** | Admin | `admins` | `AdminAuthController` (`admin.login.blade.php`) | BE-014 s/d BE-018 | FE-030 |
-| **FR-010** | Admin | `orders`, `custom_requests`, `payments` | `AdminDashboardController` (`admin.dashboard.blade.php`) | BE-061, BE-055, BE-070 | FE-034 |
-| **FR-011** | Admin | `categories` | `AdminCategoryController` (`admin.categories.*`) | BE-019 s/d BE-025 | FE-037 |
-| **FR-012** | Admin | `products`, `categories` | `AdminProductController` (`admin.products.*`) | BE-026 s/d BE-034 | FE-035, FE-036 |
-| **FR-013** | Admin | `orders`, `order_details`, `customers` | `AdminOrderController` (`admin.orders.*`) | BE-061 s/d BE-063 | FE-038, FE-039 |
-| **FR-014** | Admin | `custom_requests`, `custom_references` | `AdminCustomRequestController` (`admin.custom.*`) | BE-055 s/d BE-060 | FE-040, FE-041, FE-042 |
-| **FR-015** | Admin | `payments`, `orders` | `AdminPaymentController` (`admin.payments.*`) | BE-070 s/d BE-074 | FE-043, FE-044 |
-| **FR-016** | Admin | `orders`, `order_status_histories` | `AdminOrderStatusController` (`admin.orders.status`) | BE-064 s/d BE-067 | FE-045 |
-| **FR-017** | Admin | `orders`, `order_status_histories` | `AdminCancellationController` (`admin.cancellations.*`) | BE-075 s/d BE-080 | FE-046 |
+| **FR-001** | Customer | `products`, `categories` | `HomeController@index` (`home.blade.php`) | BE-001, BE-016 | FE-009 |
+| **FR-002** | Customer | `products`, `categories` | `CatalogController@index` (`catalog/index.blade.php`) | BE-016, BE-021 | FE-010 |
+| **FR-003** | Customer | `categories` | `CatalogController@index` (`catalog/index.blade.php`) | BE-012, BE-016 | FE-010 |
+| **FR-004** | Customer | `products`, `product_images`, `categories` | `CatalogController@show` (`catalog/show.blade.php`) | BE-016, BE-022 | FE-011 |
+| **FR-005** | Customer | `personalization_options`, `personalization_values` | `CatalogController@show` (`catalog/show.blade.php`) | BE-025, BE-026 | FE-012 |
+| **FR-006** | Customer | `add_ons`, `product_add_ons` | `CatalogController@show` (`catalog/show.blade.php`) | BE-028, BE-030 | FE-013 |
+| **FR-007** | Customer | *(State Klien JS)* | `CatalogController@show` (`catalog/show.blade.php`) | - | FE-014 |
+| **FR-008** | Customer | *(State Klien JS)* | `CatalogController@show` (`catalog/show.blade.php`) | - | FE-015, FE-016 |
+| **FR-009** | Customer | `business_settings` | `personalization.js` (`wa.me` generator) | BE-031, BE-032 | FE-008, FE-016 |
+| **FR-010** | Customer | *(Pending Confirmation)* | `personalization.js` | BE-032 | FE-016 |
+| **FR-011** | Customer | `business_settings` | `CustomBouquetController@index` (`custom-bouquet.blade.php`) | BE-031 | FE-017 |
+| **FR-012** | Customer | `business_settings` | `HomeController@about`, `contact` | BE-031 | FE-018 |
+| **FR-013** | Admin | `admins` | `Admin\LoginController` (`admin/login.blade.php`) | BE-008 s/d BE-011 | FE-019 |
+| **FR-014** | Admin | `admins` | `Admin\LoginController@logout` | BE-010 | FE-019 |
+| **FR-015** | Admin | `products`, `categories`, `add_ons` | `Admin\DashboardController` (`admin/dashboard.blade.php`) | BE-016, BE-012 | FE-020 |
+| **FR-016** | Admin | `categories` | `Admin\CategoryController` (`admin/categories/*`) | BE-012 s/d BE-015 | FE-021 |
+| **FR-017** | Admin | `products`, `categories` | `Admin\ProductController` (`admin/products/*`) | BE-016 s/d BE-020 | FE-022, FE-023 |
+| **FR-018** | Admin | `products` | `Admin\ProductController@toggleAvailability` | BE-021 | FE-022 |
+| **FR-019** | Admin | `product_images`, `products` | `Admin\ProductGalleryController` (`admin/gallery/*`) | BE-022 s/d BE-024 | FE-024 |
+| **FR-020** | Admin | `personalization_options` | `Admin\PersonalizationController` (`admin/personalizations/*`) | BE-025, BE-027 | FE-025 |
+| **FR-021** | Admin | `personalization_values` | `Admin\PersonalizationController` (`admin/personalizations/*`) | BE-026 | FE-025 |
+| **FR-022** | Admin | `product_personalization_options` | `Admin\PersonalizationController@assign` | BE-027 | FE-025 |
+| **FR-023** | Admin | `add_ons` | `Admin\AddOnController` (`admin/add-ons/*`) | BE-028, BE-029 | FE-026 |
+| **FR-024** | Admin | `product_add_ons` | `Admin\AddOnController@assign` | BE-030 | FE-026 |
+| **FR-025** | Admin | `business_settings` | `Admin\BusinessSettingController` (`admin/settings/*`) | BE-031 | FE-027 |
 
 ---
 
 ## 5. Analisis Kasus Batas (*Edge Cases*) & Penanganan Kesalahan
 
-1. **Stok Habis Saat Transaksi Dijalankan (FR-005):** Sistem wajib memvalidasi kembali ketersediaan produk saat tombol submit ditekan. Jika status telah diubah admin menjadi *Habis*, transaksi dibatalkan dengan pesan ramah pengguna.
-2. **Unggahan File Referensi Rusak / Malicious (FR-006):** Validasi *MIME-type* secara ketat (`image/jpeg`, `image/png`) di sisi server, nama berkas di-hash secara acak (*sanitized unique string*), dan disimpan di luar *root execution directory*.
-3. **Penyetujuan Harga Custom Ganda (FR-007):** Jika pelanggan mengklik aksi persetujuan lebih dari satu kali, request idempotency dijaga dengan memeriksa status tiket custom saat ini.
-4. **Pembatalan Pesanan yang Telah Dikirim (FR-017):** Sistem secara otomatis menolak permohonan pembatalan untuk pesanan yang telah mencapai status *Delivered* atau *Completed*.
+1. **Produk Ditandai Habis Saat Dilihat Pelanggan (FR-002, FR-004):** Sistem menampilkan badge merah "Habis / Slot Penuh". Tombol "Pesan via WhatsApp" otomatis dinonaktifkan (*disabled*) dan berganti menjadi tombol alternatif "Tanyakan Ketersediaan Bahan via WhatsApp".
+2. **Perangkat Pelanggan Tidak Memiliki Aplikasi WhatsApp (FR-009):** Tautan menggunakan format standar `https://wa.me/...` yang otomatis membuka WhatsApp Web di peramban komputer atau meminta konfirmasi instalasi di ponsel. Disediakan tombol cadangan untuk menyalin draf teks pesan (*copy to clipboard*).
+3. **Admin Menghapus Kategori yang Memiliki Produk Aktif (FR-016):** Database InnoDB menerapkan relasi *Foreign Key Restrict*. Controller menangkap exception dan menampilkan pesan peringatan: *"Kategori tidak dapat dihapus karena masih menaungi produk buket aktif."*
+4. **Unggahan Foto Melebihi Batas Ukuran / Format Terlarang (FR-017, FR-019):** Form Request memvalidasi berkas di server: format wajib JPG, PNG, atau WebP dengan ukuran maksimal **[Perlu Konfirmasi Owner]** (standar: 2-5 MB). Berkas ilegal (.php, .exe) otomatis ditolak sebelum masuk ke disk.
 
 ---
 
 ## 6. Kesimpulan & Rekomendasi
 
 ### 6.1 Status Task DOC-007
-Task **DOC-007 (Meninjau functional requirements)** telah selesai dilaksanakan:
-- 17 Kebutuhan Fungsional telah ditinjau dan dinyatakan valid serta siap diimplementasikan.
-- Matriks Ketertelusuran (RTM) telah memetakan seluruh FR ke database, backend, frontend, dan task checklist.
-- Penanganan skenario batas (*edge cases*) telah terdefinisi.
-- Kriteria penyelesaian terpenuhi.
+Task **DOC-007 (Meninjau functional requirements)** telah selesai diselaraskan ke baseline **v1.1**:
+- 25 Kebutuhan Fungsional telah disesuaikan secara konsisten dengan konsep katalog interaktif dan pemesanan WhatsApp.
+- Matriks Ketertelusuran (RTM) telah memetakan seluruh FR ke 10 tabel basis data MySQL, komponen Blade, dan task implementasi di `task.md`.
+- Kriteria penyelesaian (*Definition of Done*) terpenuhi 100%.
 
 ### 6.2 Rekomendasi Langkah Berikutnya:
 Melanjutkan ke task peninjauan berikutnya pada sub-fase 4.2:
 - **`DOC-008 — Meninjau non-functional requirements.`**
-

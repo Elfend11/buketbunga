@@ -1,4 +1,4 @@
-# SYSTEM ARCHITECTURE DOCUMENT (SAD)
+# SYSTEM ARCHITECTURE DOCUMENT (SAD) (v1.1)
 # BLOOMÉ — Flowers & Stories
 
 ## 1. Document Information
@@ -6,83 +6,78 @@
 - **Nama Dokumen:** System Architecture Document (SAD)
 - **Nama Produk / Sistem:** BLOOMÉ — Flowers & Stories
 - **Nama Proyek:** Perancangan Sistem Informasi Pemesanan dan Personalisasi Buket Bunga Berbasis Web
-- **Project Sponsor:** Nabila Febriyani (Pemilik Usaha BLOOMÉ)
-- **Lokasi Usaha:** Jalan Cipto Mangunkusumo, Simpang Tiga, Loa Janan Ilir, Kota Samarinda
+- **Project Sponsor / Owner:** Nabila Febriyani (Pemilik Usaha BLOOMÉ)
+- **Lokasi Usaha:** Jalan Cipto Mangunkusumo, Simpang Tiga, Loa Janan Ilir, Kota Samarinda, Kalimantan Timur
 - **Lead System Architect & DBA:** Elsa Futri
 - **System Analyst & Project Manager:** Jayanti Firdasari
 - **Frontend Architect & UI/UX Lead:** Riya Monika
-- **Versi Dokumen:** 1.0 (Official Technical Architecture Baseline)
-- **Tanggal Efektif:** 13 November 2026
+- **Versi Dokumen:** 1.1 (Refined Architecture Baseline — Interactive Catalog & Personalization with WhatsApp Ordering)
+- **Tanggal Efektif:** 20 November 2026
 - **Status Dokumen:** Approved Baseline
 
 ---
 
 ## 2. Architecture Overview
 
-Dokumen **System Architecture Document (SAD)** ini menetapkan cetak biru teknis (*technical blueprint*) untuk perancangan, pengembangan, integrasi, dan penggelaran sistem informasi **BLOOMÉ — Flowers & Stories**.
+Dokumen **System Architecture Document (SAD) v1.1** ini menetapkan cetak biru arsitektur teknis (*technical architecture blueprint*) untuk sistem informasi **BLOOMÉ — Flowers & Stories**.
 
-Sistem ini dibangun dengan pendekatan **Monolithic Modern** berbasis framework **Laravel (PHP)** dan basis data relasional **MySQL**, menerapkan pola arsitektur **Three-Layer Architecture** (Presentation Layer, Application Layer, Data Layer). Pendekatan ini dipilih secara terukur untuk meminimalkan kompleksitas infrastruktur, memaksimalkan kecepatan pengembangan (*time-to-market* sesuai tenggat 30 November 2026), serta menjamin keandalan transaksi pemesanan buket katalog dan personalisasi buket custom.
+Berdasarkan kesepakatan final proses bisnis, **sistem web BLOOMÉ dirancang secara spesifik sebagai platform katalog interaktif dan media konfigurasi personalisasi buket bunga, sedangkan proses transaksi pemesanan, konfirmasi ketersediaan, pembayaran, dan koordinasi pengiriman diteruskan secara langsung melalui WhatsApp.**
+
+Sistem dibangun menggunakan pendekatan **Monolithic Modern** berbasis framework **Laravel (PHP)** dan basis data relasional **MySQL**, dengan menerapkan pola **Three-Layer Architecture** (Presentation Layer, Application Layer, Data Layer). Dengan mengeliminasi modul penyimpanan transaksi dan modul pelacakan status pesanan di web, arsitektur sistem menjadi jauh lebih ramping, cepat, aman, dan mudah dipelihara.
 
 ---
 
-## 3. Project Context
+## 3. Project Context & Stack
 
-| Parameter Proyek | Ketetapan Arsitektur |
+| Parameter Arsitektur | Ketetapan Teknis |
 |---|---|
-| **Metodologi Pengembangan** | Waterfall (Pengembangan sekuensial dengan *Quality Gate* antar fase). |
+| **Metodologi Pengembangan** | Waterfall (Analisis -> Desain -> Implementasi -> Pengujian -> Deployment). |
+| **Pola Arsitektur** | Three-Layer Architecture (Presentation, Application, Data Layer). |
 | **Backend Framework** | Laravel 10/11 (PHP 8.2+). |
-| **Frontend Stack** | Laravel Blade Templates, Vanilla CSS, JavaScript, Vite Asset Bundler. |
-| **Database Management** | MySQL 8.0+ dengan Laravel Eloquent ORM & Database Migrations. |
-| **File Storage** | Local Disk Storage terproteksi (`storage/app/public`) dengan symbolic link publik. |
-| **Aktor Sistem** | **Customer** (*Guest User*, tanpa registrasi/login) dan **Admin** (1 akun tunggal pemilik usaha). |
+| **Frontend Stack** | Laravel Blade Templates, Tailwind CSS / Vanilla CSS, JavaScript, Vite Asset Bundler. |
+| **Database Management** | MySQL 8.0+ (Storage Engine: InnoDB, Charset: `utf8mb4_unicode_ci`). |
+| **Object-Relational Mapping** | Eloquent ORM & Laravel Database Migrations. |
+| **File Storage** | Local Disk Storage (`storage/app/public/products`) dengan symbolic link publik. |
+| **Aktor Sistem** | **Customer** (*Guest User*, tanpa login/registrasi) dan **Admin** (1 akun tunggal pemilik toko). |
 
 ---
 
 ## 4. Architecture Objectives
 
-1. **Modularity & Separation of Concerns:** Memisahkan lapisan presentasi, logika bisnis, dan data untuk menjaga kode tetap bersih, mudah diuji, dan mudah dipelihara.
-2. **Data Integrity & Consistency (ACID):** Menjamin seluruh operasi pembuatan pesanan, pembayaran, dan perubahan status tersimpan secara konsisten tanpa ada data menggantung (*zero orphaned records*).
-3. **Robust Security:** Melindungi akses panel admin melalui enkripsi kata sandi modern (Bcrypt/Argon2), proteksi serangan CSRF, mitigasi SQL Injection, sanitasi XSS, serta pengamanan ketat berkas unggahan.
-4. **Performance & Scalability:** Menjamin waktu muat halaman (*load time*) ≤ 2 detik pada koneksi internet seluler standar (4G) melalui optimasi kueri basis data dan *asset minification*.
-5. **Operational Simplicity:** Menghindari beban pengelolaan infrastruktur mikro yang berlebihan (*over-engineering*); arsitektur dirancang agar dapat dijalankan secara efisien pada shared hosting atau VPS standar.
+1. **Modularity & Clean Separation of Concerns:** Memisahkan lapisan tampilan, logika bisnis perakit pesan WhatsApp, dan akses data master produk secara bersih.
+2. **Interactive Client-Side Calculation:** Memfasilitasi kalkulasi estimasi total harga dan konfigurasi variasi buket secara instan di sisi browser pelanggan.
+3. **Seamless WhatsApp Integration:** Mengompilasi parameter buket pilihan menjadi URL skema WhatsApp baku (`wa.me`) tanpa ketergantungan API pihak ketiga berbayar.
+4. **Zero Database Bloat:** Menghilangkan beban penyimpanan transaksi pesanan, pembayaran, dan histori status pesanan di basis data web.
+5. **Robust Security & Data Integrity:** Mengamankan dashboard admin melalui enkripsi kata sandi (Bcrypt), proteksi CSRF, sanitasi input XSS, dan validasi berkas foto di sisi server.
+6. **Sub-Second Page Load:** Menjamin waktu respon katalog ≤ 1-2 detik pada koneksi internet seluler standar 4G.
 
 ---
 
-## 5. Architectural Principles
+## 5. Architectural Style: Three-Layer Architecture
 
-1. **KISS (Keep It Simple, Stupid):** Menggunakan fitur bawaan (*native features*) Laravel standar (Blade, Eloquent, Form Requests, Middleware) tanpa abstraksi pustaka pihak ketiga yang tidak esensial.
-2. **Defense in Depth:** Menerapkan validasi data berlapis (validasi antarmuka HTML5 di sisi klien dan Form Request Validation di sisi server).
-3. **Database Single Source of Truth:** Semua status transaksi, referensi kustom, dan audit perubahan status pesanan dicatat langsung pada tabel basis data MySQL yang dinormalisasi.
-4. **Zero Script Execution in Uploads:** Seluruh berkas gambar yang diunggah pelanggan disimpan sebagai berkas statis berekstensi valid tanpa izin eksekusi script PHP di direktori penyimpanan.
-
----
-
-## 6. Architecture Style and Pattern: Three-Layer Architecture
-
-Aplikasi membagi tanggung jawab komputasi secara tegas ke dalam tiga lapisan:
+Arsitektur aplikasi membagi tanggung jawab komputasi ke dalam tiga lapisan terstruktur:
 
 ```mermaid
 graph TD
-    subgraph Layer1 ["1. Presentation Layer (Antarmuka Pengguna)"]
-        Blade["Blade Views (Customer & Admin)"]
-        CSS["Custom CSS / Component Styling"]
-        JS["JavaScript Components (Interactivity)"]
-        Vite["Vite Asset Bundler"]
+    subgraph Layer1 ["1. Presentation Layer (Antarmuka & Pengalaman Pengguna)"]
+        Blade["Blade Views (Catalog, Detail, Personalization, Summary, Admin CRUD)"]
+        CSS["Custom CSS / Tailwind Styling (Floral Boutique Theme)"]
+        JS["JavaScript Engine (Live Price Estimator & WhatsApp URL Encoder)"]
+        Vite["Vite Asset Bundler & Minifier"]
     end
 
-    subgraph Layer2 ["2. Application Layer (Logika Bisnis & Kendali)"]
+    subgraph Layer2 ["2. Application Layer (Logika Bisnis & Kendali Alur)"]
         Router["HTTP Routing (web.php)"]
-        Middleware["Auth & Guest Middleware"]
-        Requests["Form Request Validators"]
-        Controllers["Resource Controllers"]
-        Services["Domain Business Services"]
+        Middleware["Auth Middleware (auth:admin) & CSRF Guard"]
+        Requests["Form Request Validators (Product, Category, Options, Add-on)"]
+        Controllers["HTTP Controllers (Catalog, Product, Personalization, Settings)"]
+        Services["Domain Services (WhatsAppUrlBuilderService, ImageUploadService)"]
     end
 
-    subgraph Layer3 ["3. Data Layer (Penyimpanan & Persistensi)"]
-        Models["Eloquent ORM Models"]
-        DBTransactions["DB::transaction Engine"]
-        MySQL[("MySQL Relational Database")]
-        Storage["Local File Storage System"]
+    subgraph Layer3 ["3. Data Layer (Persistensi Data & Media)"]
+        Models["Eloquent ORM Models (Product, Category, AddOn, Personalization)"]
+        MySQL[("MySQL Relational Database (10 Tables)")]
+        Storage["Local Disk Storage (Product Images)"]
     end
 
     Blade --> Router
@@ -91,206 +86,201 @@ graph TD
     Requests --> Controllers
     Controllers --> Services
     Services --> Models
-    Models --> DBTransactions
-    DBTransactions --> MySQL
+    Models --> MySQL
     Services --> Storage
 ```
 
-1. **Presentation Layer:** Bertanggung jawab merender antarmuka pengguna, menangani input interaksi, dan menyajikan data menggunakan Laravel Blade templates yang terkompilasi server-side.
-2. **Application Layer:** Bertanggung jawab mengatur alur request HTTP, memvalidasi aturan bisnis (*business rules*), menjalankan alur verifikasi transaksi, dan mengkoordinasikan eksekusi antar modul.
-3. **Data Layer:** Bertanggung jawab atas persistensi data relasional, pemeliharaan integritas *foreign key*, transaksi ACID, dan manajemen berkas fisik gambar di media penyimpanan.
+1. **Presentation Layer (Lapisan Presentasi):**
+   - Merender halaman etalase publik dan antarmuka manajemen admin menggunakan template Blade.
+   - Menyediakan antarmuka interaktif pemilihan personalisasi (swatch warna wrapping, pilihan pita) dan add-on.
+   - Menghitung estimasi harga total secara *real-time* via JavaScript di browser.
+   - Mengarahkan pelanggan ke WhatsApp dengan URL yang telah di-*encode*.
+2. **Application Layer (Lapisan Aplikasi & Bisnis):**
+   - Mengendalikan perutean HTTP (*routing*) dan proteksi akses rute admin melalui middleware otentikasi.
+   - Memvalidasi seluruh formulir input admin (*Form Request Validation*).
+   - Menjalankan logika bisnis penyusunan format teks pesan WhatsApp (`WhatsAppUrlBuilderService`).
+   - Mengatur proses unggah, kompresi, dan sanitasi berkas foto produk (`ImageUploadService`).
+3. **Data Layer (Lapisan Data):**
+   - Mengelola persistensi data master etalase, kategori, opsi personalisasi, add-on, dan konfigurasi toko melalui Eloquent ORM.
+   - Menjaga integritas referensial antar tabel menggunakan *foreign key constraints* InnoDB.
+   - Menyimpan berkas fisik foto produk pada direktori storage lokal yang aman.
 
 ---
 
-## 7. High-Level System Architecture Diagram
+## 6. High-Level System Architecture Diagram
 
 ```mermaid
 flowchart LR
-    ClientPublic["Customer Browser<br>(Desktop / Mobile)"]
-    ClientAdmin["Admin Browser<br>(Laptop / Mobile)"]
+    CustomerBrowser["Customer Device<br>(Mobile / Desktop)"]
+    AdminBrowser["Admin Device<br>(Laptop / Mobile)"]
+    WhatsAppApp["Aplikasi WhatsApp<br>(Ponsel Pelanggan)"]
+    OwnerWhatsApp["WhatsApp Pemilik Usaha<br>(Nabila Febriyani)"]
 
-    subgraph WebServer ["Web Server Environment (Nginx / Apache / PHP-FPM)"]
-        Router["HTTP Routing & Middleware"]
+    subgraph WebServer ["Web Server Environment (Apache / Nginx + PHP 8.2+)"]
+        Router["HTTP Router & Middleware"]
         
-        subgraph AppCore ["Laravel Core Application"]
-            CatalogMod["Catalog Module"]
-            CustomMod["Custom Bouquet Module"]
-            OrderMod["Order Engine"]
-            PaymentMod["Payment Module"]
-            AdminMod["Admin Operations Module"]
+        subgraph LaravelApp ["Aplikasi Laravel BLOOMÉ"]
+            CatalogMod["Katalog & Filter Modul"]
+            ConfigMod["Konfigurator Personalisasi & Add-on"]
+            WALinkMod["WhatsApp URL Generator Service"]
+            AdminMod["Admin Content Management Modul"]
         end
         
-        FileDisk["Local Storage Disk<br>(storage/app/public)"]
+        LocalStorage["Local Storage Disk<br>(storage/app/public/products)"]
     end
 
-    subgraph DatabaseServer ["Relational Database"]
-        MySQL[("MySQL Database<br>InnoDB Engine")]
+    subgraph DBServer ["Database Server"]
+        MySQL[("MySQL Database<br>10 Master Tables")]
     end
 
-    ClientPublic -->|HTTP/HTTPS| Router
-    ClientAdmin -->|HTTP/HTTPS (auth:admin)| Router
-    
-    Router --> AppCore
-    AppCore --> MySQL
-    CustomMod -->|Save Reference Images| FileDisk
-    AdminMod -->|Save Product Images| FileDisk
+    CustomerBrowser -->|1. Akses Web & Konfigurasi| Router
+    Router --> CatalogMod & ConfigMod
+    CatalogMod & ConfigMod --> MySQL
+    ConfigMod -->|2. Generate URL wa.me| WALinkMod
+    WALinkMod -->|3. Redirect Link Teks Pesan| CustomerBrowser
+    CustomerBrowser -->|4. Buka WhatsApp & Kirim Pesan Manual| WhatsAppApp
+    WhatsAppApp -->|5. Chat Rincian Pesan Terkirim| OwnerWhatsApp
+
+    AdminBrowser -->|Akses Admin Panel & Kelola Data| Router
+    Router --> AdminMod
+    AdminMod --> MySQL
+    AdminMod -->|Unggah Foto Produk| LocalStorage
 ```
 
 ---
 
-## 8. Application Module Architecture (Component Diagram)
+## 7. Application Component Diagram
 
-Sistem terdiri dari 6 modul fungsional utama yang saling berinteraksi:
+Sistem terdiri dari komponen modular berikut:
 
 ```mermaid
 component
-    package "Public Domain" {
-        [Catalog Browsing Component]
-        [Custom Request Component]
-        [Checkout Component]
+    package "Public Catalog Domain" {
+        [Catalog Showcase Component]
+        [Product Detail View Component]
+        [Personalization Selector Component]
+        [Add-on Selector Component]
+        [Price Estimation Engine (Client JS)]
+        [WhatsApp Link Dispatcher]
     }
 
-    package "Administrative Domain" {
-        [Admin Authentication Component]
-        [Product & Category Manager]
-        [Order Lifecycle Manager]
-        [Payment Verification Manager]
+    package "Admin Management Domain" {
+        [Admin Auth Component]
+        [Category Management Component]
+        [Product Management Component]
+        [Gallery Upload Component]
+        [Personalization Management Component]
+        [Add-on Management Component]
+        [Business Settings Component]
     }
 
     package "Shared Core Services" {
-        [File Storage Service]
-        [Order Status History Logger]
-        [Pricing Service]
+        [WhatsApp URL Builder Service]
+        [Image Upload Service]
+        [Database Query Service]
     }
 
-    [Catalog Browsing Component] --> [Checkout Component]
-    [Custom Request Component] --> [File Storage Service]
-    [Custom Request Component] --> [Checkout Component]
-    [Checkout Component] --> [Order Lifecycle Manager]
-    
-    [Order Lifecycle Manager] --> [Order Status History Logger]
-    [Admin Authentication Component] ..> [Order Lifecycle Manager] : Guards
-    [Product & Category Manager] --> [File Storage Service]
-    [Payment Verification Manager] --> [Order Status History Logger]
-```
+    [Product Detail View Component] --> [Personalization Selector Component]
+    [Product Detail View Component] --> [Add-on Selector Component]
+    [Personalization Selector Component] --> [Price Estimation Engine (Client JS)]
+    [Add-on Selector Component] --> [Price Estimation Engine (Client JS)]
+    [Price Estimation Engine (Client JS)] --> [WhatsApp Link Dispatcher]
+    [WhatsApp Link Dispatcher] --> [WhatsApp URL Builder Service]
 
-1. **Catalog Browsing Component:** Menangani penampilan produk, penapisan (*filtering*) kategori, dan pratinjau detail produk.
-2. **Custom Request Component:** Menangani form personalisasi buket, validasi berkas gambar referensi, dan penyimpanan tiket custom.
-3. **Checkout Component:** Menangani pengumpulan identitas pemesan, pembuatan pesanan (*order creation*), dan tampilan petunjuk transfer.
-4. **Product & Category Manager:** Fasilitas administratif untuk operasi CRUD produk dan kategori.
-5. **Order Lifecycle Manager:** Mengendalikan transisi 8 siklus status pesanan dan peninjauan pengajuan pembatalan.
-6. **Payment Verification Manager:** Fasilitas admin untuk memeriksa catatan transfer dan memverifikasi pelunasan secara manual.
+    [Product Management Component] --> [Image Upload Service]
+    [Product Management Component] --> [Database Query Service]
+    [Gallery Upload Component] --> [Image Upload Service]
+    [Business Settings Component] --> [Database Query Service]
+```
 
 ---
 
-## 9. Request and Data Flow (Sequence Diagrams)
+## 8. Request & Interaction Data Flow (Sequence Diagrams)
 
-### 9.1 Alur Pemesanan Katalog (Catalog Ordering Flow)
+### 8.1 Alur Pelanggan: Katalog, Personalisasi, dan Pengalihan WhatsApp
 ```mermaid
 sequenceDiagram
     autonumber
-    actor C as Customer (Guest)
-    participant V as Blade View (order-form)
-    participant Ctrl as OrderController
-    participant Req as OrderStoreRequest
-    participant DB as MySQL Database
-    
-    C->>V: Isi data pemesan, alamat & ucapan kartu
-    V->>Ctrl: POST /order/catalog
-    Ctrl->>Req: Validasi Input
-    Req-->>Ctrl: Data Valid
-    Ctrl->>DB: DB::transaction (Insert Customer, Order, OrderDetail, StatusHistory)
-    DB-->>Ctrl: Commit Sukses (Generated Order ID)
-    Ctrl-->>V: Redirect to /order/{code}/payment-info
-    V-->>C: Tampil Ringkasan & Petunjuk Transfer Bank
+    actor C as Pelanggan (Customer)
+    participant V as Blade View (catalog.show)
+    participant JS as Client Script (personalization.js)
+    participant WA as Aplikasi WhatsApp
+    actor O as Pemilik Usaha (Nabila Febriyani)
+
+    C->>V: Membuka Halaman Detail Produk Buket
+    V-->>C: Render Foto, Deskripsi, Opsi Wrapping, Pilihan Pita & Add-on
+    C->>JS: Memilih Warna Wrapping & Jenis Pita
+    C->>JS: Memilih Add-on (Kartu Ucapan, Boneka) & Menuliskan Catatan
+    JS->>JS: Hitung Ulang Estimasi Total Harga secara Real-Time
+    JS-->>C: Tampilkan Rincian Estimasi Total Biaya
+    C->>JS: Klik Tombol "Pesan via WhatsApp"
+    JS->>JS: Susun Template Teks & Encode URL ke https://wa.me/{no_wa}?text={encoded}
+    JS-->>C: Buka Tautan WhatsApp
+    C->>WA: Aplikasi WhatsApp Terbuka dengan Teks Terisi
+    C->>O: Pelanggan Menekan Tombol Kirim Pesan Manual
+    Note over C,O: Transaksi, Negosiasi, Pembayaran DP & Delivery dikoordinasikan via WhatsApp
 ```
 
-### 9.2 Alur Pengajuan Personalisasi Buket Custom (Custom Bouquet Flow)
+### 8.2 Alur Buket Custom via WhatsApp
 ```mermaid
 sequenceDiagram
     autonumber
-    actor C as Customer
+    actor C as Pelanggan
+    participant V as Blade View (custom-bouquet.blade.php)
+    participant WA as Aplikasi WhatsApp
+    actor O as Pemilik Usaha
+
+    C->>V: Membuka Halaman Custom Bouquet
+    V-->>C: Menampilkan Informasi Layanan Custom & Panduan Pemesanan
+    C->>V: Klik Tombol "Konsultasi Desain Custom via WhatsApp"
+    V-->>C: Buka URL wa.me dengan Template Konsultasi Custom
+    C->>WA: WhatsApp Terbuka
+    C->>O: Kirim Pesan & Foto Referensi Desain Bebas via Chat
+    Note over C,O: Pemilik meninjau bahan dan menaksir harga langsung di WhatsApp
+```
+
+### 8.3 Alur Pengelolaan Master Data oleh Admin
+```mermaid
+sequenceDiagram
+    autonumber
     actor A as Admin
-    participant Ctrl as CustomBouquetController
-    participant Store as File Storage
+    participant V as Admin Dashboard Blade
+    participant Ctrl as ProductController
+    participant Svc as ImageUploadService
     participant DB as MySQL Database
-    
-    C->>Ctrl: POST /custom-order (Spesifikasi + Upload Foto Referensi)
-    Ctrl->>Store: Simpan foto referensi (UUID filename)
-    Ctrl->>DB: Simpan CustomRequest & CustomReference (Status: ST-01)
-    DB-->>C: Tampil Konfirmasi Pengajuan Custom
-    
-    Note over A,DB: Admin Meninjau Permintaan
-    A->>Ctrl: POST /admin/custom/{id}/set-price (Input Harga Usulan)
-    Ctrl->>DB: Update proposed_price & Status -> ST-02 (Menunggu Persetujuan Harga)
-    
-    C->>Ctrl: POST /custom/{id}/decision (Approve Price)
-    Ctrl->>DB: Update Status -> ST-03 (Menunggu Pembayaran)
-    Ctrl-->>C: Tampil Halaman Petunjuk Pembayaran Manual
+
+    A->>V: Input Data Produk Baru & Unggah Foto
+    V->>Ctrl: POST /admin/products (Form Request Validated)
+    Ctrl->>Svc: Unggah & Kompres Foto Produk ke Storage
+    Svc-->>Ctrl: Path Berkas Foto Disimpan
+    Ctrl->>DB: Insert Data Produk Baru ke Tabel products
+    DB-->>Ctrl: Berhasil Disimpan
+    Ctrl-->>V: Redirect dengan Flash Message Sukses
 ```
 
 ---
 
-## 10. Order Status Architecture (State Machine Diagram)
+## 9. Database Architecture (10 Relational Entities)
 
-Arsitektur status pesanan diatur oleh mesin status yang kaku guna mencegah perubahan status ilegal:
-
-```mermaid
-stateDiagram-v2
-    [*] --> ST01: Pesanan Dibuat
-    
-    ST01: ST-01 Menunggu Peninjauan Admin
-    ST02: ST-02 Menunggu Persetujuan Harga
-    ST03: ST-03 Menunggu Pembayaran
-    ST04: ST-04 Menunggu Konfirmasi Pembayaran
-    ST05: ST-05 Pembayaran Dikonfirmasi
-    ST06: ST-06 Sedang Dibuat
-    ST07: ST-07 Selesai (Terminal)
-    ST08: ST-08 Dibatalkan (Terminal)
-    
-    ST01 --> ST02: Admin Input Harga Custom (Khusus Custom)
-    ST01 --> ST03: Admin Verifikasi Stok (Khusus Katalog)
-    ST01 --> ST08: Pembatalan Disetujui
-    
-    ST02 --> ST03: Pelanggan Setuju Harga
-    ST02 --> ST08: Pelanggan Tolak / Batal
-    
-    ST03 --> ST04: Pelanggan Konfirmasi Bayar
-    ST03 --> ST08: Pembatalan Disetujui
-    
-    ST04 --> ST05: Admin Verifikasi Mutasi Sah
-    ST04 --> ST03: Verifikasi Ditolak (Bukti Tidak Sah)
-    
-    ST05 --> ST06: Florist Mulai Merangkai
-    ST06 --> ST07: Buket Diserahkan / Selesai
-    
-    ST07 --> [*]
-    ST08 --> [*]
-```
-
----
-
-## 11. Database Architecture & Entity Relationship Diagram (ERD)
-
-Arsitektur data dirancang menggunakan 10 entitas relasional terstruktur pada engine InnoDB MySQL:
+Basis data sistem dirancang secara efisien menggunakan 10 tabel relasional yang dinormalisasi:
 
 ```mermaid
 erDiagram
-    ADMINS ||--o{ ORDER_STATUS_HISTORIES : updates
-    CATEGORIES ||--o{ PRODUCTS : categorizes
-    PRODUCTS ||--o{ ORDER_DETAILS : includes
-    CUSTOMERS ||--o{ ORDERS : places
-    ORDERS ||--|{ ORDER_DETAILS : contains
-    ORDERS ||--o| CUSTOM_REQUESTS : customizes
-    CUSTOM_REQUESTS ||--o{ CUSTOM_REFERENCES : attaches
-    ORDERS ||--o{ PAYMENTS : pays
-    ORDERS ||--o{ ORDER_STATUS_HISTORIES : tracks
+    CATEGORIES ||--o{ PRODUCTS : contains
+    PRODUCTS ||--o{ PRODUCT_IMAGES : displays
+    PRODUCTS ||--o{ PRODUCT_PERSONALIZATION_OPTIONS : configures
+    PERSONALIZATION_OPTIONS ||--|{ PERSONALIZATION_VALUES : defines
+    PERSONALIZATION_OPTIONS ||--o{ PRODUCT_PERSONALIZATION_OPTIONS : assigns
+    PRODUCTS ||--o{ PRODUCT_ADD_ONS : offers
+    ADD_ONS ||--o{ PRODUCT_ADD_ONS : links
+    ADMINS ||--o{ BUSINESS_SETTINGS : manages
 
     ADMINS {
         bigint id PK
         string name
         string email UK
         string password
+        string remember_token
         timestamps created_at
     }
 
@@ -299,6 +289,7 @@ erDiagram
         string name UK
         string slug UK
         text description
+        boolean is_active
         timestamps created_at
     }
 
@@ -307,6 +298,50 @@ erDiagram
         bigint category_id FK
         string name
         string slug UK
+        decimal base_price
+        text description
+        string main_image
+        boolean is_available
+        timestamps created_at
+    }
+
+    PRODUCT_IMAGES {
+        bigint id PK
+        bigint product_id FK
+        string image_path
+        int sort_order
+        boolean is_primary
+        timestamps created_at
+    }
+
+    PERSONALIZATION_OPTIONS {
+        bigint id PK
+        string name
+        string type
+        boolean is_required
+        timestamps created_at
+    }
+
+    PERSONALIZATION_VALUES {
+        bigint id PK
+        bigint option_id FK
+        string value_name
+        decimal additional_price
+        string color_hex
+        boolean is_available
+        timestamps created_at
+    }
+
+    PRODUCT_PERSONALIZATION_OPTIONS {
+        bigint id PK
+        bigint product_id FK
+        bigint option_id FK
+        timestamps created_at
+    }
+
+    ADD_ONS {
+        bigint id PK
+        string name
         decimal price
         text description
         string image_path
@@ -314,285 +349,180 @@ erDiagram
         timestamps created_at
     }
 
-    CUSTOMERS {
+    PRODUCT_ADD_ONS {
         bigint id PK
-        string name
-        string whatsapp_number
-        text address
-        timestamps created_at
-    }
-
-    ORDERS {
-        bigint id PK
-        string order_code UK
-        bigint customer_id FK
-        string order_type
-        decimal total_amount
-        string current_status
-        date delivery_date
-        text greeting_card_message
-        timestamps created_at
-    }
-
-    ORDER_DETAILS {
-        bigint id PK
-        bigint order_id FK
         bigint product_id FK
-        string product_name_snapshot
-        decimal unit_price_snapshot
-        int quantity
-        decimal subtotal
-    }
-
-    CUSTOM_REQUESTS {
-        bigint id PK
-        bigint order_id FK
-        string flower_materials
-        string color_scheme
-        string theme
-        text notes
-        decimal proposed_price
-        string customer_decision
+        bigint add_on_id FK
         timestamps created_at
     }
 
-    CUSTOM_REFERENCES {
+    BUSINESS_SETTINGS {
         bigint id PK
-        bigint custom_request_id FK
-        string file_path
-        string original_filename
-        int file_size
-        timestamps created_at
-    }
-
-    PAYMENTS {
-        bigint id PK
-        bigint order_id FK
-        string payment_method
-        decimal amount_paid
-        string verification_status
-        datetime verified_at
-        timestamps created_at
-    }
-
-    ORDER_STATUS_HISTORIES {
-        bigint id PK
-        bigint order_id FK
-        bigint changed_by_admin_id FK
-        string status_code
-        text notes
+        string key UK
+        text value
+        string group
         timestamps created_at
     }
 ```
 
 ---
 
-## 12. Laravel Project Architecture
+## 10. Laravel Project Directory Architecture
 
-Struktur direktori Laravel disusun modular dan mematuhi konvensi framework resmi:
+Struktur direktori implementasi kode Laravel disusun rapi dan modular:
 
 ```
 app/
 ├── Http/
 │   ├── Controllers/
-│   │   ├── HomeController.php               # Halaman beranda publik
-│   │   ├── CatalogController.php            # Katalog & detail buket
-│   │   ├── OrderController.php              # Checkout pesanan katalog
-│   │   ├── CustomBouquetController.php      # Form & alur buket custom
-│   │   ├── PaymentController.php            # Instruksi bayar & konfirmasi
-│   │   └── Admin/                           # Controller panel admin
-│   │       ├── Auth/LoginController.php     # Autentikasi admin
-│   │       ├── DashboardController.php      # Statistik operasional
-│   │       ├── ProductController.php        # CRUD buket
-│   │       ├── CategoryController.php       # CRUD kategori
-│   │       ├── OrderController.php          # Antrean pesanan & detail
-│   │       ├── CustomRequestController.php  # Review custom & harga
-│   │       ├── PaymentController.php        # Verifikasi bayar manual
-│   │       └── CancellationController.php   # Manajemen pembatalan
+│   │   ├── HomeController.php               # Halaman beranda publik, about, contact
+│   │   ├── CatalogController.php            # Katalog publik & halaman detail buket
+│   │   ├── CustomBouquetController.php      # Halaman informasi & CTA konsultasi custom
+│   │   └── Admin/                           # Controller khusus panel admin
+│   │       ├── Auth/LoginController.php     # Otentikasi sesi login/logout admin
+│   │       ├── DashboardController.php      # Ringkasan metrik konten katalog
+│   │       ├── CategoryController.php       # CRUD kategori buket
+│   │       ├── ProductController.php        # CRUD produk & toggle ketersediaan
+│   │       ├── ProductGalleryController.php # Manajemen galeri multi-foto buket
+│   │       ├── PersonalizationController.php# CRUD opsi & variasi personalisasi
+│   │       ├── AddOnController.php          # CRUD item tambahan & penetapan harga
+│   │       └── BusinessSettingController.php# Kelola nomor WhatsApp & info toko
 │   │
 │   ├── Middleware/
 │   │   ├── AdminAuthenticate.php            # Proteksi akses rute admin
-│   │   └── PreventRequestsDuringMaintenance.php
+│   │   └── VerifyCsrfToken.php              # Proteksi token CSRF formulir
 │   │
 │   └── Requests/                            # Validasi request terisolasi
-│       ├── CatalogOrderRequest.php
-│       ├── CustomBouquetRequest.php
 │       ├── AdminLoginRequest.php
 │       ├── StoreProductRequest.php
-│       └── CustomPriceProposeRequest.php
+│       ├── UpdateProductRequest.php
+│       ├── StoreCategoryRequest.php
+│       ├── StorePersonalizationRequest.php
+│       ├── StoreAddOnRequest.php
+│       └── UpdateBusinessSettingRequest.php
 │
 ├── Models/                                  # Eloquent ORM Models
 │   ├── Admin.php
 │   ├── Category.php
 │   ├── Product.php
-│   ├── Customer.php
-│   ├── Order.php
-│   ├── OrderDetail.php
-│   ├── CustomRequest.php
-│   ├── CustomReference.php
-│   ├── Payment.php
-│   └── OrderStatusHistory.php
+│   ├── ProductImage.php
+│   ├── PersonalizationOption.php
+│   ├── PersonalizationValue.php
+│   ├── ProductPersonalizationOption.php
+│   ├── AddOn.php
+│   ├── ProductAddOn.php
+│   └── BusinessSetting.php
 │
-└── Services/                                # Reusable Business Logic
-    ├── OrderCodeGenerator.php               # Generator kode pesanan unik (e.g. BLM-202611-001)
-    ├── FileUploadService.php                # Validasi & penyimpanan berkas
-    └── OrderStatusService.php               # Transisi status & pencatatan audit
+└── Services/                                # Reusable Domain Business Services
+    ├── WhatsAppUrlBuilderService.php        # Logika pembentukan teks draf pesan & URL wa.me
+    └── ImageUploadService.php               # Validasi MIME-type, hashing UUID, & resize gambar
 ```
 
 ---
 
-## 13. Routing Architecture
+## 11. Routing Architecture
 
-Rute aplikasi dikelompokkan ke dalam 3 namespace logis pada `routes/web.php`:
+Rute aplikasi pada file `routes/web.php` dibagi ke dalam rute publik dan rute admin terproteksi:
 
 ```php
-// 1. PUBLIC ROUTES (Akses Umum Tanpa Login)
+// =========================================================================
+// 1. PUBLIC ROUTES (Dapat Diakses Seluruh Pengunjung Tanpa Login)
+// =========================================================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalog/{slug}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/custom-bouquet', [CustomBouquetController::class, 'index'])->name('custom.index');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
-// 2. TRANSACTIONAL ROUTES (Guest Checkout)
-Route::post('/order/catalog', [OrderController::class, 'store'])->name('order.catalog.store');
-Route::get('/custom-bouquet', [CustomBouquetController::class, 'create'])->name('custom.create');
-Route::post('/custom-bouquet', [CustomBouquetController::class, 'store'])->name('custom.store');
-Route::get('/custom-bouquet/{code}/review', [CustomBouquetController::class, 'review'])->name('custom.review');
-Route::post('/custom-bouquet/{code}/decision', [CustomBouquetController::class, 'decision'])->name('custom.decision');
-Route::get('/order/{code}/payment', [PaymentController::class, 'show'])->name('payment.show');
-Route::post('/order/{code}/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');
-Route::post('/order/{code}/cancel', [OrderController::class, 'requestCancellation'])->name('order.cancel');
-
-// 3. ADMIN AUTHENTICATION
+// =========================================================================
+// 2. ADMIN AUTHENTICATION ROUTES
+// =========================================================================
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // 4. PROTECTED ADMIN ROUTES (auth:admin)
+    // =====================================================================
+    // 3. PROTECTED ADMIN ROUTES (auth:admin)
+    // =====================================================================
     Route::middleware(['auth:admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Master Kategori & Produk
         Route::resource('categories', CategoryController::class);
         Route::resource('products', ProductController::class);
-        Route::resource('orders', AdminOrderController::class);
-        Route::get('/custom-requests', [CustomRequestController::class, 'index'])->name('custom.index');
-        Route::get('/custom-requests/{id}', [CustomRequestController::class, 'show'])->name('custom.show');
-        Route::post('/custom-requests/{id}/price', [CustomRequestController::class, 'proposePrice'])->name('custom.price');
-        Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
-        Route::post('/payments/{id}/verify', [AdminPaymentController::class, 'verify'])->name('payments.verify');
-        Route::post('/orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
-        Route::post('/orders/{id}/cancellation', [CancellationController::class, 'decide'])->name('cancellations.decide');
+        Route::patch('/products/{id}/availability', [ProductController::class, 'toggleAvailability'])
+            ->name('products.availability');
+        
+        // Galeri Foto Produk
+        Route::get('/products/{id}/gallery', [ProductGalleryController::class, 'index'])->name('products.gallery');
+        Route::post('/products/{id}/gallery', [ProductGalleryController::class, 'store'])->name('products.gallery.store');
+        Route::delete('/gallery/{id}', [ProductGalleryController::class, 'destroy'])->name('gallery.destroy');
+        
+        // Variasi Personalisasi & Add-on
+        Route::resource('personalizations', PersonalizationController::class);
+        Route::resource('add-ons', AddOnController::class);
+        
+        // Pengaturan WhatsApp & Informasi Bisnis
+        Route::get('/settings', [BusinessSettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [BusinessSettingController::class, 'update'])->name('settings.update');
     });
 });
 ```
 
 ---
 
-## 14. File Storage Architecture
+## 12. File Storage Architecture
 
-Penyimpanan berkas gambar produk dan foto referensi kustom diisolasi pada disk lokal dengan arsitektur aman:
+Penyimpanan berkas foto produk dikelola menggunakan local storage Laravel yang terisolasi:
 
-- **Root Direktori Berkas:** `storage/app/public/`
-  - Produk Katalog: `storage/app/public/products/`
-  - Foto Referensi Kustom: `storage/app/public/custom_references/`
-- **Tautan Publik:** Diekspos melalui symbolic link standar Laravel: `php artisan storage:link` (`public/storage/`).
-- **Prosedur Sanitasi Berkas (Upload Security):**
-  1. Validasi MIME Type: Wajib `image/jpeg` atau `image/png`.
-  2. Batas Ukuran: Maksimum 5.120 KB (5 MB).
-  3. Pengacakan Nama Berkas: Nama berkas asli dibuang dan diganti dengan UUID acak (`Str::uuid() . '.' . $extension`) untuk mencegah eksploitasi penimpaan berkas (*file overwrite attack*).
-  4. Larangan Eksekusi: Konfigurasi web server melarang eksekusi script PHP di dalam folder storage.
+- **Direktori Berkas:** `storage/app/public/products/`
+- **Akses Publik:** Melalui symbolic link bawaan `public/storage/products/` (`php artisan storage:link`).
+- **Keamanan Unggahan Berkas (Upload Security):**
+  1. Validasi server-side ketat: format hanya boleh `jpg`, `jpeg`, `png`, `webp`.
+  2. Batas ukuran berkas foto maksimal **[Perlu Konfirmasi Owner]** (standar: 2-5 MB).
+  3. Sanitasi nama berkas: Nama file asli dibuang dan diganti dengan UUID acak (`Str::uuid() . '.' . $extension`).
+  4. Non-Executable Storage: Direktori storage dikonfigurasikan agar tidak mengeksekusi script PHP.
 
 ---
 
-## 15. Security Architecture
+## 13. Security Architecture
 
-1. **Autentikasi & Penyimpanan Kata Sandi:** Menggunakan algoritma hash Bcrypt dengan faktor beban adaptif bawaan Laravel.
-2. **Proteksi Sesi:** Regenerasi Session ID saat admin login sukses guna memitigasi serangan *Session Fixation*. Batas *lifetime* sesi admin disetel 120 menit dengan *auto-logout*.
-3. **Pencegahan CSRF:** Token `@csrf` disertakan pada seluruh formulir POST/PUT/DELETE; divalidasi oleh middleware `VerifyCsrfToken`.
-4. **Pencegahan SQL Injection:** 100% kueri database dieksekusi menggunakan Eloquent ORM atau Query Builder berparameter (*PDO prepared statements*). Penggunaan raw SQL tanpa sanitasi dilarang mutlak.
-5. **Mitigasi Cross-Site Scripting (XSS):** Semua data teks dari pengguna otomatis di-escape menggunakan sintaks kurung kurawal ganda Blade `{{ $variable }}`.
-
----
-
-## 16. Error Handling and Logging Architecture
-
-1. **Penanganan Error Terpusat:** Menggunakan `app/Exceptions/Handler.php`. Pada lingkungan production (`APP_DEBUG=false`), sistem tidak akan pernah membocorkan *stack trace* kode.
-2. **Halaman Error Kustom Bernuansa Floral:**
-   - `resources/views/errors/404.blade.php` : Halaman halaman tidak ditemukan yang ramah.
-   - `resources/views/errors/403.blade.php` : Peringatan akses terlarang.
-   - `resources/views/errors/500.blade.php` : Pesan permintaan maaf sistem dengan kontak darurat butik.
-3. **Audit Log:** Seluruh pengecualian fatal (*exceptions*) dan log transisi status otomatis ditulis ke `storage/logs/laravel.log` dengan format terstruktur.
+1. **Autentikasi & Hashing:** Otentikasi admin dilindungi enkripsi kata sandi Bcrypt bawaan Laravel.
+2. **Session Security:** Regenerasi ID sesi secara otomatis setelah login sukses untuk mencegah serangan *Session Fixation*.
+3. **Proteksi CSRF:** Seluruh form HTTP (POST, PATCH, DELETE) wajib menyertakan direktif `@csrf`.
+4. **Pencegahan SQL Injection:** Seluruh manipulasi data menggunakan Eloquent ORM atau parameterized query binding.
+5. **Pencegahan XSS:** Output data dinamis di-escape otomatis menggunakan sintaks kurung kurawal ganda Blade `{{ $variable }}`.
 
 ---
 
-## 17. Non-Functional Architecture Attributes
-
-| Atribut Kualitas | Pendekatan Arsitektur |
-|---|---|
-| **Performa & Waktu Muat** | Menggunakan Eager Loading `with()` untuk mencegah masalah N+1 Query; kompresi aset melalui Vite; browser caching berkas statis. |
-| **Responsivitas Layar** | Grid sistem adaptif berbasis CSS Flexbox/Grid untuk 3 breakpoint (Mobile ≤ 576px, Tablet 768-992px, Desktop ≥ 1024px). |
-| **Keandalan & Integritas** | Transaksi atomik `DB::transaction()` pada setiap pembentukan pesanan multi-tabel; foreign key cascade/restrict yang teruji. |
-| **Kemudahan Pemeliharaan** | Standar kode PSR-12, pemisahan logika bisnis dari controller ke Service Classes, dan dokumentasi API kontrak yang jelas. |
-
----
-
-## 18. Deployment Architecture (Diagram)
-
-```mermaid
-flowchart TD
-    Internet((Jaringan Internet)) --> WebServer["Web Server (Nginx / Apache)<br>Reverse Proxy & Static Asset Server"]
-    
-    subgraph HostEnvironment ["Hosting / VPS Environment"]
-        WebServer --> PHP["PHP 8.2+ FPM Runtime<br>Laravel Monolith Application"]
-        PHP --> MySQLInstance[("MySQL 8.0+ Database Server<br>InnoDB Storage Engine")]
-        PHP --> StorageDir["Local File System<br>storage/app/public/"]
-    end
-
-    style HostEnvironment fill:#fdfaf9,stroke:#b09a9c,stroke-width:1px
-    style WebServer fill:#f6dde3,stroke:#642d36,stroke-width:1px
-    style PHP fill:#e99aaf,stroke:#642d36,stroke-width:1px
-    style MySQLInstance fill:#a8b5a0,stroke:#333,stroke-width:1px
-```
-
-- **Konfigurasi Awal:** Pengembangan dan pengujian lokal menggunakan lingkungan PHP/MySQL terstandarisasi.
-- **Konfigurasi Produksi:** Aplikasi dirancang siap dipasang (*deployable*) pada Web Hosting / VPS Linux dengan PHP 8.2, modul PHP ekstras (PDO, OpenSSL, Mbstring, Tokenizer, XML, GD), dan basis data MySQL.
-
----
-
-## 19. Architectural Decisions and Trade-Offs (ADR)
+## 14. Architectural Decisions & Trade-Offs (ADR)
 
 | Keputusan Arsitektur | Pilihan yang Diambil | Alternatif yang Ditolak | Justifikasi & Trade-Off |
 |---|---|---|---|
-| **ADR-01: Gaya Arsitektur** | Monolithic Laravel Modular | Microservices Architecture | Monolitik dipilih karena ukuran tim (3 orang) dan jadwal ketat (7 minggu). Microservices akan menimbulkan kompleksitas jaringan dan biaya operasional yang tidak perlu. |
-| **ADR-02: Frontend Rendering** | Server-Side Rendering (Blade) | Single Page App (Vue / React) | Blade terintegrasi langsung dengan ekosistem Laravel tanpa latensi API ekstra, mempermudah SEO katalog buket, dan mempercepat kolaborasi UI/UX. |
-| **ADR-03: Media Storage** | Local Disk Symbolic Link | Cloud Object Storage (AWS S3) | Local disk tidak membutuhkan biaya langganan API cloud tambahan pada tahap awal; arsitektur abstraksi disk Laravel memungkinkan migrasi mulus ke S3 di masa depan jika volume gambar melonjak. |
-| **ADR-04: Metode Pembayaran** | Manual Transfer Verification | Automated Payment Gateway | Menghindari biaya integrasi merchant gateway dan potongan transaksi per pesanan; pemilik usaha menginginkan verifikasi manual yang terkontrol. |
+| **ADR-01: Alur Pemesanan** | WhatsApp Direct Hand-off | Web Transaction & Checkout DB | Menghilangkan beban integrasi payment gateway, pencatatan transaksi yang rentan tumpang-tindih, dan cocok dengan kebiasaan pelanggan florist boutique di Samarinda yang menghendaki konsultasi ramah via WA. |
+| **ADR-02: Gaya Arsitektur** | Monolithic Laravel Modular | Microservices Architecture | Monolitik sangat ideal untuk tim 3 orang dengan tenggat waktu 30 November 2026; meminimalkan latensi dan kerumitan deployment. |
+| **ADR-03: Rendering Engine** | Blade Templates (SSR) + JS Interactivity | Single Page Application (Vue/React) | Server-side rendering Blade memberikan kecepatan muat pertama yang optimal, SEO friendly untuk katalog bunga, dan interaktivitas personalisasi tetap mulus dengan JavaScript ringan. |
+| **ADR-04: Kalkulasi Estimasi** | Client-Side Real-Time Estimation | AJAX Server-Side Re-calculation | Menghitung estimasi harga di browser membuat antarmuka terasa sangat responsif (*zero latency*) saat pelanggan mencentang opsi variasi dan add-on. |
 
 ---
 
-## 20. Architectural Constraints & Compliance
+## 15. Parameter Menunggu Konfirmasi (`[Perlu Konfirmasi Owner]`)
 
-1. Sistem wajib mematuhi seluruh batasan Three-Layer Architecture: Controller dilarang menulis raw SQL langsung atau memanggil request eksternal tanpa validasi.
-2. Tidak diizinkan menambah dependensi paket Laravel pihak ketiga (*third-party packages*) tanpa evaluasi keamanan dan persetujuan Technical Lead.
-3. Seluruh tabel wajib dibuat menggunakan migration resmi Laravel dan relasi antar model Eloquent wajib diverifikasi integritasnya.
-
----
-
-## 21. Open Questions and Assumptions (`[PERLU KONFIRMASI]`)
-
-Arsitektur sistem menandai parameter infrastruktur berikut sebagai menunggu konfirmasi resmi dari Sponsor:
-1. Pemilihan penyedia layanan hosting production dan nama domain resmi.
-2. Jadwal prosedur otomasi backup basis data di tingkat server hosting (*cron backup schedule*).
-3. Batasan jumlah maksimum unggahan gambar referensi per transaksi (arsitektur menyiapkan dukungan hingga 5 gambar referensi per pesanan).
+1. Nomor WhatsApp bisnis resmi untuk penerimaan pesanan.
+2. Batas ukuran maksimal file foto upload produk admin.
+3. Rencana domain dan web hosting production.
+4. Frekuensi dan prosedur backup database di hosting.
 
 ---
 
-## 22. Architectural Validation & Sign-Off
+## 16. Architectural Validation & Sign-Off
 
-Arsitektur sistem BLOOMÉ telah ditinjau dan dinyatakan memenuhi seluruh kebutuhan fungsional (`requirement.md`), kebutuhan produk (`prd.md`), serta standar tata kelola teknis perangkat lunak.
+Arsitektur sistem BLOOMÉ v1.1 ini telah divalidasi memenuhi seluruh kebutuhan fungsional dan teknis, selaras dengan `requirement.md`, `prd.md`, dan `database-design.md`.
 
-**Disusun dan Disahkan Oleh:**  
+**Disahkan Oleh:**  
 **Elsa Futri** (Backend Developer & Lead System Architect)  
 **Jayanti Firdasari** (Project Manager & System Analyst)  
 **Riya Monika** (UI/UX Designer & Frontend Developer)  
-Tanggal: 13 November 2026
+Tanggal: 20 November 2026

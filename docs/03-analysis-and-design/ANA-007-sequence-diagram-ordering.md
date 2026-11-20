@@ -1,21 +1,35 @@
-# SEQUENCE DIAGRAM ALUR PEMESANAN (ORDERING SEQUENCE DIAGRAM)
+<<<<<<< HEAD
+# SEQUENCE DIAGRAM EKSPLORASI KATALOG, PERSONALISASI, DAN HAND-OFF PEMESANAN WHATSAPP
+=======
+# SEQUENCE DIAGRAM KATALOG, PERSONALISASI, DAN WHATSAPP URL BUILDER
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 ## BLOOMÉ — Flowers & Stories
 **Task ID:** ANA-007  
 **Fase:** Phase 2 — System Analysis and Design (Sub-fase 5.2 System Modeling)  
 **Penanggung Jawab:** Jayanti Firdasari (Lead System Analyst & Project Manager)  
-**Tanggal Penyusunan:** 13 November 2026  
+<<<<<<< HEAD
+**Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dependensi:** ANA-003 — Activity Diagram Pemesanan Katalog, ANA-004 — Activity Diagram Pemesanan Custom, ARC-001 — Three-Layer Architecture, ARC-005 — Routing Architecture  
+**Dependensi:** ANA-003, ANA-004, ARC-001 (Three-Layer Architecture), ARC-005 (Routing Architecture)  
+=======
+**Tanggal Penyusunan:** 13 November 2026 (Revisi Final: 20 November 2026)  
+**Status Task:** Completed Final (`[x]`)  
+**Dependensi:** ANA-001, ANA-002, ANA-003 (Selesai Final)  
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 
 ---
 
-## 1. Ringkasan Eksekutif & Tujuan Pemodelan
+## 1. Ringkasan Eksekutif & Karakteristik Alur
 
-Pemodelan Sequence Diagram Alur Pemesanan (Task ANA-007) disusun untuk memetakan interaksi temporal antar-objek (*message exchange lifecycle*) secara runut dan presisi pada sistem pemesanan website **BLOOMÉ — Flowers & Stories**. Pemodelan ini menerapkan pendekatan *Object-Oriented Analysis and Design* (OOAD) yang disinkronkan dengan arsitektur tiga lapis (*Three-Layer Architecture*: Presentation, Application, dan Data Layer) berbasis framework Laravel.
+<<<<<<< HEAD
+Pemodelan Sequence Diagram Alur Pemesanan dan Personalisasi (Task ANA-007) disusun untuk memetakan interaksi temporal antar-objek (*message exchange lifecycle*) secara runut dan presisi pada website **BLOOMÉ — Flowers & Stories**. Pemodelan ini menerapkan pendekatan *Object-Oriented Analysis and Design* (OOAD) yang disinkronkan dengan arsitektur tiga lapis (*Three-Layer Architecture*: Presentation, Application, dan Data Layer) berbasis framework Laravel.
 
-Diagram urutan ini mencakup 2 (dua) skenario utama pemesanan sesuai *business logic* proyek:
-1. **Pemesanan Produk Katalog (*Catalog Bouquet Order* — UC-04):** Alur checkout cepat bagi tamu (*guest checkout*) untuk produk jadi dengan harga tetap, verifikasi ketersediaan, pemotretan snapshot historis harga/nama produk, serta pencatatan otomatis riwayat status awal.
-2. **Pengajuan & Penetapan Harga Personalisasi Buket Custom (*Custom Bouquet Request & Pricing Negotiation* — UC-05, UC-05.1, UC-06):** Alur pemesanan khusus dengan unggah berkas foto referensi, penaksiran harga manual oleh pemilik usaha (Admin), serta persetujuan akhir oleh pelanggan.
+Berdasarkan kesepakatan final tim (Konsep Sistem v1.1), **website BLOOMÉ berfungsi sebagai katalog interaktif dan media konfigurasi personalisasi buket bunga, sedangkan proses pemesanan resmi, konfirmasi harga, pembayaran, negosiasi, dan pengiriman dilanjutkan secara langsung melalui WhatsApp**. 
+
+Dengan demikian, diagram sekuensial ini memodelkan tiga siklus interaksi inti:
+1. **Eksplorasi Katalog & Filter Kategori:** Alur penelusuran buket aktif berdasarkan kategori bunga, uang, atau snack dari basis data.
+2. **Detail Buket, Konfigurasi Personalisasi & Live Price Estimation:** Pemuatan galeri multi-foto, pemilih visual warna (*color swatches*), penambahan item add-on, dan kalkulasi subtotal otomatis di antarmuka pengguna tanpa pemuatan ulang halaman.
+3. **Penyusunan Pesan Otomatis & Direct WhatsApp Hand-off:** Mekanisme pembentukan draf teks pemesanan terstruktur rapi, pengambilan nomor kontak toko dari `business_settings`, dan pengalihan ke WhatsApp melalui protokol `wa.me`, di mana pelanggan menekan tombol kirim secara manual. **Website tidak menyimpan transaksi pesanan di basis data web.**
 
 ---
 
@@ -23,399 +37,306 @@ Diagram urutan ini mencakup 2 (dua) skenario utama pemesanan sesuai *business lo
 
 | Partisipan / Lifeline | Layer Arsitektur | Tipe Komponen | Peran & Tanggung Jawab Utama |
 |---|---|---|---|
-| **Customer (Guest)** | Aktor Eksternal | Pengguna | Mengisi formulir, memilih tanggal pengiriman, mengunggah foto, dan menyetujui harga buket custom tanpa harus registrasi akun (BR-001). |
-| **Admin (Nabila Febriyani)** | Aktor Internal | Pemilik Usaha | Meninjau antrean pesanan masuk, memvalidasi kelayakan permintaan custom, dan menetapkan harga usulan (*proposed price*). |
-| **Blade Views (`resources/views/`)** | Presentation Layer | UI / View | Menampilkan formulir pemesanan, merender pesan kesalahan validasi secara *inline*, menampilkan status pesanan, serta instruksi transfer bank. |
-| **Web Router (`routes/web.php`)** | Application Layer | HTTP Routing | Menerima request HTTP (POST/GET), memetakan endpoint ke controller yang tepat, serta mengalokasikan middleware keamanan. |
-| **Form Requests (`App\Http\Requests\`)** | Application Layer | Request Validator | Memvalidasi integritas data isian formulir (nomor WhatsApp, alamat Samarinda, tanggal kebutuhan, format foto referensi ≤ 5MB) sebelum mencapai controller. |
-| **Controllers (`App\Http\Controllers\`)** | Application Layer | Application Controller | Mengorkestrasi logika bisnis pemesanan, memanggil service generator, mengelola unggah file, serta mengendalikan transaksi database. |
-| **File Storage Subsystem (`Storage::disk`)** | Application Layer | File Storage | Menyimpan berkas foto referensi ke dalam folder aman `storage/app/public/custom_references/` dengan penamaan berbasis UUID acak. |
-| **Order Services (`App\Services\`)** | Application Layer | Domain Service | Menyediakan logika khusus: `OrderCodeGenerator` untuk penerbitan kode unik pesanan dan `OrderStatusService` untuk transisi serta pencatatan histori status. |
-| **Eloquent Models (`App\Models\`)** | Data Layer | ORM Entities | Objek representasi tabel relasional (`Customer`, `Order`, `OrderDetail`, `CustomRequest`, `CustomReference`, `OrderStatusHistory`). |
-| **MySQL Database Engine** | Data Layer | RDBMS | Menjamin integritas transaksional ACID (*Atomicity, Consistency, Isolation, Durability*) melalui blok `DB::transaction()`. |
+| **Customer (Guest)** | Aktor Eksternal | Pengguna | Mengakses katalog tanpa login, memilih buket, memilih warna wrapping/pita, memilih add-on, mengetik pesan ucapan, menekan tombol pesan, dan mengirim pesan manual di WhatsApp. |
+| **Blade Views (`resources/views/`)** | Presentation Layer | UI / View | Merender antarmuka katalog (`catalog.blade.php`), halaman detail produk (`product-detail.blade.php`), komponen swatch warna, dan kartu ringkasan estimasi live. |
+| **Frontend Script (Live Calc & WA Builder)** | Presentation Layer | JavaScript Module | Menghitung estimasi subtotal secara real-time di browser pengguna dan merangkai teks pesan draf pemesanan terformat rapi. |
+| **Web Router (`routes/web.php`)** | Application Layer | HTTP Routing | Menerima request HTTP GET publik untuk rute beranda, katalog, dan detail buket. |
+| **Catalog / Product Controllers** | Application Layer | Controllers | Mengorkestrasi pemanggilan data kategori, produk aktif, galeri foto, opsi personalisasi, dan add-on dari Eloquent models. |
+| **Eloquent Models (`App\Models\`)** | Data Layer | ORM Entities | Model entitas: `Category`, `Product`, `ProductImage`, `PersonalizationOption`, `PersonalizationValue`, `AddOn`, dan `BusinessSetting`. |
+| **MySQL Database Engine** | Data Layer | RDBMS | Menyediakan data master etalase terindeks secara cepat (*response time* < 1 detik). |
+| **WhatsApp App (External)** | Saluran Eksternal | External Channel | Menerima tautan `wa.me` dan menampilkan draf pesan pemesanan di antarmuka chat WhatsApp pelanggan. |
+| **Florist (Nabila Febriyani)** | Aktor Eksternal | Pemilik Usaha | Menerima pesan pemesanan di ponsel butik, mengecek stok fisik bunga, menyepakati harga final, menerima transfer bayar, dan mengatur pengiriman. |
 
 ---
 
-## 3. Sequence Diagram Pemesanan Katalog (Catalog Ordering Flow)
+## 3. Sequence Diagram Alur Eksplorasi Katalog & Personalisasi Buket
+=======
+Pemodelan Diagram Sekuensial Katalog, Personalisasi, dan WhatsApp URL Builder (Task ANA-007) memetakan interaksi temporal antar-objek (*message sequence*) dalam proses pemilihan buket bunga, konfigurasi personalisasi, pemilihan add-on, kalkulasi estimasi harga di sisi klien, hingga perakitan URL WhatsApp pada website **BLOOMÉ — Flowers & Stories**.
 
-Diagram di bawah ini menggambarkan alur lengkap saat pelanggan memesan buket bunga siap beli dari katalog produk:
+Pada versi lama, dokumen ini memodelkan transaksi database `DB::transaction()` yang membuat record pada tabel `orders` dan `order_details`. Pada revisi final ini, pemodelan disesuaikan dengan arsitektur **Zero-Checkout & WhatsApp Hand-off**:
+- Seluruh konfigurasi diproses secara interaktif di sisi klien (didukung data produk dan add-on dari server).
+- Sistem tidak menerbitkan transaksi basis data resmi pada website.
+- Akhir dari alur adalah kompilasi parameter pesan terformat dan eksekusi tautan `https://wa.me/`.
+
+---
+
+## 2. Sequence Diagram: Eksplorasi, Personalisasi & Pembangkitan URL WhatsApp
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor C as Customer (Guest)
-    participant V as Blade View (order-catalog.blade.php)
+<<<<<<< HEAD
+    participant V as Blade View (catalog/detail)
+    participant JS as Frontend Live Calculator & WA Builder
     participant R as Web Router (routes/web.php)
-    participant Val as CatalogOrderRequest
-    participant Ctrl as OrderController
-    participant Gen as OrderCodeGenerator
-    participant Svc as OrderStatusService
-    participant Mod as Eloquent Models (Order, Detail, Customer)
+    participant Ctrl as ProductController
+    participant Mod as Eloquent Models (Product, Category, Options, AddOns)
     participant DB as MySQL Database
-    actor A as Admin (Nabila)
+    participant WA as WhatsApp App (External)
+    actor F as Florist Owner (Nabila)
 
-    C->>V: Isi formulir pemesanan (Nama, WA, Alamat, Pesan Ucapan, Tanggal Kebutuhan)
-    C->>V: Klik tombol "Konfirmasi Pesanan"
+    %% ==========================================
+    %% FASE 1: Eksplorasi Katalog & Filter Produk
+    %% ==========================================
+    Note over C,DB: FASE 1: Menjelajahi Katalog & Filter Kategori
+    C->>V: Buka Halaman Katalog (/katalog?kategori=buket-bunga)
     activate V
-    V->>R: POST /order/catalog (FormData payload)
+    V->>R: GET /katalog?kategori=buket-bunga
+    activate R
+    R->>Ctrl: index(Request $request)
+    activate Ctrl
+    Ctrl->>Mod: Category::where('slug', 'buket-bunga')->first()
+    activate Mod
+    Mod->>DB: SELECT * FROM categories WHERE slug = ?
+    activate DB
+    DB-->>Mod: Record Category
+    deactivate DB
+    Mod-->>Ctrl: Category instance
+    deactivate Mod
+
+    Ctrl->>Mod: Product::with('primaryImage')->where('is_available', 1)->get()
+    activate Mod
+    Mod->>DB: SELECT * FROM products JOIN product_images ...
+    activate DB
+    DB-->>Mod: Recordset Products
+    deactivate DB
+    Mod-->>Ctrl: Collection $products
+    deactivate Mod
+
+    Ctrl-->>V: Render View 'catalog.index' ($products, $categories)
+    deactivate Ctrl
+    V-->>C: Tampilkan grid kartu buket bunga siap pesan
+    deactivate V
+
+    %% ==========================================
+    %% FASE 2: Detail Produk & Konfigurasi Visual
+    %% ==========================================
+    Note over C,DB: FASE 2: Buka Detail Buket, Konfigurasi Personalisasi & Add-on
+    C->>V: Klik salah satu buket (e.g. "Rose Romance Deluxe")
+    activate V
+    V->>R: GET /produk/rose-romance-deluxe
+    activate R
+    R->>Ctrl: show($slug)
+    activate Ctrl
+    Ctrl->>Mod: Product::with(['images', 'personalizationOptions.values', 'addOns'])->where('slug', $slug)->firstOrFail()
+    activate Mod
+    Mod->>DB: Eager load product, product_images, options, values, add_ons
+    activate DB
+    DB-->>Mod: Data lengkap produk & relasi
+    deactivate DB
+    Mod-->>Ctrl: Product instance lengkap
+    deactivate Mod
+
+    Ctrl-->>V: Render View 'products.show' ($product)
+    deactivate Ctrl
+    V-->>C: Tampilkan slider galeri foto, harga dasar (e.g. Rp 250.000), swatch warna, & add-on
+    deactivate V
+
+    %% ==========================================
+    %% FASE 3: Interaksi Konfigurasi & Live Calc
+    %% ==========================================
+    Note over C,JS: FASE 3: Interaksi Personalisasi & Live Price Calculation
+    C->>V: Pilih Swatch Warna Wrapping ("Blush Pink")
+    V->>JS: updateOption('wrapping', 'Blush Pink', price=0)
+    activate JS
+    JS->>V: Update badge pilihan variasi pada kartu ringkasan
+    deactivate JS
+
+    C->>V: Centang Add-on "Kartu Ucapan Premium" (+Rp 10.000) & "Boneka Mini" (+Rp 25.000)
+    V->>JS: addAddOn(['Kartu Ucapan', 'Boneka Mini'], totalAddon=35000)
+    activate JS
+    JS->>V: Update daftar add-on pada kartu ringkasan
+    deactivate JS
+
+    C->>V: Ketik teks ucapan ("Happy Graduation Sahabatku!")
+    V->>JS: setGreetingMessage("Happy Graduation Sahabatku!")
+
+    activate JS
+    JS->>JS: calculateTotal() => Rp 250.000 + Rp 0 + Rp 35.000 = Rp 285.000
+    JS->>V: Tampilkan estimasi subtotal live: "Rp 285.000"
+    deactivate JS
+    V-->>C: Pelanggan melihat ringkasan lengkap & estimasi harga live
+
+    %% ==========================================
+    %% FASE 4: WhatsApp Generator & Hand-off
+    %% ==========================================
+    Note over C,F: FASE 4: Generator Pesan Otomatis & Direct WhatsApp Hand-off
+    C->>V: Klik tombol "Pesan via WhatsApp"
+    activate V
+    V->>JS: triggerWhatsAppOrder()
+    activate JS
+
+    Note over JS: Susun pesan draf baku: Produk, Variasi, Add-on, Ucapan, Estimasi
+    JS->>JS: buildOrderMessage(product, options, addons, message, estimatedTotal)
+    JS->>JS: encodeURIComponent(message)
+    JS->>V: window.open("https://wa.me/6281234567890?text=" + encodedText, "_blank")
+    deactivate JS
+    deactivate V
+
+    Note over V,WA: *TIDAK ADA penyimpanan pesanan ke basis data web (Hand-off Murni)*
+
+    V->>WA: Buka tab / aplikasi WhatsApp dengan draf pesan siap kirim
+    activate WA
+    WA-->>C: Tampilkan obrolan chat BLOOMÉ dengan draf pesan lengkap
+    deactivate WA
+
+    C->>WA: Tekan tombol "Kirim" (*Send*) secara manual
+    activate WA
+    WA->>F: Pesan pemesanan diterima di ponsel pemilik butik
+    deactivate WA
+    activate F
+    F-->>C: Balas chat WhatsApp: Konfirmasi ketersediaan bunga segar, nomor rekening transfer, & jadwal kurir Samarinda
+    deactivate F
+=======
+    participant V as Blade View (product-detail.blade.php)
+    participant JS as Frontend Script (personalization.js)
+    participant R as Web Router (routes/web.php)
+    participant Ctrl as CatalogController
+    participant Svc as WhatsAppPayloadBuilder
+    participant Mod as Eloquent Models (Product, AddOn, Setting)
+    participant DB as MySQL Database
+    actor W as Florist (Aplikasi WhatsApp)
+
+    %% 1. Eksplorasi Produk
+    C->>V: Buka Halaman Detail Produk (/katalog/{slug})
+    activate V
+    V->>R: GET /katalog/{slug}
     deactivate V
     activate R
-    R->>Val: Delegasikan validasi input
+    R->>Ctrl: show($slug)
     deactivate R
-    activate Val
+    activate Ctrl
+    
+    Ctrl->>Mod: Product::with('category')->where('slug', $slug)->firstOrFail()
+    activate Mod
+    Mod->>DB: SELECT * FROM products WHERE slug = ?
+    activate DB
+    DB-->>Mod: Record Produk Aktif
+    deactivate DB
+    Mod-->>Ctrl: Instance $product
+    deactivate Mod
 
-    alt Kasus 1: Input Data Tidak Valid (Nomor WA tidak valid / Tanggal lampau)
-        Val-->>V: 302 Redirect Back (Errors & Old Input Flashed)
+    Ctrl->>Mod: AddOn::where('is_active', true)->get()
+    activate Mod
+    Mod->>DB: SELECT * FROM add_ons WHERE is_active = 1
+    activate DB
+    DB-->>Mod: Daftar Opsi Add-on
+    deactivate DB
+    Mod-->>Ctrl: Collection $addOns
+    deactivate Mod
+
+    Ctrl-->>V: Render View detail produk lengkap ($product, $addOns)
+    deactivate Ctrl
+    activate V
+    V-->>C: Tampilkan Galeri Foto, Harga Dasar, dan Form Personalisasi
+    deactivate V
+
+    %% 2. Interaksi Personalisasi & Live Calculator
+    Note over C,JS: Pelanggan Mengonfigurasi Buket di Antarmuka
+    C->>JS: 1. Pilih Warna Wrapping (e.g. "Soft Pink") & Pita ("Cream")
+    C->>JS: 2. Centang Add-on: "Boneka Wisuda" (+Rp35.000) & "Lampu LED" (+Rp15.000)
+    C->>JS: 3. Tulis Pesan Kartu: "Happy Graduation, Sarah!"
+    C->>JS: 4. Masukkan Tanggal Kebutuhan & Alamat Delivery Samarinda
+    activate JS
+    JS->>JS: Hitung Total Estimasi = Harga Dasar + Subtotal Add-on
+    JS-->>V: Update Tampilan Ringkasan & Total Estimasi (e.g. Rp 300.000)
+    deactivate JS
+    activate V
+    V-->>C: Panel Ringkasan Menampilkan Estimasi Biaya Terbaru
+    deactivate V
+
+    %% 3. Pemicuan Pemesanan ke WhatsApp
+    C->>V: Klik Tombol "Pesan via WhatsApp"
+    activate V
+    V->>JS: Trigger handleOrderSubmit(formData)
+    deactivate V
+    activate JS
+
+    JS->>JS: Validasi Kelengkapan Isian (Pesan kartu & Alamat delivery)
+    
+    alt Form Belum Lengkap (Alamat Kosong)
+        JS-->>V: Tampilkan Alert Validasi: "Mohon lengkapi alamat pengiriman delivery"
         activate V
-        V-->>C: Tampilkan pesan error inline pada form
+        V-->>C: Indikator merah pada kolom alamat
         deactivate V
-    else Kasus 2: Validasi Berhasil
-        Val->>Ctrl: Request valid (Validated array)
-        deactivate Val
-        activate Ctrl
-
-        Ctrl->>DB: DB::beginTransaction()
-        activate DB
-        DB-->>Ctrl: Transaksi aktif
-
-        Note over Ctrl,Mod: Cari / daftarkan data pelanggan via Nomor WhatsApp (BR-003)
-        Ctrl->>Mod: Customer::firstOrCreate([phone], [name, address])
-        activate Mod
-        Mod->>DB: INSERT/SELECT customers
-        DB-->>Mod: Customer instance ($customer)
-        Mod-->>Ctrl: Return $customer
-        deactivate Mod
-
-        Ctrl->>Gen: OrderCodeGenerator::generate()
-        activate Gen
-        Gen-->>Ctrl: Return order_code (e.g. "BLM-202611-0001")
-        deactivate Gen
-
-        Note over Ctrl,Mod: Simpan master pesanan dengan status awal ST-01
-        Ctrl->>Mod: Order::create(customer_id, order_code, 'catalog', total_amount, 'ST-01', delivery_date, greeting_message)
-        activate Mod
-        Mod->>DB: INSERT INTO orders
-        DB-->>Mod: Order instance ($order)
-        Mod-->>Ctrl: Return $order
-        deactivate Mod
-
-        Note over Ctrl,Mod: Simpan Snapshot Historis Produk (BR-020)
-        Ctrl->>Mod: OrderDetail::create(order_id, product_id, product_name_snapshot, unit_price_snapshot, qty, subtotal)
-        activate Mod
-        Mod->>DB: INSERT INTO order_details
-        DB-->>Mod: Detail created
-        Mod-->>Ctrl: Return $detail
-        deactivate Mod
-
-        Note over Ctrl,Svc: Catat jejak audit status pesanan pertama kali
-        Ctrl->>Svc: OrderStatusService::recordInitialStatus($order, 'ST-01', 'Pesanan katalog baru dibuat oleh pelanggan')
+    else Form Lengkap & Valid
+        Note over JS,Svc: Susun Teks Pesan Terformat & URL Hand-off
+        JS->>Svc: buildWhatsAppUrl(product, personalization, addons, address)
         activate Svc
-        Svc->>Mod: OrderStatusHistory::create(order_id, 'ST-01', notes, changed_by=null)
+        Svc->>Svc: Format Teks Pesan Rapi (Baris baru, nama buket, add-on, estimasi)
+        Svc->>Svc: rawurlencode(formatted_text)
+        Svc->>Mod: Ambil Nomor WhatsApp Resmi Butik dari Setting
         activate Mod
-        Mod->>DB: INSERT INTO order_status_histories
-        DB-->>Mod: History logged
-        Mod-->>Svc: Success
+        Mod-->>Svc: Nomor Telepon (e.g. 6281234567890)
         deactivate Mod
-        Svc-->>Ctrl: Audit trail tersimpan
+        Svc-->>JS: Return full URL: "https://wa.me/6281234567890?text=..."
         deactivate Svc
 
-        alt Kegagalan Sistem / Query Error
-            Ctrl->>DB: DB::rollBack()
-            DB-->>Ctrl: Transaksi dibatalkan (No dirty data)
-            Ctrl-->>V: 500 Error View / Notifikasi Gagal
-            activate V
-            V-->>C: Tampilkan error: "Terjadi gangguan teknis, silakan coba kembali"
-            deactivate V
-        else Transaksi Berhasil Penuh
-            Ctrl->>DB: DB::commit()
-            deactivate DB
-            Ctrl-->>V: 302 Redirect to route('order.payment-info', $order->order_code)
-            deactivate Ctrl
-            activate V
-            V-->>C: Render halaman rincian tagihan & rekening pembayaran resmi
-            deactivate V
+        JS->>C: Redirect Peramban / Buka Aplikasi WhatsApp (window.open)
+        deactivate JS
 
-            Note over C,A: Notifikasi pesanan baru tersedia di dashboard admin
-            A->>Ctrl: Buka Menu Dashboard Admin / Antrean Pesanan
-            activate Ctrl
-            Ctrl->>DB: SELECT * FROM orders WHERE current_status = 'ST-01'
-            activate DB
-            DB-->>Ctrl: Kumpulan record pesanan baru
-            deactivate DB
-            Ctrl-->>A: Tampilkan pesanan baru "BLM-202611-0001" siap ditinjau
-            deactivate Ctrl
-        end
+        %% 4. Hand-off ke Florist
+        C->>W: Kirim Pesan Terformat Otomatis via WhatsApp
+        activate W
+        W-->>C: Florist Membalas di WhatsApp: Konfirmasi Ketersediaan & Ongkos Kirim
+        deactivate W
     end
+>>>>>>> c202b49 (Revise documentation and initial implementation)
 ```
 
 ---
 
-## 4. Sequence Diagram Pemesanan & Personalisasi Custom Bouquet (Custom Order & Negotiation Flow)
+<<<<<<< HEAD
+## 4. Analisis Alur & Penegasan Batas Sistem (System Demarcation)
 
-Diagram ini menggambarkan interaksi 3 fase: (A) Pengajuan spesifikasi buket dan unggah foto referensi oleh pelanggan, (B) Peninjauan dan pengajuan harga oleh Admin, dan (C) Persetujuan atau penolakan harga oleh pelanggan:
+### 4.1 Peniadaan Transaksi Basis Data Web pada Alur Pemesanan
+1. **Zero Database Write on Order:** Pada alur pemesanan pelanggan, sistem web hanya melakukan operasi baca (`SELECT`) terhadap tabel `products`, `product_images`, `personalization_options`, `personalization_values`, `add_ons`, dan `business_settings`.
+2. **Tidak Ada Tabel `orders` atau `customers`:** Data konfigurasi buket dan identitas pelanggan diolah secara murni di sisi memori antarmuka (*client-side state*) dan diteruskan ke WhatsApp melalui parameter URL `wa.me`. Hal ini menjamin privasi pengguna tanpa risiko kebocoran data transaksi di web.
+3. **Penyusunan Pesan Terformat:** Teks pesan yang dihasilkan memuat struktur lengkap:
+   ```text
+   Halo BLOOMÉ Flowers & Stories, saya ingin memesan buket:
+   - Produk: Rose Romance Deluxe
+   - Kertas Wrapping: Blush Pink
+   - Pita: Satin Burgundy
+   - Add-on: Kartu Ucapan Premium, Boneka Wisuda Mini
+   - Ucapan Kartu: "Happy Graduation Sahabatku!"
+   - Estimasi Harga Web: Rp 285.000
+   Mohon konfirmasi ketersediaan bahan, total harga final, dan rekening pembayarannya. Terima kasih!
+   ```
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor C as Customer (Guest)
-    participant V as Blade View (custom-order.blade.php)
-    participant Val as CustomOrderRequest
-    participant Ctrl as CustomBouquetController
-    participant Stor as File Storage (Storage::disk)
-    participant Svc as OrderStatusService
-    participant Mod as Eloquent Models (Order, CustomRequest, CustomReference)
-    participant DB as MySQL Database
-    actor A as Admin (Nabila)
-    participant AdminCtrl as Admin\CustomBouquetController
-
-    %% ==========================================
-    %% FASE A: Pengajuan Custom Oleh Pelanggan
-    %% ==========================================
-    Note over C,AdminCtrl: FASE A: Pengajuan Custom & Unggah Foto Referensi
-    C->>V: Isi formulir custom (Jenis bunga, Skema warna, Tema, Catatan, Tanggal)
-    C->>V: Unggah berkas foto referensi (JPG/PNG ≤ 5MB)
-    C->>V: Klik "Kirim Pengajuan Personalisasi"
-    activate V
-    V->>Val: POST /custom-order (Form Data Multipart)
-    deactivate V
-    activate Val
-
-    alt Format / Ukuran File Tidak Sesuai (Bukan JPG/PNG atau > 5MB)
-        Val-->>V: 302 Redirect Back with Error: "Berkas harus JPG/PNG maks 5MB"
-        activate V
-        V-->>C: Tampilkan validasi error berkas
-        deactivate V
-    else Validasi Berhasil
-        Val->>Ctrl: Form data valid & berkas gambar terverifikasi
-        deactivate Val
-        activate Ctrl
-
-        Ctrl->>Stor: Simpan foto referensi: putFile('custom_references', $file)
-        activate Stor
-        Stor-->>Ctrl: Return $filePath (UUID sanitasi)
-        deactivate Stor
-
-        Ctrl->>DB: DB::beginTransaction()
-        activate DB
-
-        Ctrl->>Mod: Customer::firstOrCreate([phone], [name, address])
-        activate Mod
-        Mod->>DB: Query customers
-        DB-->>Mod: Instance $customer
-        Mod-->>Ctrl: Return $customer
-        deactivate Mod
-
-        Ctrl->>Mod: Order::create(customer_id, order_code, 'custom', total_amount=0, 'ST-01', delivery_date, greeting_message)
-        activate Mod
-        Mod->>DB: INSERT INTO orders
-        DB-->>Mod: Instance $order
-        Mod-->>Ctrl: Return $order
-        deactivate Mod
-
-        Ctrl->>Mod: CustomRequest::create(order_id, flower_materials, color_scheme, theme, notes, 'pending')
-        activate Mod
-        Mod->>DB: INSERT INTO custom_requests
-        DB-->>Mod: Instance $customRequest
-        Mod-->>Ctrl: Return $customRequest
-        deactivate Mod
-
-        Ctrl->>Mod: CustomReference::create(custom_request_id, file_path, original_filename, file_size)
-        activate Mod
-        Mod->>DB: INSERT INTO custom_references
-        DB-->>Mod: Reference saved
-        Mod-->>Ctrl: Return $reference
-        deactivate Mod
-
-        Ctrl->>Svc: OrderStatusService::recordInitialStatus($order, 'ST-01', 'Pengajuan buket custom diajukan')
-        activate Svc
-        Svc->>DB: INSERT INTO order_status_histories
-        DB-->>Svc: Success
-        Svc-->>Ctrl: Done
-        deactivate Svc
-
-        Ctrl->>DB: DB::commit()
-        deactivate DB
-
-        Ctrl-->>V: 302 Redirect to route('order.track', $order->order_code)
-        deactivate Ctrl
-        activate V
-        V-->>C: Tampilkan Halaman: "Pengajuan Diterima — Menunggu Penilaian Harga Admin"
-        deactivate V
-    end
-
-    %% ==========================================
-    %% FASE B: Peninjauan & Usulan Harga Admin
-    %% ==========================================
-    Note over C,AdminCtrl: FASE B: Evaluasi Bahan & Penetapan Harga oleh Admin
-    A->>AdminCtrl: Buka antrean custom: GET /admin/custom-orders/{id}
-    activate AdminCtrl
-    AdminCtrl->>DB: Ambil detail pesanan, data custom, & berkas referensi foto
-    activate DB
-    DB-->>AdminCtrl: Data custom lengkap
-    deactivate DB
-    AdminCtrl-->>A: Tampilkan rincian bahan, catatan khusus, dan pratinjau foto referensi
-    deactivate AdminCtrl
-
-    A->>AdminCtrl: Masukkan nominal harga usulan (e.g. Rp 350.000) & Klik "Kirim Harga Usulan"
-    activate AdminCtrl
-    AdminCtrl->>DB: DB::beginTransaction()
-    activate DB
-
-    AdminCtrl->>Mod: Update custom_requests (proposed_price = 350000)
-    activate Mod
-    Mod->>DB: UPDATE custom_requests
-    deactivate Mod
-
-    AdminCtrl->>Mod: Update orders (total_amount = 350000, current_status = 'ST-02')
-    activate Mod
-    Mod->>DB: UPDATE orders SET current_status = 'ST-02'
-    deactivate Mod
-
-    AdminCtrl->>Svc: OrderStatusService::transition($order, 'ST-02', 'Admin menetapkan harga Rp 350.000', admin_id)
-    activate Svc
-    Svc->>DB: INSERT INTO order_status_histories
-    deactivate Svc
-
-    AdminCtrl->>DB: DB::commit()
-    deactivate DB
-    AdminCtrl-->>A: Flash: "Harga usulan berhasil dikirim ke pemesan"
-    deactivate AdminCtrl
-
-    %% ==========================================
-    %% FASE C: Keputusan Pelanggan
-    %% ==========================================
-    Note over C,AdminCtrl: FASE C: Respon Pelanggan Terhadap Nominal Harga
-    C->>V: Buka URL pelacakan pesanan: GET /order/track/{order_code}
-    activate V
-    V->>DB: Ambil status 'ST-02' & proposed_price Rp 350.000
-    activate DB
-    DB-->>V: Data pesanan
-    deactivate DB
-    V-->>C: Tampilkan kartu penawaran harga Rp 350.000 dengan tombol [Setujui] dan [Tolak]
-    deactivate V
-
-    alt Pilihan 1: Pelanggan Menyetujui Harga Usulan
-        C->>V: Klik tombol "Setujui Harga Ini"
-        activate V
-        V->>Ctrl: POST /order/{order_code}/decision (action: 'approve')
-        deactivate V
-        activate Ctrl
-
-        Ctrl->>DB: DB::beginTransaction()
-        activate DB
-        Ctrl->>Mod: Update custom_requests (customer_decision = 'approved')
-        Ctrl->>Mod: Update orders (current_status = 'ST-03')
-        Ctrl->>Svc: OrderStatusService::transition($order, 'ST-03', 'Pelanggan menyetujui penawaran harga')
-        Ctrl->>DB: DB::commit()
-        deactivate DB
-
-        Ctrl-->>V: 302 Redirect to route('order.payment-info', $order->order_code)
-        deactivate Ctrl
-        activate V
-        V-->>C: Tampilkan nomor rekening bank resmi untuk transfer pembayaran
-        deactivate V
-
-    else Pilihan 2: Pelanggan Menolak Penawaran Harga
-        C->>V: Klik tombol "Tolak Penawaran"
-        activate V
-        V->>Ctrl: POST /order/{order_code}/decision (action: 'reject')
-        deactivate V
-        activate Ctrl
-
-        Ctrl->>DB: DB::beginTransaction()
-        activate DB
-        Ctrl->>Mod: Update custom_requests (customer_decision = 'rejected')
-        Ctrl->>Mod: Update orders (current_status = 'ST-08')
-        Ctrl->>Svc: OrderStatusService::transition($order, 'ST-08', 'Pesanan custom dibatalkan karena penolakan harga oleh pelanggan')
-        Ctrl->>DB: DB::commit()
-        deactivate DB
-
-        Ctrl-->>V: 200 OK (View: order-cancelled.blade.php)
-        deactivate Ctrl
-        activate V
-        V-->>C: Tampilkan status: "Pesanan Dibatalkan (Penawaran Ditolak)"
-        deactivate V
-    end
-```
+### 4.2 Alur di Luar Sistem Web (WhatsApp Operational Hand-off)
+1. **Pengiriman Manual:** Pelanggan memiliki kendali penuh untuk meninjau kembali isi pesan di WhatsApp sebelum menekan tombol kirim. Website tidak mengklaim bahwa pesanan telah diterima hanya karena WhatsApp berhasil terbuka.
+2. **Konfirmasi Personal oleh Florist:** Florist Nabila menanggapi pesan, memastikan bahan bunga segar siap dirangkai di butik Samarinda, menyampaikan nomor rekening resmi (BCA/BRI/Mandiri/E-Wallet), menyepakati opsi DP 50% `[Perlu Konfirmasi Owner]`, serta mengoordinasikan kurir pengantaran.
 
 ---
 
-## 5. Rincian Teknis Komponen & Spesifikasi Pesan (Message Specifications)
+## 5. Kesimpulan & Rekomendasi
 
-### 5.1 Penanganan Input & Validasi Server (`CatalogOrderRequest` & `CustomOrderRequest`)
-- **Aturan Validasi Katalog:**
-  ```php
-  public function rules(): array
-  {
-      return [
-          'product_id'       => ['required', 'exists:products,id,is_available,1'],
-          'customer_name'    => ['required', 'string', 'max:100'],
-          'customer_phone'   => ['required', 'string', 'regex:/^(\+62|62|0)8[1-9][0-9]{6,10}$/'],
-          'delivery_address' => ['required', 'string', 'max:500'],
-          'delivery_date'    => ['required', 'date', 'after_or_equal:today'],
-          'greeting_message' => ['nullable', 'string', 'max:300'],
-      ];
-  }
-  ```
-- **Aturan Validasi Custom:**
-  ```php
-  public function rules(): array
-  {
-      return [
-          'flower_materials' => ['required', 'string', 'max:255'],
-          'color_scheme'     => ['required', 'string', 'max:150'],
-          'theme'            => ['nullable', 'string', 'max:150'],
-          'notes'            => ['nullable', 'string', 'max:1000'],
-          'reference_photo'  => ['required', 'file', 'image', 'mimes:jpeg,jpg,png', 'max:5120'], // Max 5MB
-          'delivery_date'    => ['required', 'date', 'after_or_equal:today'],
-          'customer_name'    => ['required', 'string', 'max:100'],
-          'customer_phone'   => ['required', 'string', 'regex:/^(\+62|62|0)8[1-9][0-9]{6,10}$/'],
-          'delivery_address' => ['required', 'string', 'max:500'],
-      ];
-  }
-  ```
+### 5.1 Status Task ANA-007
+Task **ANA-007 (Sequence Diagram Pemesanan Katalog & Personalisasi)** telah selesai diselaraskan:
+- Seluruh objek transaksi backend lama (`CatalogOrderRequest`, `OrderController`, `OrderCodeGenerator`, `orders`, `order_details`, `order_status_histories`) telah dieliminasi.
+- Interaksi Three-Layer difokuskan pada penyajian katalog, konfigurasi variasi visual swatch, kalkulasi harga live di frontend, dan WhatsApp hand-off murni.
+- Kriteria penyelesaian terpenuhi 100%.
 
-### 5.2 Mekanisme Snapshot Historis Transaksi (Audit & Price Protection — BR-020)
-Pada diagram pemesanan katalog pesan nomor 15–18, sistem tidak mengandalkan harga langsung dari relasi `products.price` melainkan melakukan penyalinan nilai (*snapshot copy*):
-1. Mengambil harga satuan saat ini dari tabel `products`.
-2. Menyimpan string nama produk ke kolom `order_details.product_name_snapshot`.
-3. Menyimpan nominal desimal harga ke kolom `order_details.unit_price_snapshot`.
-4. Menghitung `subtotal = unit_price_snapshot * quantity`.
-Hal ini menjamin bahwa jika admin merubah harga atau menonaktifkan buket di masa depan, laporan keuangan dan riwayat transaksi masa lalu tidak berubah.
+### 5.2 Rekomendasi Langkah Berikutnya:
+Melanjutkan ke pemodelan sequence diagram alur koordinasi pembayaran via WhatsApp:
+- **`ANA-008 — Sequence Diagram koordinasi pembayaran & verifikasi via WhatsApp.`**
+=======
+## 3. Rincian Teknis Komponen & Tanggung Jawab Objek
 
-### 5.3 Keamanan Penyimpanan Berkas Referensi Foto (`CustomReference`)
-1. Berkas tidak disimpan menggunakan nama aslinya untuk menghindari serangan *file overwrite* atau *directory traversal*.
-2. Sistem men-generate nama berkas berbasis UUID unik v4 (contoh: `d3b07384-d113-4f44-9344-9721a97d9134.jpg`).
-3. Direktori target berada di `storage/app/public/custom_references/` yang hanya dapat diakses melalui symbolic link terkontrol (`php artisan storage:link`).
-4. Metadata nama asli (`original_filename`) dan ukuran berkas (`file_size`) disimpan dalam database sebagai bukti otentik pengajuan pelanggan.
+1. **`personalization.js` (Frontend State Manager):**
+   - Mengelola status lokal antarmuka (*client-side reactive state*) saat pelanggan memilih kertas wrapping, warna pita, dan item add-on.
+   - Menghitung secara instan nilai estimasi total tagihan sehingga pelanggan mendapatkan kepastian biaya sebelum berpindah ke WhatsApp.
+2. **`WhatsAppPayloadBuilder`:**
+   - Bertanggung jawab mengubah objek data formulir menjadi susunan pesan teks yang humanis dan terstruktur rapi.
+   - Mengenkoding karakter khusus (`%0A` untuk enter/baris baru, `%20` untuk spasi) agar pesan tampil sempurna di aplikasi WhatsApp pelanggan.
+3. **Peniadaan Transaksi Basis Data:**
+   - Diagram ini membuktikan bahwa tidak ada operasi `INSERT INTO orders` atau manipulasi tabel pembayaran saat pelanggan mengklik tombol pesan. Integritas sistem tetap ringan dan bebas dari data transaksi menggantung (*abandoned checkout records*).
 
 ---
 
-## 6. Matriks Kepatuhan Terhadap Persyaratan & Aturan Bisnis
-
-| Kode Aturan | Persyaratan Terkait | Implementasi pada Sequence Diagram | Kepatuhan |
-|---|---|---|:---:|
-| **BR-001** | Guest Checkout | Tidak ada proses autentikasi (`Auth::attempt`) atau pengecekan session akun pada alur Customer. Pesanan diproses langsung menggunakan data form. | **Sesuai Penuh** |
-| **BR-003** | Identitas Pemesan Lengkap | Validasi server memeriksa kelengkapan nama, nomor WhatsApp (format regex Indonesia), dan alamat pengiriman sebelum `Customer::firstOrCreate` dieksekusi. | **Sesuai Penuh** |
-| **BR-004** | Tanggal Kebutuhan Wajib Diisi | Kolom `delivery_date` divalidasi tidak boleh kosong dan harus tanggal masa depan atau hari ini (`after_or_equal:today`). | **Sesuai Penuh** |
-| **BR-005** | Harga Katalog Tetap | Total tagihan dihitung dari harga katalog yang tercatat aktif pada database saat checkout. | **Sesuai Penuh** |
-| **BR-008** | Unggah Foto Referensi Custom | Validasi berkas foto referensi mewajibkan format berkas JPG/PNG dengan batas ukuran maksimal 5MB (5.120 KB). | **Sesuai Penuh** |
-| **BR-009** | Usulan Harga Pesanan Custom | Pesanan custom dimulai dengan `total_amount = 0` dan berstatus `ST-01`. Admin mengusulkan harga via dashboard yang mengubah status ke `ST-02`. | **Sesuai Penuh** |
-| **BR-010** | Keputusan Harga Custom | Pelanggan memiliki hak mutlak untuk menyetujui (lanjut ke `ST-03`) atau menolak penawaran (status menjadi `ST-08 Dibatalkan`). | **Sesuai Penuh** |
-| **BR-020** | Snapshot Historis Produk | Penulisan record ke `order_details` memuat kolom `product_name_snapshot` dan `unit_price_snapshot`. | **Sesuai Penuh** |
-
----
-
-## 7. Kesimpulan & Rekomendasi
-
-### 7.1 Status Penyelesaian Task ANA-007
-Task **ANA-007 (Sequence Diagram pemesanan)** telah selesai dikerjakan secara tuntas dan komprehensif:
-- Diagram urutan pesan (*Sequence Diagram*) telah dimodelkan dengan standar visual Mermaid untuk alur katalog maupun buket custom.
-- Interaksi antar-komponen di ketiga layer arsitektur (Presentation, Application, Data Layer) terdefinisi secara granular.
-- Proteksi integritas data berbasis transaksi database ACID serta mitigasi kesalahan (*error handling*) telah dimodelkan.
-- Seluruh aturan bisnis (*business rules*) dan kebutuhan fungsional terkait pemesanan terpenuhi dengan konsisten.
-
-### 7.2 Rekomendasi Langkah Berikutnya:
-Melanjutkan pekerjaan ke task pemodelan sequence diagram selanjutnya pada sub-fase 5.2:
-- **`ANA-008 — Sequence Diagram pembayaran.`**
-
+## 4. Kesimpulan
+Task **ANA-007 (Sequence Diagram Katalog, Personalisasi & WhatsApp URL Builder)** telah selesai direvisi penuh. Interaksi objek secara eksplisit mengalirkan data pelanggan menuju gerbang hand-off WhatsApp tanpa melalui checkout database internal.
+>>>>>>> c202b49 (Revise documentation and initial implementation)
