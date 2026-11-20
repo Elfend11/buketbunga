@@ -3,31 +3,24 @@
 **Task ID:** ARC-003  
 **Fase:** Phase 2 — System Analysis and Design (Sub-fase 5.3 System Architecture)  
 **Penanggung Jawab:** Elsa Futri (Lead Software Architect & Backend Developer) & Jayanti Firdasari (Project Manager & System Analyst)  
-**Tanggal Penyusunan:** 13 November 2026  
-**Status Task:** Completed (`[x]`)  
-**Dependensi:** ARC-001 — Three-Layer Architecture (Selesai), ARC-002 — High-Level Architecture Diagram (Selesai), DOC-016 — Arsitektur Sistem (Selesai)  
+**Tanggal Penyusunan:** 13 November 2026 (Revisi Final: 20 November 2026)  
+**Status Task:** Completed Final (`[x]`)  
+**Dependensi:** ARC-001 — Three-Layer Architecture, ARC-002 — High-Level Architecture Diagram  
 
 ---
 
-## 1. Ringkasan Eksekutif & Tujuan Perancangan
+## 1. Ringkasan Eksekutif & Karakteristik Komponen
 
-Perancangan Diagram Komponen Aplikasi (Task ARC-003) disusun untuk mendefinisikan dekomposisi struktural modular dari sistem perangkat lunak **BLOOMÉ — Flowers & Stories**. Diagram ini memetakan komponen-komponen fungsional independen, antarmuka kontrak (*provided & required interfaces*), serta relasi ketergantungan (*dependencies*) antar-subsistem.
+Perancangan Diagram Komponen Aplikasi (Task ARC-003) disusun untuk mendefinisikan dekomposisi struktural modular dari sistem perangkat lunak **BLOOMÉ — Flowers & Stories**. Diagram ini memetakan komponen-komponen perangkat lunak independen, antarmuka kontrak (*provided & required interfaces*), serta relasi ketergantungan (*dependencies*) antar-subsistem.
 
-Dengan mendefinisikan komponen secara granular:
-1. **Memastikan Prinsip Ketergantungan Asiklis (*Acyclic Dependencies Principle - ADP*):** Struktur paket dirancang bersih tanpa adanya siklus ketergantungan tertutup (*circular dependencies*).
-2. **Memperjelas Kontrak Antarmuka (*Interface Contracts*):** Setiap modul mengetahui secara eksplisit input, output, dan pengecualian (*exceptions*) yang dihasilkan saat berkolaborasi dengan modul lain.
-3. **Mendukung Pengembangan Paralel Tim:** Riya Monika (Frontend Lead) dan Elsa Futri (Backend Lead) dapat mengimplementasikan komponen tampilan dan logika aplikasi secara independen dengan mengacu pada kontrak antarmuka yang telah disepakati.
+Sesuai ketentuan arsitektur baru:
+1. **Peniadaan Komponen Transaksional Web:** Komponen checkout, pembayaran transfer online, verifikasi mutasi rekening, dan manajemen siklus status pesanan telah dieliminasi dari sistem perangkat lunak website.
+2. **Modularitas Katalog & Personalisasi:** Sistem dibagi ke dalam modul-modul fungsional yang kohesif: penjelajahan katalog, konfigurasi personalisasi & add-on, kalkulator estimasi live, jembatan pengalihan pesan WhatsApp, serta pengelolaan master etalase oleh admin tunggal.
+3. **Ketergantungan Asiklis (*Acyclic Dependencies Principle - ADP*):** Struktur paket dirancang bersih searah tanpa adanya dependensi sirkular antar-komponen.
 
 ---
 
 ## 2. Diagram Komponen Sistem (Component Diagram)
-
-Diagram berikut memodelkan pembagian komponen perangkat lunak ke dalam 3 paket domain utama (*Public Customer Domain*, *Administrative Domain*, dan *Shared Core & Infrastructure Services*):
-
-```mermaid
-classDiagram
-    %% Note: Mermaid flowchart / class-diagram hybrid for component visualization
-```
 
 ```mermaid
 flowchart TB
@@ -36,11 +29,11 @@ flowchart TB
     %% ==========================================
     subgraph PkgPublic ["Paket: Public Customer Domain (Tamu / Pelanggan)"]
         direction TB
-        CompCatalog["«component»<br><b>Catalog Browsing</b><br>(Katalog, Kategori, Detail)"]
-        CompCustom["«component»<br><b>Custom Bouquet Request</b><br>(Formulir & Upload Ref)"]
-        CompCheckout["«component»<br><b>Checkout & Order Creation</b><br>(Guest Checkout & Snapshot)"]
-        CompPaymentPub["«component»<br><b>Payment Instruction & Confirm</b><br>(Tagihan & Konfirmasi Transfer)"]
-        CompTracking["«component»<br><b>Order Tracking & Cancel</b><br>(Lacak Real-Time & Ajukan Batal)"]
+        CompCatalog["«component»<br><b>Catalog Browsing</b><br>(Katalog, Kategori, Detail Produk)"]
+        CompPersonalization["«component»<br><b>Personalization & Add-on</b><br>(Pilihan Wrapping, Pita, Add-on, Ucapan)"]
+        CompEstimator["«component»<br><b>Price Estimator</b><br>(Live Calculation Subtotal Add-on)"]
+        CompWADispatcher["«component»<br><b>WhatsApp Order Dispatcher</b><br>(Pemicu Hand-off & URL Redirect)"]
+        CompCustomNav["«component»<br><b>Custom Consultation Guide</b><br>(Edukasi Buket & Link Konsultasi WA)"]
     end
 
     %% ==========================================
@@ -48,174 +41,146 @@ flowchart TB
     %% ==========================================
     subgraph PkgAdmin ["Paket: Administrative Domain (Back-Office Florist)"]
         direction TB
-        CompAuth["«component»<br><b>Admin Auth Guard</b><br>(Login, Session, Middleware)"]
-        CompCatProdMgr["«component»<br><b>Product & Category Manager</b><br>(CRUD Produk & Stok)"]
-        CompCustomDesk["«component»<br><b>Custom Pricing Workbench</b><br>(Review Foto & Usulan Harga)"]
-        CompOrderLifecycle["«component»<br><b>Order Lifecycle Manager</b><br>(Antrean & Transisi Status)"]
-        CompPayVerify["«component»<br><b>Payment Verification Desk</b><br>(Audit Mutasi Sah/Tolak)"]
-        CompCancelDecision["«component»<br><b>Cancellation Evaluator</b><br>(Persetujuan/Penolakan Batal)"]
+        CompAuth["«component»<br><b>Admin Auth Guard</b><br>(Login, Session auth:admin, Logout)"]
+        CompCategoryMgr["«component»<br><b>Category Manager</b><br>(CRUD Kategori Buket)"]
+        CompProductMgr["«component»<br><b>Product & Stock Manager</b><br>(CRUD Buket, Upload Foto, Toggle Stok)"]
+        CompAddonMgr["«component»<br><b>Add-on Manager</b><br>(CRUD Opsi Pelengkap & Tarif)"]
+        CompSettingMgr["«component»<br><b>Business Setting Manager</b><br>(Pengaturan Nomor WhatsApp & Info Butik)"]
     end
 
     %% ==========================================
     %% PACKAGE: SHARED CORE SERVICES
     %% ==========================================
-    subgraph PkgShared ["Paket: Shared Domain & Core Services"]
+    subgraph PkgShared ["Paket: Shared Domain & Utility Services"]
         direction TB
-        SvcOrderCode["«service»<br><b>OrderCodeGenerator</b><br>(BLM-YYYYMM-XXXX)"]
-        SvcOrderStatus["«service»<br><b>OrderStatusService</b><br>(FSM State Engine)"]
-        SvcStorage["«service»<br><b>Secure Storage Manager</b><br>(UUID Hashing & Public Link)"]
-        SvcAudit["«service»<br><b>Audit Trail Logger</b><br>(Status History Logger)"]
+        SvcWAPayload["«service»<br><b>WhatsAppPayloadBuilder</b><br>(Text Structuring & rawurlencode)"]
+        SvcPriceEstimator["«service»<br><b>PriceEstimatorService</b><br>(Kalkulasi Biaya Buket + Add-on)"]
+        SvcStorage["«service»<br><b>Secure Storage Manager</b><br>(UUID Hashing & Storage Disk)"]
     end
 
     %% ==========================================
-    %% PACKAGE: DATA PERSISTENCE
+    %% PACKAGE: DATA PERSISTENCE SUBSYSTEM
     %% ==========================================
     subgraph PkgData ["Paket: Data Persistence Subsystem"]
         direction TB
-        CompTxEngine["«component»<br><b>Atomic Transaction Engine</b><br>(DB::transaction ACID)"]
-        CompORM["«component»<br><b>Eloquent ORM Entities</b><br>(Order, Customer, Payment, dll)"]
-        DBStore[("MySQL Relational Database")]
-        DiskStore[("Local Disk Filesystem")]
+        CompORM["«component»<br><b>Eloquent ORM Entities</b><br>(Admin, Category, Product, AddOn, Setting)"]
+        DBStore[("MySQL Relational Database Server<br>(InnoDB Engine, UTF8MB4)")]
+        DiskStore[("Local Disk Storage<br>(storage/app/public/products/)")]
     end
 
     %% ==========================================
     %% DEPENDENCIES & INVOCATIONS
     %% ==========================================
     
-    %% Public Flow
-    CompCatalog -->|"Pilih Buket & Checkout"| CompCheckout
-    CompCustom -->|"Validasi Berkas Foto"| SvcStorage
-    CompCustom -->|"Buat Tiket Custom"| CompCheckout
-    CompCheckout -->|"Terbitkan Kode Transaksi"| SvcOrderCode
-    CompCheckout -->|"Inisialisasi Status ST-01"| SvcOrderStatus
-    CompCheckout -->|"Persistensi Snapshot BR-020"| CompTxEngine
-    CompPaymentPub -->|"Submit Konfirmasi Bayar"| SvcOrderStatus
-    CompTracking -->|"Cek Status Terkini"| CompORM
-    CompTracking -->|"Ajukan Pembatalan (BR-013)"| SvcOrderStatus
+    %% Public Invocations
+    CompCatalog -->|"1. Tampilkan Opsi Buket"| CompPersonalization
+    CompPersonalization -->|"2. Update Live Subtotal"| CompEstimator
+    CompEstimator <-->|"Kalkulasi Harga"| SvcPriceEstimator
+    CompPersonalization -->|"3. Submit Data Pesanan"| CompWADispatcher
+    CompWADispatcher -->|"4. Susun Format Teks & Encode URL"| SvcWAPayload
+    CompCustomNav -->|"Susun Pesan Konsultasi"| SvcWAPayload
 
-    %% Admin Guard
-    CompAuth -.->|"Guards Access"| CompCatProdMgr
-    CompAuth -.->|"Guards Access"| CompCustomDesk
-    CompAuth -.->|"Guards Access"| CompOrderLifecycle
-    CompAuth -.->|"Guards Access"| CompPayVerify
-    CompAuth -.->|"Guards Access"| CompCancelDecision
+    %% Admin Invocations
+    CompAuth -.->|"Guards Access"| CompCategoryMgr
+    CompAuth -.->|"Guards Access"| CompProductMgr
+    CompAuth -.->|"Guards Access"| CompAddonMgr
+    CompAuth -.->|"Guards Access"| CompSettingMgr
 
-    %% Admin Operations Flow
-    CompCatProdMgr -->|"Upload Foto Produk"| SvcStorage
-    CompCatProdMgr -->|"Update Katalog/Kategori"| CompORM
-    CompCustomDesk -->|"Ambil Berkas Referensi"| SvcStorage
-    CompCustomDesk -->|"Kirim Harga Usulan (ST-02)"| SvcOrderStatus
-    CompOrderLifecycle -->|"Ubah Status Produksi (ST-06/07)"| SvcOrderStatus
-    CompPayVerify -->|"Verifikasi Mutasi (ST-05/03)"| SvcOrderStatus
-    CompCancelDecision -->|"Keputusan Batal (ST-08)"| SvcOrderStatus
-
-    %% Core Services Connections
-    SvcOrderStatus -->|"Catat Perubahan Kronologis"| SvcAudit
-    SvcAudit -->|"Simpan Jejak Audit"| CompORM
+    CompProductMgr -->|"Upload Foto Produk Resmi (≤ 5MB)"| SvcStorage
     SvcStorage -->|"Simpan Berkas Fisik"| DiskStore
-    SvcOrderStatus -->|"Validasi & Mutasi Status"| CompTxEngine
 
-    %% Persistence
-    CompTxEngine --> CompORM
+    %% Data Access
+    CompCatalog -->|"Query Produk Aktif"| CompORM
+    CompPersonalization -->|"Query Opsi Add-on Aktif"| CompORM
+    CompCategoryMgr -->|"CRUD Kategori"| CompORM
+    CompProductMgr -->|"CRUD Produk & Stok"| CompORM
+    CompAddonMgr -->|"CRUD Master Add-on"| CompORM
+    CompSettingMgr -->|"Update Nomor WA & Setting"| CompORM
+    SvcWAPayload -->|"Ambil Nomor WA Tujuan"| CompORM
+
     CompORM --> DBStore
+
+    %% External Hand-off
+    CompWADispatcher -.->|"Buka Link wa.me/"| ExtWA["📱 Aplikasi WhatsApp (Eksternal)"]
+    CompCustomNav -.->|"Buka Link wa.me/"| ExtWA
 ```
 
 ---
 
-## 3. Spesifikasi Komponen & Kontrak Antarmuka (Component Specifications)
+## 3. Spesifikasi Kontrak Antarmuka Komponen (*Interface Contracts*)
 
 ### 3.1 Komponen Domain Publik (*Public Customer Domain*)
 
 #### 1. Catalog Browsing Component
 - **Fungsi:** Menyajikan daftar katalog buket bunga dengan filter kategori, pagination, dan pratinjau detail produk.
 - **Provided Interfaces:**
-  - `GET /catalog` $\rightarrow$ Menampilkan etalase produk aktif (`is_available = 1`).
-  - `GET /catalog/{slug}` $\rightarrow$ Menampilkan detail buket, deskripsi bunga, dan harga tetap.
+  - `GET /katalog` $\rightarrow$ Menyajikan daftar buket aktif (`is_available = 1`).
+  - `GET /katalog/{slug}` $\rightarrow$ Menyajikan detail komposisi buket, foto galeri, dan harga dasar.
 - **Required Interfaces:** `Product`, `Category` (Eloquent ORM).
 - **Artefak Terkait:** `CatalogController.php`, `catalog/index.blade.php`, `catalog/show.blade.php`.
 
-#### 2. Custom Bouquet Request Component
-- **Fungsi:** Menampung spesifikasi buket pesanan khusus pelanggan, memvalidasi berkas referensi foto ($\le$ 5MB), dan meneruskannya ke mesin checkout.
+#### 2. Personalization & Add-on Component
+- **Fungsi:** Menyediakan antarmuka interaktif bagi pelanggan untuk memilih warna kertas wrapping, warna pita satin, memilih item add-on (boneka wisuda, cokelat, lampu LED), dan mengisi kartu ucapan.
 - **Provided Interfaces:**
-  - `GET /custom-order` $\rightarrow$ Menampilkan formulir input spesifikasi custom.
-  - `POST /custom-order` $\rightarrow$ Menerima payload multipart `CustomOrderRequest`.
-- **Required Interfaces:** `Secure Storage Manager`, `Checkout & Order Creation Component`.
-- **Artefak Terkait:** `CustomBouquetController.php`, `CustomOrderRequest.php`, `custom-order.blade.php`.
+  - Client-side selection handlers via `personalization.js`.
+- **Required Interfaces:** `Price Estimator Component`, `AddOn` Model.
+- **Artefak Terkait:** `resources/js/personalization.js`, partial view `components/personalization-form.blade.php`.
 
-#### 3. Checkout & Order Creation Component
-- **Fungsi:** Menghimpun identitas tamu pemesan (nama, WA, alamat Samarinda, ucapan), mengunci snapshot harga historis (BR-020), dan menghasilkan record pesanan resmi.
+#### 3. Price Estimator Component
+- **Fungsi:** Menghitung total perkiraan tagihan secara real-time di sisi antarmuka pengguna: $\text{Estimasi} = \text{Harga Buket} + \sum \text{Harga Add-on}$.
 - **Provided Interfaces:**
-  - `POST /order/catalog` $\rightarrow$ Menerima pesanan produk katalog.
-  - `POST /order/custom` $\rightarrow$ Menerima pesanan buket custom.
-- **Required Interfaces:** `OrderCodeGenerator`, `OrderStatusService`, `Atomic Transaction Engine`.
-- **Artefak Terkait:** `OrderController.php`, `CatalogOrderRequest.php`, `Order.php`, `OrderDetail.php`.
+  - `calculateLiveTotal(basePrice, selectedAddonIds)`.
+- **Required Interfaces:** `PriceEstimatorService`.
 
-#### 4. Payment Instruction & Confirmation Component
-- **Fungsi:** Menampilkan informasi rekening resmi bank butik dan menampung konfirmasi transfer mandiri pelanggan.
+#### 4. WhatsApp Order Dispatcher Component
+- **Fungsi:** Mengambil data konfigurasi pesanan dari form, memanggil layanan penyusun pesan, dan mengalihkan peramban pelanggan ke URL universal WhatsApp.
 - **Provided Interfaces:**
-  - `GET /order/{code}/payment` $\rightarrow$ Menampilkan nomor rekening & rincian nominal tagihan.
-  - `POST /order/{code}/payment/confirm` $\rightarrow$ Merekam konfirmasi transfer & transisi ke status ST-04.
-- **Required Interfaces:** `OrderStatusService`, `Payment` (Eloquent Model).
-- **Artefak Terkait:** `PaymentController.php`, `PaymentConfirmRequest.php`, `order/payment-info.blade.php`.
+  - `handleOrderSubmit(formData)` $\rightarrow$ Memicu `window.location.href = waUrl`.
+- **Required Interfaces:** `WhatsAppPayloadBuilder Service`.
 
-#### 5. Order Tracking & Cancellation Component
-- **Fungsi:** Menyajikan linimasa status pesanan real-time berdasarkan kode pesanan dan menyediakan form pengajuan pembatalan sebelum bunga dirangkai fisik (BR-013).
+#### 5. Custom Consultation Guide Component
+- **Fungsi:** Menyajikan halaman inspirasi edukatif bagi pelanggan yang menginginkan rangkaian buket bunga khusus dan menyediakan tombol pintasan konsultasi langsung ke WhatsApp.
 - **Provided Interfaces:**
-  - `GET /order/track/{code}` $\rightarrow$ Menampilkan status terkini dan jejak histori.
-  - `POST /order/{code}/cancel` $\rightarrow$ Mengajukan permohonan pembatalan beserta alasan.
-- **Required Interfaces:** `OrderStatusService`, `Order` (Eloquent Model).
-- **Artefak Terkait:** `OrderTrackingController.php`, `order/track.blade.php`.
+  - `GET /custom-bouquet` $\rightarrow$ Menyajikan panduan buket custom.
+- **Artefak Terkait:** `CustomBouquetController.php`, `custom/index.blade.php`.
 
 ---
 
 ### 3.2 Komponen Domain Administratif (*Administrative Domain*)
 
 #### 1. Admin Auth Guard Component
-- **Fungsi:** Melindungi area back-office melalui otentikasi sesi berbasis guard khusus (`admin`), proteksi brute-force login, dan CSRF guard.
+- **Fungsi:** Melindungi akses panel kontrol administrasi melalui otentikasi sesi terenkripsi bagi akun tunggal pemilik usaha (Nabila Febriyani).
 - **Provided Interfaces:**
-  - `POST /admin/login` $\rightarrow$ Verifikasi kredensial admin (Bcrypt hash).
-  - `POST /admin/logout` $\rightarrow$ Invalidation sesi admin.
-  - `Middleware auth:admin` $\rightarrow$ Guarding seluruh rute berawalan `/admin/*`.
+  - `GET /admin/login`, `POST /admin/login`, `POST /admin/logout`.
+  - Middleware: `auth:admin`.
 - **Artefak Terkait:** `Admin\AuthController.php`, `Admin.php`.
 
-#### 2. Product & Category Manager
-- **Fungsi:** Operasi CRUD kategori produk dan katalog buket bunga, termasuk pengelolaan status ketersediaan (*is_available*) dan unggah foto produk resmi.
-- **Provided Interfaces:**
-  - Resource routes: `/admin/products` dan `/admin/categories`.
-- **Required Interfaces:** `Secure Storage Manager`, `Product`, `Category`.
-- **Artefak Terkait:** `Admin\ProductController.php`, `Admin\CategoryController.php`.
+#### 2. Category Manager Component
+- **Fungsi:** Operasi CRUD master kategori buket bunga lengkap dengan validasi slug unik.
+- **Provided Interfaces:** Resource routes `/admin/categories`.
+- **Required Interfaces:** `Category` Model.
+- **Artefak Terkait:** `Admin\CategoryController.php`.
 
-#### 3. Custom Pricing Workbench Component
-- **Fungsi:** Fasilitas bagi pemilik usaha untuk meninjau detail permintaan kustom, menganalisis foto referensi, dan menetapkan harga usulan (*proposed price*).
+#### 3. Product & Stock Manager Component
+- **Fungsi:** Menambah, melihat, menyunting, dan menghapus produk buket, mengunggah foto produk resmi, serta mengubah ketersediaan stok (*In Stock* / *Out of Stock*).
 - **Provided Interfaces:**
-  - `GET /admin/custom-orders/{id}` $\rightarrow$ Menampilkan rincian kustom & pratinjau gambar.
-  - `POST /admin/custom-orders/{id}/set-price` $\rightarrow$ Submit harga usulan & update status ke ST-02.
-- **Required Interfaces:** `OrderStatusService`, `Secure Storage Manager`.
-- **Artefak Terkait:** `Admin\CustomBouquetController.php`.
+  - Resource routes `/admin/products`.
+  - `PATCH /admin/products/{id}/toggle-stock` $\rightarrow$ Toggle instan status `is_available`.
+- **Required Interfaces:** `Secure Storage Manager`, `Product` Model.
+- **Artefak Terkait:** `Admin\ProductController.php`, `StoreProductRequest.php`.
 
-#### 4. Order Lifecycle Manager Component
-- **Fungsi:** Mengendalikan antrean pesanan harian berdasarkan tanggal pengiriman (*delivery_date*) dan memutakhirkan tahapan pengerjaan fisik (ST-05 $\rightarrow$ ST-06 $\rightarrow$ ST-07).
-- **Provided Interfaces:**
-  - `GET /admin/orders` $\rightarrow$ Filter antrean pesanan berdasarkan status dan tanggal.
-  - `POST /admin/orders/{id}/status` $\rightarrow$ Memperbarui status pemrosesan/pengiriman buket.
-- **Required Interfaces:** `OrderStatusService`, `Atomic Transaction Engine`.
-- **Artefak Terkait:** `Admin\OrderController.php`, `OrderStatusUpdateRequest.php`.
+#### 4. Add-on Manager Component
+- **Fungsi:** Mengelola master item add-on (boneka, cokelat, lampu LED, kartu ucapan) dan tarif harga tambahannya.
+- **Provided Interfaces:** Resource routes `/admin/addons`.
+- **Required Interfaces:** `AddOn` Model.
+- **Artefak Terkait:** `Admin\AddOnController.php`.
 
-#### 5. Payment Verification Desk Component
-- **Fungsi:** Memeriksa antrean pembayaran pending (ST-04) dan memvalidasi keabsahan dana berdasarkan mutasi rekening manual.
+#### 5. Business Setting Manager Component
+- **Fungsi:** Memperbarui data kontak WhatsApp resmi butik yang menjadi tujuan redirect pemesanan dan informasi profil butik Samarinda.
 - **Provided Interfaces:**
-  - `GET /admin/payments` $\rightarrow$ Antrean konfirmasi pembayaran.
-  - `POST /admin/payments/{id}/verify` $\rightarrow$ Keputusan verifikasi (Sah $\rightarrow$ ST-05 / Ditolak $\rightarrow$ ST-03).
-- **Required Interfaces:** `OrderStatusService`, `Payment` (Eloquent Model).
-- **Artefak Terkait:** `Admin\PaymentController.php`, `PaymentVerifyRequest.php`.
-
-#### 6. Cancellation Evaluator Component
-- **Fungsi:** Meninjau alasan permohonan pembatalan dari pemesan dan memberikan keputusan persetujuan (ST-08) atau penolakan pembatalan (BR-014).
-- **Provided Interfaces:**
-  - `GET /admin/cancellations` $\rightarrow$ Daftar antrean permohonan pembatalan.
-  - `POST /admin/orders/{id}/cancellation` $\rightarrow$ Eksekusi keputusan pembatalan.
-- **Required Interfaces:** `OrderStatusService`, `Order` (Eloquent Model).
-- **Artefak Terkait:** `Admin\CancellationController.php`.
+  - `GET /admin/settings`, `POST /admin/settings/whatsapp`.
+- **Required Interfaces:** `Setting` Model.
+- **Artefak Terkait:** `Admin\SettingController.php`.
 
 ---
 
@@ -223,45 +188,25 @@ flowchart TB
 
 | Komponen Layanan | Kelas Implementasi | Tanggung Jawab Utama | Konsumen Layanan |
 |---|---|---|---|
-| **OrderCodeGenerator** | `App\Services\OrderCodeGenerator` | Memproduksi format kode unik `BLM-YYYYMM-XXXX` berurut per bulan dengan proteksi duplikasi. | `Checkout & Order Creation Component` |
-| **OrderStatusService** | `App\Services\OrderStatusService` | Menegakkan aturan mesin status FSM, memvalidasi legalitas transisi status, dan mencatat histori. | Seluruh modul transaksi & admin |
-| **Secure Storage Manager** | `Illuminate\Support\Facades\Storage` | Mengamankan unggahan gambar via hashing nama UUID v4 di folder `storage/app/public/`. | `Custom Component`, `Product Manager` |
-| **Audit Trail Logger** | Terintegrasi di `OrderStatusService` | Menyimpan log kronologis `order_status_histories` lengkap dengan ID admin pengubah. | `OrderStatusService` |
-| **Atomic Transaction Engine** | `Illuminate\Support\Facades\DB` | Membungkus eksekusi operasi multi-tabel dalam blok atomik ACID (`DB::transaction`). | Controllers & Services |
+| **WhatsAppPayloadBuilder** | `App\Services\WhatsAppPayloadBuilder` | Mengompilasi string template pesan WhatsApp terstruktur dan mengenkoding karakter aman (`rawurlencode`). | `WhatsApp Order Dispatcher`, `Custom Guide` |
+| **PriceEstimatorService** | `App\Services\PriceEstimatorService` | Menghitung kalkulasi subtotal add-on dan total estimasi buket. | `Price Estimator Component` |
+| **Secure Storage Manager** | `Illuminate\Support\Facades\Storage` | Mengamankan berkas foto produk resmi via penamaan hash acak UUID v4 di folder `storage/app/public/products/`. | `Product & Stock Manager` |
 
 ---
 
-## 4. Matriks Dependensi & Keterikatan (*Coupling Analysis*)
+## 4. Analisis Ketergantungan Komponen (*Coupling & Acyclic Analysis*)
 
-Analisis ketergantungan memastikan kepatuhan terhadap prinsip arsitektur berorientasi komponen:
-
-```text
-[Public Domain] --------+
-                        |---> [Shared Core Services] ---> [Data Persistence Subsystem]
-[Administrative Domain] -+
-```
-
-1. **Bebas Ketergantungan Siklis (*No Circular Dependencies*):**
+Struktur komponen memenuhi prinsip-prinsip desain berorientasi komponen:
+1. **Bebas Dependensi Siklis (*Acyclic Dependencies Principle - ADP*):**
    - Komponen Publik tidak bergantung pada Komponen Admin.
-   - Komponen Admin tidak memanggil balik antarmuka Komponen Publik.
-   - Layanan Inti (*Shared Services*) tidak memiliki ketergantungan ke lapisan atas (Controllers/Views).
+   - Komponen Admin tidak memanggil balik Komponen Publik.
+   - Layanan Inti (`Shared Services`) berada pada lapisan bawah dan tidak memiliki ketergantungan ke komponen pengendali (*controllers/views*).
 2. **Keterikatan Rendah (*Low Coupling*):**
-   - Komponen saling berinteraksi melalui *Data Transfer Objects* (DTOs), Form Request terikat, atau model data Eloquent.
+   - Seluruh interaksi data dilakukan menggunakan model Eloquent sederhana atau Data Transfer Objects (DTOs) ringan.
 3. **Kohesi Tinggi (*High Cohesion*):**
-   - Setiap komponen membatasi cakupan pekerjaannya hanya pada domain bisnis yang relevan (misal: verifikasi pembayaran terisolasi dari perangkaian status fisik buket).
+   - Setiap komponen memusatkan tanggung jawabnya murni pada satu ranah bisnis (misal: pengelolaan add-on terpisah dari pengelolaan stok produk).
 
 ---
 
-## 5. Kesimpulan & Rekomendasi
-
-### 5.1 Status Penyelesaian Task ARC-003
-Task **ARC-003 (Membuat Component Diagram)** telah selesai dilaksanakan secara komprehensif:
-- Seluruh 11 komponen utama dan 5 layanan inti terbagi (*shared core services*) telah didekomposisi dan dimodelkan dengan diagram visual Mermaid.
-- Kontrak antarmuka (*provided & required interfaces*) terpetakan secara presisi ke dalam struktur controller, form request, service, dan view Laravel.
-- Analisis ketergantungan asiklis (*acyclic dependencies*) telah tervalidasi.
-- Kriteria penyelesaian (*Definition of Done*) terpenuhi.
-
-### 5.2 Rekomendasi Langkah Berikutnya:
-Melanjutkan pekerjaan ke task analisis arsitektur berikutnya pada sub-fase 5.3:
-- **`ARC-004 — Menentukan Application Modules.`**
-
+## 5. Kesimpulan
+Task **ARC-003 (Application Component Diagram)** telah selesai direvisi penuh. Komponen perangkat lunak telah terpetakan secara terstruktur mendukung alur katalog interaktif, kustomisasi buket, dan hand-off WhatsApp tanpa adanya modul checkout atau transaksi web.
