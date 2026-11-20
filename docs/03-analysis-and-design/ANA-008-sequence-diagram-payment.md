@@ -1,382 +1,145 @@
-# SEQUENCE DIAGRAM ALUR PEMBAYARAN & VERIFIKASI (PAYMENT VERIFICATION SEQUENCE DIAGRAM)
+# SEQUENCE DIAGRAM ALUR KOORDINASI PEMBAYARAN DAN KESEPAKATAN HARGA VIA WHATSAPP
 ## BLOOMÉ — Flowers & Stories
 **Task ID:** ANA-008  
 **Fase:** Phase 2 — System Analysis and Design (Sub-fase 5.2 System Modeling)  
 **Penanggung Jawab:** Jayanti Firdasari (Lead System Analyst & Project Manager)  
-**Tanggal Penyusunan:** 13 November 2026  
+**Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dependensi:** ANA-005 — Activity Diagram Pembayaran, ANA-007 — Sequence Diagram Pemesanan, ARC-001 — Three-Layer Architecture  
+**Dependensi:** ANA-005, ANA-007, ARC-001 (Three-Layer Architecture)  
 
 ---
 
 ## 1. Ringkasan Eksekutif & Tujuan Pemodelan
 
-Pemodelan Sequence Diagram Alur Pembayaran (Task ANA-008) disusun untuk memetakan secara presisi pertukaran pesan dinamis (*dynamic message sequence*) antar-objek dalam siklus pembayaran dan konfirmasi transaksi pada website **BLOOMÉ — Flowers & Stories**.
+Pemodelan Sequence Diagram Koordinasi Pembayaran (Task ANA-008) disusun untuk memetakan secara runtut pertukaran pesan dinamis (*dynamic message sequence*) dalam siklus kesepakatan harga final, penyampaian nomor rekening resmi, pengiriman bukti resi transfer, dan konfirmasi keabsahan dana pada **BLOOMÉ — Flowers & Stories**.
 
-Sesuai dengan keputusan arsitektur (ADR-04) dan aturan bisnis (**BR-010 & BR-011**), sistem BLOOMÉ menerapkan model **pembayaran transfer manual (Bank Transfer & E-Wallet)** dengan **verifikasi mutasi fisik manual oleh pemilik usaha (Admin)** tanpa ketergantungan pihak ketiga (*payment gateway gateway-less*). Sequence diagram ini memodelkan dua interaksi krusial:
-1. **Konfirmasi Pembayaran oleh Pelanggan (*Customer Payment Submission* — UC-08):** Pelanggan yang telah menerima kode tagihan dan instruksi rekening mentransfer dana secara manual, lalu mengirimkan konfirmasi pembayaran ke sistem.
-2. **Audit & Verifikasi Mutasi oleh Admin (*Admin Payment Verification & Settlement* — UC-17):** Admin meninjau data pembayaran masuk di dashboard, mencocokkan mutasi riil perbankan/e-wallet, dan memutuskan apakah dana sah (*verified*) atau ditolak (*rejected*).
+Sesuai dengan keputusan arsitektur (ADR-04) dan aturan bisnis (**BR-010 & BR-011**), sistem BLOOMÉ menerapkan model **pembayaran transfer manual (Bank Transfer & E-Wallet)** yang dikomunikasikan secara langsung melalui **WhatsApp** dengan **verifikasi mutasi fisik oleh pemilik usaha (Nabila Febriyani)** tanpa ketergantungan payment gateway pihak ketiga.
+
+Diagram ini menegaskan titik transisi:
+1. **Peran Sistem Web:** Menyediakan estimasi harga live di muka dan meneruskan rincian konfigurasi ke WhatsApp. Sistem web tidak mencatat tagihan, tidak memproses transaksi, dan tidak memiliki formulir pembayaran.
+2. **Peran Komunikasi WhatsApp:** Seluruh siklus transaksi riil (konfirmasi ketersediaan stok bunga segar, penetapan biaya ongkir kurir Samarinda, pengiriman nomor rekening BCA/BRI/Mandiri/E-Wallet, opsi DP 50% `[Perlu Konfirmasi Owner]`, penyerahan screenshot mutasi, dan konfirmasi lunas) terjadi di dalam saluran obrolan WhatsApp antara pembeli dan pemilik butik.
 
 ---
 
 ## 2. Identifikasi Partisipan & Lifeline Objek
 
-| Partisipan / Lifeline | Layer Arsitektur | Tipe Komponen | Peran & Tanggung Jawab Utama |
+| Partisipan / Lifeline | Ranah Operasional | Tipe Komponen | Peran & Tanggung Jawab Utama |
 |---|---|---|---|
-| **Customer (Guest)** | Aktor Eksternal | Pengguna | Mengakses halaman instruksi bayar, mentransfer dana via m-banking/ATM, dan mengirim konfirmasi transfer. |
-| **Admin (Nabila Febriyani)** | Aktor Internal | Pemilik Usaha | Memeriksa mutasi rekening pada aplikasi mobile banking butik dan memverifikasi keabsahan pembayaran pada dashboard admin. |
-| **Blade Views (`resources/views/`)** | Presentation Layer | UI / View | Menampilkan rincian tagihan (`order.payment-info`), formulir konfirmasi (`order.payment-confirm`), dan panel verifikasi admin (`admin.payments.show`). |
-| **Web Router (`routes/web.php`)** | Application Layer | HTTP Routing | Menerima rute HTTP GET/POST pembayaran dan mengarahkan ke controller bersangkutan. |
-| **Form Requests (`App\Http\Requests\`)** | Application Layer | Request Validator | Memvalidasi input konfirmasi pembayaran (`PaymentConfirmRequest`) dan input keputusan verifikasi (`PaymentVerifyRequest`). |
-| **Payment Controllers** | Application Layer | Controllers | Mengendalikan orkestrasi pembayaran: `PaymentController` (sisi pelanggan) dan `Admin\PaymentController` (sisi admin). |
-| **OrderStatusService (`App\Services\`)** | Application Layer | Domain Service | Mengatur transisi status pesanan dari ST-03 ke ST-04, lalu ke ST-05 atau kembali ke ST-03, serta mencatat jejak audit. |
-| **Eloquent Models (`App\Models\`)** | Data Layer | ORM Entities | Model entitas `Order`, `Payment`, `OrderStatusHistory`, dan `Admin`. |
-| **MySQL Database Engine** | Data Layer | RDBMS | Mengelola integritas data transaksional melalui mekanisme `DB::transaction()` ACID. |
+| **Customer (Guest)** | Sisi Pengguna | Aktor Manusia | Mengirim pesan pemesanan di WhatsApp, memilih rekening tujuan, melakukan transfer dana di m-banking, dan mengirim bukti resi di chat. |
+| **Sistem Web BLOOMÉ** | Ranah Web | Sistem Informasi | Menyajikan estimasi harga awal dan mengalihkan pelanggan ke tautan WhatsApp resmi toko. |
+| **WhatsApp App (External)** | Saluran Komunikasi | Aplikasi Eksternal | Media percakapan langsung tempat pesan draf dikirim, berkas foto bukti bayar dipertukarkan, dan komunikasi berlangsung. |
+| **Aplikasi M-Banking / E-Wallet Pelanggan** | Ranah Keuangan | Aplikasi Eksternal | Sarana eksekusi pemindahan dana perbankan di luar sistem BLOOMÉ. |
+| **Florist Owner (Nabila Febriyani)** | Sisi Toko | Aktor Manusia | Menerima pesan, memastikan ketersediaan bahan, mengirim rekening resmi, memverifikasi mutasi dana masuk, dan menyepakati jadwal kurir. |
+| **Aplikasi M-Banking Resmi Butik** | Ranah Keuangan Toko | Aplikasi Eksternal | Sarana pemilik usaha memeriksa mutasi rekening bank masuk secara riil. |
 
 ---
 
-## 3. Sequence Diagram Alur Pembayaran & Verifikasi Manual
+## 3. Sequence Diagram Alur Koordinasi Pembayaran via WhatsApp
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor C as Customer (Guest)
-    participant V as Blade View (payment-info / confirm)
-    participant R as Web Router (routes/web.php)
-    participant Val as PaymentConfirmRequest
-    participant Ctrl as PaymentController
-    participant Svc as OrderStatusService
-    participant Mod as Eloquent Models (Order, Payment)
-    participant DB as MySQL Database
-    actor A as Admin (Nabila)
-    participant AdminV as Blade View (admin/payments)
-    participant AdminCtrl as Admin\PaymentController
-    participant AdminVal as PaymentVerifyRequest
+    participant Web as Sistem Web BLOOMÉ
+    participant WA as WhatsApp App (External)
+    participant C_Bank as M-Banking / E-Wallet Pelanggan
+    actor F as Florist Owner (Nabila)
+    participant F_Bank as M-Banking Resmi Butik BLOOMÉ
 
-    %% ========================================================
-    %% BAGIAN 1: Akses Instruksi & Konfirmasi Transfer Pelanggan
-    %% ========================================================
-    Note over C,AdminCtrl: BAGIAN 1: Pelanggan Melihat Instruksi & Konfirmasi Pembayaran
-    C->>V: Buka Halaman Instruksi Pembayaran (/order/{order_code}/payment)
-    activate V
-    V->>R: GET /order/{order_code}/payment
-    deactivate V
-    activate R
-    R->>Ctrl: show($order_code)
-    deactivate R
-    activate Ctrl
+    %% ==========================================
+    %% TAHAP 1: Transisi dari Web ke WhatsApp
+    %% ==========================================
+    Note over C,WA: TAHAP 1: Pengalihan Estimasi dari Web ke Obrolan WhatsApp
+    C->>Web: Selesaikan Konfigurasi Buket (Estimasi Harga Live: Rp 285.000)
+    activate Web
+    Web->>WA: Buka URL wa.me dengan Draf Pesan Ter-encode
+    deactivate Web
+    activate WA
+    WA-->>C: Tampilkan Chat WhatsApp dengan Draf Rincian Pesanan
+    deactivate WA
 
-    Ctrl->>Mod: Order::where('order_code', $order_code)->firstOrFail()
-    activate Mod
-    Mod->>DB: SELECT * FROM orders WHERE order_code = ?
-    activate DB
-    DB-->>Mod: Record Order
-    deactivate DB
-    Mod-->>Ctrl: Instance $order (Status: ST-03 Menunggu Pembayaran)
-    deactivate Mod
+    C->>WA: Tekan Tombol Kirim Pesan secara Manual
+    activate WA
+    WA->>F: Pesan Rincian Pemesanan Masuk di WhatsApp Butik
+    deactivate WA
+    activate F
 
-    Ctrl-->>V: Render View payment-info (Rincian Tagihan & No Rekening BCA/BRI/DANA)
-    deactivate Ctrl
-    activate V
-    V-->>C: Tampilkan total tagihan (e.g. Rp 250.000) & instruksi transfer
-    deactivate V
+    %% ==========================================
+    %% TAHAP 2: Konfirmasi Stok & Kesepakatan Tagihan
+    %% ==========================================
+    Note over C,F: TAHAP 2: Konfirmasi Stok Fisik & Penyampaian Tagihan Resmi
+    F->>F: Periksa Ketersediaan Bunga Mawar Segar & Bahan Wrapping di Butik
+    F-->>WA: Balas Chat: Konfirmasi Bunga Ready & Jadwal Pengerjaan
+    activate WA
+    WA-->>C: Pelanggan Menerima Balasan: Pesanan Dapat Dibuat
+    deactivate WA
 
-    Note over C: Pelanggan melakukan transfer manual di luar aplikasi via M-Banking / ATM
+    F-->>WA: Kirim Rincian Tagihan Final + Biaya Ongkir Samarinda [Perlu Konfirmasi Owner]
+    activate WA
+    F-->>WA: Kirim Rekening Resmi (BCA/BRI/Mandiri/DANA a.n. Nabila Febriyani)
+    F-->>WA: Informasikan Ketentuan DP 50% atau Lunas 100% [Perlu Konfirmasi Owner]
+    WA-->>C: Pelanggan Menerima Tagihan Resmi & Pilihan Rekening
+    deactivate WA
+    deactivate F
 
-    C->>V: Klik tombol "Saya Sudah Melakukan Transfer" (Input Metode Bayar & Nominal)
-    activate V
-    V->>R: POST /order/{order_code}/payment/confirm (payment_method, amount_paid)
-    deactivate V
-    activate R
-    R->>Val: Validasi input data konfirmasi
-    deactivate R
-    activate Val
+    %% ==========================================
+    %% TAHAP 3: Eksekusi Transfer & Penyerahan Resi
+    %% ==========================================
+    Note over C,F_Bank: TAHAP 3: Transfer Dana Manual di Luar Sistem & Penyerahan Resi
+    C->>C_Bank: Buka Aplikasi Mobile Banking / E-Wallet
+    activate C_Bank
+    C->>C_Bank: Input Nomor Rekening Toko & Lakukan Transfer Dana (DP 50% / Lunas)
+    C_Bank-->>C: Transaksi Sukses & Terbitkan Resi / Bukti Mutasi
+    deactivate C_Bank
 
-    alt Kasus 1.A: Validasi Gagal (Nominal kosong / metode tidak valid)
-        Val-->>V: 302 Redirect Back (Error Validation)
-        activate V
-        V-->>C: Tampilkan pesan kesalahan form
-        deactivate V
-    else Kasus 1.B: Validasi Sukses
-        Val->>Ctrl: confirm(PaymentConfirmRequest $request, $order_code)
-        deactivate Val
-        activate Ctrl
+    C->>C: Ambil Screenshot Bukti Transfer
+    C->>WA: Unggah & Kirim Gambar Bukti Resi Transfer ke Chat WhatsApp
+    activate WA
+    WA->>F: Bukti Resi Transfer Diterima di WhatsApp Toko
+    deactivate WA
+    activate F
 
-        Ctrl->>DB: DB::beginTransaction()
-        activate DB
+    %% ==========================================
+    %% TAHAP 4: Verifikasi Mutasi Rekening & Penjadwalan
+    %% ==========================================
+    Note over F,F_Bank: TAHAP 4: Verifikasi Mutasi Fisik & Konfirmasi Pesanan Sah
+    F->>F_Bank: Buka Aplikasi M-Banking Butik BLOOMÉ
+    activate F_Bank
+    F->>F_Bank: Cek Riwayat Mutasi Rekening Masuk
+    F_Bank-->>F: Data Mutasi Masuk Terlihat & Nominal Cocok
+    deactivate F_Bank
 
-        Note over Ctrl,Mod: Simpan record pembayaran baru berstatus pending
-        Ctrl->>Mod: Payment::create(order_id, payment_method, amount_paid, verification_status='pending')
-        activate Mod
-        Mod->>DB: INSERT INTO payments
-        DB-->>Mod: Payment created
-        Mod-->>Ctrl: Instance $payment
-        deactivate Mod
-
-        Note over Ctrl,Mod: Transisi status pesanan ST-03 -> ST-04 (Menunggu Konfirmasi Pembayaran)
-        Ctrl->>Mod: Order::update(['current_status' => 'ST-04'])
-        activate Mod
-        Mod->>DB: UPDATE orders SET current_status = 'ST-04'
-        Mod-->>Ctrl: Order updated
-        deactivate Mod
-
-        Ctrl->>Svc: OrderStatusService::transition($order, 'ST-04', 'Pelanggan telah mengirimkan konfirmasi transfer', null)
-        activate Svc
-        Svc->>DB: INSERT INTO order_status_histories (order_id, status_code='ST-04', notes, created_at)
-        Svc-->>Ctrl: Audit log tersimpan
-        deactivate Svc
-
-        Ctrl->>DB: DB::commit()
-        deactivate DB
-
-        Ctrl-->>V: 302 Redirect to route('order.track', $order_code)
-        deactivate Ctrl
-        activate V
-        V-->>C: Tampilkan status pesanan: "ST-04: Pembayaran Sedang Diverifikasi Admin"
-        deactivate V
-    end
-
-    %% ========================================================
-    %% BAGIAN 2: Verifikasi Mutasi Oleh Pemilik Usaha (Admin)
-    %% ========================================================
-    Note over C,AdminCtrl: BAGIAN 2: Peninjauan Mutasi & Verifikasi Manual oleh Admin
-    A->>AdminV: Buka menu Verifikasi Pembayaran (/admin/payments)
-    activate AdminV
-    AdminV->>AdminCtrl: index()
-    deactivate AdminV
-    activate AdminCtrl
-
-    AdminCtrl->>DB: SELECT * FROM payments JOIN orders WHERE verification_status = 'pending'
-    activate DB
-    DB-->>AdminCtrl: Kumpulan antrean pembayaran pending
-    deactivate DB
-    AdminCtrl-->>AdminV: Render view antrean pembayaran
-    activate AdminV
-    AdminV-->>A: Tampilkan daftar transaksi menunggu verifikasi
-    deactivate AdminV
-    deactivate AdminCtrl
-
-    A->>AdminV: Klik tombol "Periksa Detail" pada pesanan
-    activate AdminV
-    AdminV->>AdminCtrl: show($payment_id)
-    deactivate AdminV
-    activate AdminCtrl
-    AdminCtrl-->>AdminV: Render rincian nominal tagihan, nama pemesan, dan waktu konfirmasi
-    activate AdminV
-    AdminV-->>A: Tampilkan formulir keputusan verifikasi
-    deactivate AdminV
-    deactivate AdminCtrl
-
-    Note over A: Admin membuka m-banking / mutasi rekening butik untuk validasi dana riil
-
-    alt Keputusan A: Pembayaran Sah & Mutasi Sesuai (Approve / Verified)
-        A->>AdminV: Klik tombol "Verifikasi Pembayaran (Sah)"
-        activate AdminV
-        AdminV->>AdminCtrl: POST /admin/payments/{id}/verify (decision: 'verified')
-        deactivate AdminV
-        activate AdminCtrl
-        AdminCtrl->>AdminVal: Validasi input verifikasi
-        activate AdminVal
-        AdminVal-->>AdminCtrl: Valid
-        deactivate AdminVal
-
-        AdminCtrl->>DB: DB::beginTransaction()
-        activate DB
-
-        AdminCtrl->>Mod: Payment::update(['verification_status' => 'verified', 'verified_at' => now()])
-        activate Mod
-        Mod->>DB: UPDATE payments SET verification_status = 'verified', verified_at = NOW()
-        deactivate Mod
-
-        AdminCtrl->>Mod: Order::update(['current_status' => 'ST-05'])
-        activate Mod
-        Mod->>DB: UPDATE orders SET current_status = 'ST-05'
-        deactivate Mod
-
-        AdminCtrl->>Svc: OrderStatusService::transition($order, 'ST-05', 'Pembayaran sah dan telah diverifikasi admin', $admin->id)
-        activate Svc
-        Svc->>DB: INSERT INTO order_status_histories (order_id, status_code='ST-05', changed_by_admin_id, notes)
-        Svc-->>AdminCtrl: Audit status tercatat
-        deactivate Svc
-
-        AdminCtrl->>DB: DB::commit()
-        deactivate DB
-
-        AdminCtrl-->>AdminV: Flash message: "Pembayaran berhasil diverifikasi. Pesanan masuk status ST-05."
-        activate AdminV
-        AdminV-->>A: Tampilkan tanda lunas & tombol "Mulai Rangkai Bunga"
-        deactivate AdminV
-        deactivate AdminCtrl
-
-        Note over C,V: Pelanggan memeriksa kembali status pesanan
-        C->>V: Refresh Halaman Status (/order/track/{order_code})
-        activate V
-        V->>DB: SELECT current_status FROM orders
-        activate DB
-        DB-->>V: 'ST-05 Pembayaran Dikonfirmasi'
-        deactivate DB
-        V-->>C: Tampilkan status hijau: "Pembayaran Dikonfirmasi — Pesanan Siap Dirangkai"
-        deactivate V
-
-    else Keputusan B: Dana Belum Masuk / Kurang (Reject / Unverified)
-        A->>AdminV: Masukkan catatan alasan & klik "Tolak Verifikasi"
-        activate AdminV
-        AdminV->>AdminCtrl: POST /admin/payments/{id}/verify (decision: 'rejected', rejection_notes: 'Dana tidak ditemukan pada mutasi')
-        deactivate AdminV
-        activate AdminCtrl
-
-        AdminCtrl->>DB: DB::beginTransaction()
-        activate DB
-
-        AdminCtrl->>Mod: Payment::update(['verification_status' => 'rejected'])
-        activate Mod
-        Mod->>DB: UPDATE payments SET verification_status = 'rejected'
-        deactivate Mod
-
-        AdminCtrl->>Mod: Order::update(['current_status' => 'ST-03'])
-        activate Mod
-        Mod->>DB: UPDATE orders SET current_status = 'ST-03'
-        deactivate Mod
-
-        AdminCtrl->>Svc: OrderStatusService::transition($order, 'ST-03', 'Verifikasi ditolak: Dana tidak ditemukan pada mutasi', $admin->id)
-        activate Svc
-        Svc->>DB: INSERT INTO order_status_histories (order_id, status_code='ST-03', changed_by_admin_id, notes)
-        Svc-->>AdminCtrl: Audit status tercatat
-        deactivate Svc
-
-        AdminCtrl->>DB: DB::commit()
-        deactivate DB
-
-        AdminCtrl-->>AdminV: Flash message: "Verifikasi pembayaran ditolak. Status dikembalikan ke ST-03."
-        activate AdminV
-        AdminV-->>A: Tampilkan opsi hubungi pemesan via WhatsApp
-        deactivate AdminV
-        deactivate AdminCtrl
-
-        C->>V: Refresh Halaman Status (/order/track/{order_code})
-        activate V
-        V->>DB: SELECT current_status FROM orders
-        activate DB
-        DB-->>V: 'ST-03 Menunggu Pembayaran'
-        deactivate DB
-        V-->>C: Tampilkan peringatan: "Pembayaran belum terverifikasi. Silakan transfer ulang atau konfirmasi via WhatsApp."
-        deactivate V
-    end
+    F-->>WA: Kirim Pesan Konfirmasi: "Pembayaran Sah / Lunas Diterima!"
+    activate WA
+    F-->>WA: Informasikan: Buket Akan Dirangkai Tepat Waktu & Jadwal Pengiriman
+    WA-->>C: Pelanggan Menerima Konfirmasi Resmi Pembayaran Telah Diterima
+    deactivate WA
+    deactivate F
 ```
 
 ---
 
-## 4. Spesifikasi Teknis Antarmuka & Logika Transaksi
+## 4. Analisis Batas Sistem & Keandalan Alur Pembayaran
 
-### 4.1 Validasi Konfirmasi Pembayaran (`PaymentConfirmRequest`)
-```php
-namespace App\Http\Requests;
+### 4.1 Eliminasi Celah Keamanan Pembayaran pada Sistem Web
+1. **Bebas Kerentanan Transaksi Web:** Karena website tidak memproses pembayaran, tidak ada risiko *SQL Injection* pada data transaksi, manipulasi parameter harga via HTTP request tampering, atau kebocoran kredensial pembayaran perbankan di sisi server website.
+2. **Tidak Menyimpan Foto Resi di Server Web:** Bukti transfer berupa foto hanya dipertukarkan di dalam aplikasi WhatsApp yang terenkripsi secara *end-to-end* (E2EE), sehingga server web BLOOMÉ tidak memerlukan kapasitas penyimpanan besar untuk berkas pembayaran.
+3. **Peniadaan Status Pesanan Fiktif:** Website tidak pernah menampilkan status *Paid* atau *Unpaid* yang dapat memicu kebingungan jika terdapat keterlambatan sinkronisasi data perbankan.
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class PaymentConfirmRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true; // Guest checkout diizinkan
-    }
-
-    public function rules(): array
-    {
-        return [
-            'payment_method' => ['required', 'string', 'in:BCA Transfer,BRI Transfer,Mandiri Transfer,DANA,GoPay'],
-            'amount_paid'    => ['required', 'numeric', 'min:10000'],
-            'sender_name'    => ['nullable', 'string', 'max:100'],
-            'notes'          => ['nullable', 'string', 'max:500'],
-        ];
-    }
-}
-```
-
-### 4.2 Validasi Keputusan Verifikasi Admin (`PaymentVerifyRequest`)
-```php
-namespace App\Http\Requests\Admin;
-
-use Illuminate\Foundation\Http\FormRequest;
-
-class PaymentVerifyRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return auth()->guard('admin')->check();
-    }
-
-    public function rules(): array
-    {
-        return [
-            'decision'        => ['required', 'string', 'in:verified,rejected'],
-            'rejection_notes' => ['required_if:decision,rejected', 'nullable', 'string', 'max:500'],
-        ];
-    }
-}
-```
-
-### 4.3 Logika Atomik Eksekusi Verifikasi (`Admin\PaymentController@verify`)
-```php
-public function verify(PaymentVerifyRequest $request, int $id)
-{
-    $payment = Payment::with('order')->findOrFail($id);
-    $order = $payment->order;
-
-    DB::transaction(function () use ($request, $payment, $order) {
-        if ($request->decision === 'verified') {
-            $payment->update([
-                'verification_status' => 'verified',
-                'verified_at'         => now(),
-            ]);
-
-            $order->update(['current_status' => 'ST-05']);
-
-            app(OrderStatusService::class)->transition(
-                $order,
-                'ST-05',
-                'Pembayaran diverifikasi sah melalui mutasi rekening.',
-                auth('admin')->id()
-            );
-        } else {
-            $payment->update([
-                'verification_status' => 'rejected',
-            ]);
-
-            $order->update(['current_status' => 'ST-03']);
-
-            app(OrderStatusService::class)->transition(
-                $order,
-                'ST-03',
-                'Verifikasi ditolak: ' . $request->rejection_notes,
-                auth('admin')->id()
-            );
-        }
-    });
-
-    return redirect()->route('admin.payments.index')
-        ->with('success', 'Status verifikasi pembayaran berhasil diperbarui.');
-}
-```
+### 4.2 Prosedur Verifikasi Manual oleh Pemilik Usaha
+1. **Validasi Mutasi Ganda (*Double-Check*):** Pemilik usaha tidak hanya melihat gambar resi yang dikirimkan pembeli (untuk mencegah resi palsu / editan), tetapi selalu memeriksa mutasi dana masuk secara langsung pada aplikasi perbankan resmi butik.
+2. **Penanganan Kasus Transfer Kurang / Selisih:** Jika dana yang ditransfer tidak sesuai dengan kesepakatan tagihan, pemilik usaha dapat langsung memberitahukan selisih dana kepada pembeli di dalam ruang percakapan yang sama secara santun dan cepat.
 
 ---
 
-## 5. Matriks Kepatuhan Aturan Bisnis (Traceability Matrix)
+## 5. Kesimpulan & Rekomendasi
 
-| Aturan Bisnis | Deskripsi Kepatuhan | Evaluasi Teknis |
-|---|---|:---:|
-| **BR-010** | Metode Pembayaran Manual: Pembayaran hanya dilakukan secara manual melalui transfer bank (BCA/BRI/Mandiri) atau e-wallet (DANA/GoPay). | **Terpenuhi Penuh** |
-| **BR-011** | Verifikasi Manual oleh Pemilik: Pembayaran diverifikasi oleh admin dengan memeriksa mutasi rekening sebelum pesanan beralih ke status pemrosesan buket (ST-05). | **Terpenuhi Penuh** |
-| **BR-012** | Batas Waktu & Penolakan Mutasi: Jika transfer ditolak atau mutasi tidak cocok, status dikembalikan ke ST-03 dan alasan penolakan dicatat lengkap pada histori. | **Terpenuhi Penuh** |
-| **BR-018** | Audit Trail Lengkap: Setiap perubahan status akibat pembayaran wajib mencatat identitas admin yang memverifikasi (`changed_by_admin_id`). | **Terpenuhi Penuh** |
+### 5.1 Status Task ANA-008
+Task **ANA-008 (Sequence Diagram Pembayaran)** telah selesai diselaraskan:
+- Seluruh objek backend pembayaran web lama (`PaymentController`, `PaymentConfirmRequest`, `PaymentVerifyRequest`, `payments`, `OrderStatusService`) telah dieliminasi.
+- Interaksi pembayaran transfer bank, e-wallet, pengiriman resi, dan verifikasi mutasi rekening di WhatsApp telah dimodelkan dengan runtut.
+- Kriteria penyelesaian terpenuhi 100%.
 
----
-
-## 6. Kesimpulan & Rekomendasi
-
-### 6.1 Status Task ANA-008
-Task **ANA-008 (Sequence Diagram pembayaran)** telah selesai dilaksanakan:
-- Diagram urutan pesan (*Sequence Diagram*) pembayaran manual dan verifikasi mutasi admin berhasil dimodelkan secara komprehensif menggunakan format Mermaid.
-- Alur percabangan (*verified* vs *rejected*) dan penanganan kegagalan database telah terpetakan dengan transaksi ACID.
-- Kriteria penyelesaian (*Definition of Done*) terpenuhi.
-
+### 5.2 Rekomendasi Langkah Berikutnya:
+Melanjutkan ke pemodelan sequence diagram untuk pengelolaan etalase produk dan pengaturan toko oleh admin:
+- **`ANA-009 — Sequence Diagram pengelolaan etalase produk, galeri, dan pengaturan bisnis oleh admin.`**

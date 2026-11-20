@@ -3,9 +3,9 @@
 **Task ID:** ANA-002  
 **Fase:** Phase 2 — System Analysis and Design (Sub-fase 5.2 System Modeling)  
 **Penanggung Jawab:** Jayanti Firdasari (Lead System Analyst & Project Manager)  
-**Tanggal Penyusunan:** 13 November 2026  
+**Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dependensi:** ANA-001 — Use Case Diagram (Selesai)  
+**Dependensi:** ANA-001 — Use Case Diagram (Selesai dan Diselaraskan)  
 
 ---
 
@@ -13,7 +13,9 @@
 
 Penyusunan Deskripsi Use Case (Task ANA-002) merupakan spesifikasi tekstual formal yang mendokumentasikan setiap use case dari diagram `ANA-001`. Dokumen ini merinci alur interaksi standar (*Main Flow / Happy Path*), alur percabangan (*Alternative Flows*), penanganan galat (*Exception Flows*), prakondisi, pascakondisi, serta aturan bisnis yang berlaku.
 
-Spesifikasi ini menjadi landasan langsung bagi penyusunan diagram aktivitas (*Activity Diagrams*), diagram sekuensial (*Sequence Diagrams*), dan pengujian perangkat lunak pada sistem informasi **BLOOMÉ — Flowers & Stories**.
+Berdasarkan kesepakatan arsitektur terbaru (Konsep Sistem v1.1), sistem informasi **BLOOMÉ — Flowers & Stories** difokuskan sebagai **katalog interaktif dan media konfigurasi personalisasi buket bunga, sedangkan proses pemesanan resmi, konfirmasi harga, pembayaran, negosiasi, dan pengiriman dilanjutkan secara langsung melalui WhatsApp**. 
+
+Dengan penegasan batas sistem (*system boundary*) ini, website tidak menyediakan registrasi pelanggan, tidak melakukan checkout web, tidak menyimpan transaksi resmi di basis data web, dan tidak mengelola status pesanan. Seluruh interaksi lanjutan pasca penekanan tombol WhatsApp diselesaikan secara manusiawi di saluran percakapan WhatsApp toko oleh pemilik usaha (Nabila Febriyani).
 
 ---
 
@@ -27,301 +29,280 @@ Setiap use case didokumentasikan menggunakan format terstandarisasi:
 - **Pascakondisi (*Postconditions*):** Kondisi sistem setelah use case berhasil (*success*) atau gagal (*failed*).
 - **Alur Utama (*Main Flow*):** Urutan langkah interaksi ideal antara aktor dan sistem.
 - **Alur Alternatif (*Alternative Flows*):** Cabang alur valid lainnya.
-- **Alur Pengecualian (*Exception Flows*):** Penanganan kesalahan input, stok habis, atau kegagalan transaksi.
+- **Alur Pengecualian (*Exception Flows*):** Penanganan kesalahan input atau kondisi data kosong.
 
 ---
 
-## 3. Spesifikasi Lengkap Use Case Domain Pelanggan (Customer Domain)
+## 3. Spesifikasi Use Case Domain Pelanggan (Customer Domain)
 
-### UC-01: Melihat Beranda & Informasi Usaha
+### UC-01: Melihat Beranda & Profil Butik Samarinda
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan mengakses halaman utama untuk melihat profil butik BLOOMÉ, produk unggulan, kategori buket, dan kontak butik.
+- **Deskripsi:** Pelanggan mengakses halaman utama website untuk melihat identitas merek BLOOMÉ, hero banner, koleksi buket unggulan, navigasi kategori, dan alamat butik di Samarinda tanpa form login.
 - **Prakondisi:** Pelanggan memiliki koneksi internet dan peramban web aktif.
-- **Pascakondisi:** Halaman beranda ter-render sempurna dengan nuansa estetika floral.
+- **Pascakondisi:** Halaman beranda ter-render sempurna dengan nuansa estetika floral (*Playfair Display & Blush Pink*).
 - **Alur Utama:**
-  1. Pelanggan membuka URL akar website (`/`).
-  2. Sistem mengambil data kategori aktif dan produk unggulan dari database.
-  3. Sistem menampilkan hero banner, cerita butik, showcase buket favorit, banner promosi buket custom, alamat Samarinda, dan footer.
+  1. Pelanggan membuka URL utama website (`/`).
+  2. Sistem mengambil data kategori aktif dari tabel `categories` dan produk unggulan dari tabel `products`.
+  3. Sistem mengambil informasi kontak butik Samarinda dari tabel `business_settings`.
+  4. Sistem menampilkan hero banner, cerita butik (*Flowers & Stories*), kartu buket unggulan, banner ajakan konsultasi custom, dan footer.
 - **Alur Pengecualian:**
-  - *E1 (Koneksi Database Terputus):* Sistem menampilkan halaman error 500 ramah pengguna.
+  - *E1 (Koneksi Database Terputus):* Sistem menampilkan halaman error 500 yang ramah pengguna.
 
 ---
 
 ### UC-02: Menjelajahi Katalog & Filter Kategori
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan melihat etalase buket siap pesan dan menyaringnya berdasarkan kategori tertentu.
-- **Prakondisi:** Halaman katalog dapat diakses.
-- **Pascakondisi:** Daftar produk ditampilkan sesuai filter yang dipilih pelanggan.
+- **Deskripsi:** Pelanggan melihat etalase buket siap pesan dan menyaringnya berdasarkan kelompok kategori tertentu.
+- **Prakondisi:** Pelanggan mengakses menu "Katalog" (`/katalog`).
+- **Pascakondisi:** Daftar produk ditampilkan dalam bentuk kartu grid sesuai filter kategori terpilih.
 - **Alur Utama:**
-  1. Pelanggan mengklik menu "Katalog".
-  2. Sistem menampilkan seluruh buket katalog yang aktif dalam bentuk grid kartu.
-  3. Pelanggan mengklik salah satu tombol kategori (misal: *Buket Bunga*, *Buket Uang*, *Buket Snack*).
-  4. Sistem memfilter dan menyajikan produk yang sesuai dengan kategori terpilih.
+  1. Pelanggan membuka menu "Katalog".
+  2. Sistem menampilkan seluruh produk buket aktif beserta thumbnail foto utama, nama, harga dasar, dan status ketersediaan.
+  3. Pelanggan mengklik tombol filter kategori (misal: *Buket Bunga*, *Buket Uang*, *Buket Snack*).
+  4. Sistem menyaring dan menyajikan produk yang sesuai dengan kategori terpilih tanpa memuat ulang seluruh halaman (*client-side filter* atau query teroptimasi).
 - **Alur Alternatif:**
-  - *A1 (Kategori Kosong):* Sistem menampilkan *empty state* ilustrasi vas bunga dengan pesan ramah.
+  - *A1 (Kategori Kosong):* Jika tidak ada produk pada kategori terpilih, sistem menyajikan *empty state* ramah dengan ilustrasi vas bunga dan tombol "Lihat Semua Buket".
 
 ---
 
-### UC-03: Melihat Detail Buket
+### UC-03: Melihat Detail Buket & Galeri Multi-Foto
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan membuka halaman rincian buket untuk melihat galeri foto, komposisi bunga, harga, dan ketersediaan stok.
-- **Prakondisi:** Pelanggan memilih salah satu produk di katalog atau beranda.
+- **Deskripsi:** Pelanggan membuka halaman rincian produk untuk meninjau foto multi-sudut, deskripsi komposisi bunga, harga dasar, dan status ketersediaan stok.
+- **Prakondisi:** Pelanggan memilih kartu produk buket di katalog atau beranda.
 - **Pascakondisi:** Halaman detail produk terbuka lengkap.
 - **Alur Utama:**
-  1. Pelanggan mengklik kartu produk.
-  2. Sistem mencari produk berdasarkan `slug` di basis data.
-  3. Sistem menampilkan galeri foto, nama buket, harga (IDR), deskripsi komposisi bunga, status ketersediaan, dan tombol "Pesan Sekarang".
+  1. Pelanggan mengklik salah satu kartu buket.
+  2. Sistem mencari produk berdasarkan kolom `slug` di tabel `products`.
+  3. Sistem melakukan *eager loading* foto galeri terkait dari tabel `product_images`, opsi personalisasi dari `personalization_options`, dan item add-on yang diizinkan dari `add_ons`.
+  4. Sistem menampilkan slider galeri foto tajam, nama buket, harga dasar, deskripsi bahan, status ketersediaan (*Tersedia* / *Habis*), dan panel konfigurator personalisasi.
 - **Alur Alternatif:**
-  - *A1 (Stok Habis):* Jika `is_available == 0`, tombol "Pesan Sekarang" dinonaktifkan dengan label "Stok Habis".
+  - *A1 (Stok Habis):* Jika `is_available == 0`, sistem menyajikan badge "Stok Habis" dan menonaktifkan tombol pemesanan WhatsApp secara visual dengan pesan informatif.
 
 ---
 
-### UC-04: Melakukan Pemesanan Katalog
+### UC-04: Mengonfigurasi Personalisasi Buket (Wrapping & Pita)
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan mengisi formulir checkout katalog, memasukkan pesan kartu ucapan, dan menentukan tanggal pengiriman tanpa login.
-- **Prakondisi:** Pelanggan berada di halaman detail produk buket yang berstatus tersedia.
-- **Pascakondisi:** Pesanan katalog tersimpan di basis data dengan status `ST-01 Menunggu Peninjauan Admin`.
+- **Deskripsi:** Pelanggan memilih variasi warna kertas pembungkus (*wrapping paper*), pita satin, atau opsi variasi lainnya secara interaktif.
+- **Prakondisi:** Halaman detail produk buket terbuka dan produk berstatus tersedia (`is_available == 1`).
+- **Pascakondisi:** Opsi variasi terpilih tercatat pada memori antarmuka dan memperbarui ringkasan.
 - **Alur Utama:**
-  1. Pelanggan mengklik tombol "Pesan Sekarang" di detail produk.
-  2. Sistem menampilkan formulir checkout pemesanan katalog.
-  3. Pelanggan mengisi nama lengkap, nomor WhatsApp aktif, dan alamat pengiriman di Samarinda.
-  4. Pelanggan mengetikkan pesan khusus kartu ucapan (*greeting card*) dan memilih tanggal kebutuhan buket.
-  5. Pelanggan meninjau ringkasan pesanan dan mengklik tombol "Kirim Pesanan".
-  6. Sistem memvalidasi data form request.
-  7. Sistem menjalankan transaksi basis data: menyimpan data pelanggan, membuat record pesanan dengan kode acak `BLM-YYYYMM-XXXX`, membuat detail pesanan dengan snapshot harga, dan mencatat histori status awal (`ST-01`).
-  8. Sistem mengarahkan pelanggan ke halaman ringkasan pesanan dan instruksi pembayaran transfer bank.
-- **Alur Pengecualian:**
-  - *E1 (Form Tidak Lengkap):* Sistem menampilkan notifikasi kesalahan validasi inline pada field yang kosong.
-  - *E2 (Stok Tiba-tiba Habis):* Jika stok habis saat submit, transaksi di-rollback dan sistem memberi tahu pemesan.
+  1. Pelanggan melihat opsi personalisasi yang tersedia untuk buket tersebut.
+  2. Pelanggan mengklik salah satu pemilih visual warna (*color swatches*) atau tombol radio variasi (misal: *Wrapping Spunbond Blush Pink*, *Pita Satin Burgundy*).
+  3. Sistem menandai swatch warna yang aktif dan memperbarui pilihan variasi pada panel ringkasan pesanan.
+  4. Jika variasi memiliki penyesuaian harga (`additional_price > 0`), sistem langsung memperbarui kalkulasi estimasi total harga.
 
 ---
 
-### UC-05: Mengajukan Personalisasi Buket Custom
+### UC-05: Memilih Item Add-on & Mengisi Catatan Ucapan
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan mengajukan permintaan pembuatan buket kustom dengan memilih spesifikasi bahan, warna, tema, catatan khusus, dan mengunggah foto referensi.
-- **Prakondisi:** Pelanggan mengakses halaman Custom Bouquet.
-- **Pascakondisi:** Tiket permintaan custom tersimpan di basis data dengan status `ST-01 Menunggu Peninjauan Admin`.
+- **Deskripsi:** Pelanggan menambahkan item pelengkap (kartu ucapan khusus, boneka wisuda mini, cokelat Ferrero, lampu LED string) dan menuliskan pesan ucapan kartu.
+- **Prakondisi:** Pelanggan berada pada panel konfigurasi di halaman detail produk.
+- **Pascakondisi:** Item add-on terpilih dan teks ucapan kartu tersimpan pada memori antarmuka.
 - **Alur Utama:**
-  1. Pelanggan membuka menu "Custom Bouquet".
-  2. Sistem menampilkan panduan pemesanan personal dan formulir spesifikasi buket custom.
-  3. Pelanggan memilih jenis bunga (bunga segar, artificial, dll.), kombinasi warna, tema perayaan, dan catatan rincian.
-  4. Pelanggan menjalankan **UC-05.1: Mengunggah Berkas Foto Referensi** (format JPG/PNG ≤ 5MB).
-  5. Pelanggan mengisi data identitas (nama, WhatsApp, alamat) dan tanggal kebutuhan buket.
-  6. Pelanggan mengklik "Ajukan Buket Custom".
-  7. Sistem memvalidasi form, menyimpan berkas foto tersanitasi ke storage lokal, menyimpan data pesanan tipe custom ke database, dan menerbitkan tiket custom.
-  8. Sistem menampilkan konfirmasi bahwa pengajuan berhasil terkirim dan sedang ditinjau florist BLOOMÉ.
+  1. Pelanggan melihat daftar add-on yang tersedia beserta thumbnail foto dan harga satuan.
+  2. Pelanggan mencentang satu atau beberapa kotak centang add-on (misal: *Kartu Ucapan Premium*, *Boneka Wisuda Mini*).
+  3. Sistem menambahkan item add-on dan nominal biayanya ke panel ringkasan pesanan.
+  4. Pelanggan mengetikkan pesan personal ucapan pada kolom teks yang disediakan (*greeting card message*).
+  5. Sistem menampilkan indikator jumlah karakter teks secara real-time.
 
 ---
 
-### UC-05.1: Mengunggah Berkas Foto Referensi (Included in UC-05)
+### UC-06: Melihat Ringkasan Pilihan & Kalkulasi Estimasi Harga Live
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Mengunggah berkas foto acuan buket dari galeri perangkat.
+- **Deskripsi:** Pelanggan melihat rangkuman seluruh pilihan buket, variasi yang dipilih, daftar add-on, dan kalkulasi estimasi total biaya secara langsung.
+- **Prakondisi:** Pelanggan telah memilih produk dan mengonfigurasi personalisasi atau add-on.
+- **Pascakondisi:** Kartu ringkasan menyajikan subtotal transparan sebelum beralih ke WhatsApp.
 - **Alur Utama:**
-  1. Pelanggan memilih/menarik berkas foto ke dropzone unggah.
-  2. Sistem memvalidasi tipe MIME berkas (`image/jpeg`, `image/png`) dan ukuran berkas (maksimal 5 MB).
-  3. Sistem menampilkan pratinjau thumbnail foto di antarmuka form.
-- **Alur Pengecualian:**
-  - *E1 (Format Ilegal):* Jika format berkas PDF/EXE, sistem menolak dan menampilkan alert: *"Format berkas wajib JPG, JPEG, atau PNG"*.
-  - *E2 (Ukuran > 5MB):* Sistem menolak dan menampilkan alert: *"Ukuran berkas melebihi batas 5 MB"*.
-
----
-
-### UC-06: Meninjau & Memutuskan Harga Custom
-- **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan meninjau nominal harga yang diusulkan oleh florist dan menentukan keputusan persetujuan (*Approve*) atau penolakan (*Reject*).
-- **Prakondisi:** Admin telah meninjau tiket custom dan menginput nominal harga penawaran (status `ST-02`).
-- **Pascakondisi:** Status pesanan beralih ke `ST-03 Menunggu Pembayaran` (jika setuju) atau `ST-08 Dibatalkan` (jika tolak).
-- **Alur Utama:**
-  1. Pelanggan membuka halaman peninjauan harga buket custom melalui tautan unik pesanan.
-  2. Sistem menampilkan spesifikasi buket, foto referensi, dan nominal penawaran harga dari admin.
-  3. Pelanggan menekan tombol "Setujui Harga".
-  4. Sistem memperbarui status pesanan menjadi `ST-03 Menunggu Pembayaran` dan mencatat persetujuan.
-  5. Sistem menampilkan rincian rekening bank/e-wallet untuk pembayaran.
+  1. Sistem secara otomatis mendeteksi setiap perubahan pilihan (produk, variasi personalisasi, penambahan/pengurangan add-on).
+  2. Sistem menghitung subtotal: `Harga Dasar Produk + Total Penyesuaian Variasi + Total Biaya Add-on`.
+  3. Sistem merender kartu ringkasan interaktif yang menampilkan: nama buket, variasi terpilih, rincian add-on, teks ucapan, dan nominal estimasi harga total (IDR).
 - **Alur Alternatif:**
-  - *A1 (Pelanggan Menolak Harga):* Pelanggan menekan tombol "Tolak Usulan". Sistem mencatat status penolakan, menggeser status ke `ST-08 Dibatalkan`, dan menyajikan tautan kontak WhatsApp admin untuk negosiasi ulang/revisi.
+  - *A1 (Pemesanan Multi-Item):* Jika fitur draf pemesanan beberapa buket diaktifkan `[Perlu Konfirmasi Owner]`, pelanggan dapat menambahkan buket terkonfigurasi ke daftar sementara draf sebelum mengarahkan ke WhatsApp.
 
 ---
 
-### UC-07: Melihat Instruksi Pembayaran Transfer
+### UC-07: Mengarahkan Pemesanan ke WhatsApp (Generator Pesan)
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan melihat rincian nomor rekening bank resmi dan e-wallet pemilik usaha untuk melakukan transfer manual.
-- **Prakondisi:** Pesanan berada dalam status `ST-03 Menunggu Pembayaran`.
-- **Pascakondisi:** Pelanggan memperoleh nomor rekening resmi dan nominal tagihan yang tepat.
+- **Deskripsi:** Pelanggan menekan tombol "Pesan via WhatsApp" untuk menghasilkan pesan terformat rapi dan membuka aplikasi/tab WhatsApp resmi toko tanpa penyimpanan transaksi di basis data web.
+- **Prakondisi:** Konfigurasi buket telah dipilih dan tombol "Pesan via WhatsApp" aktif.
+- **Pascakondisi:** Aplikasi atau peramban membuka URL `wa.me` dengan draf pesan pesanan lengkap; tidak ada record pesanan yang tersimpan di basis data web.
 - **Alur Utama:**
-  1. Pelanggan membuka halaman pembayaran pesanan.
-  2. Sistem menampilkan kode pesanan, total tagihan yang harus dibayar, daftar rekening bank resmi (BCA/BRI/Mandiri), dan akun e-wallet (DANA/GoPay) atas nama resmi pemilik usaha.
+  1. Pelanggan mengklik tombol "Pesan via WhatsApp".
+  2. Sistem menyusun teks draf pemesanan terstruktur rapi:
+     - Salam pembuka resmi BLOOMÉ
+     - Nama Produk Buket
+     - Rincian Variasi Personalisasi (Wrapping, Pita)
+     - Rincian Add-on Tambahan
+     - Pesan Kartu Ucapan / Catatan Khusus
+     - Estimasi Total Harga (IDR)
+     - Catatan bahwa harga final, ongkir Samarinda, dan pembayaran akan dikonfirmasi pemilik toko.
+  3. Sistem mengambil nomor WhatsApp aktif dari tabel `business_settings`.
+  4. Sistem melakukan *URL encode* terhadap teks pesan dan menyusun tautan lengkap: `https://wa.me/{nomor_toko}?text={encoded_message}`.
+  5. Sistem membuka tautan tersebut pada tab baru atau mengalihkan ke aplikasi WhatsApp di ponsel pelanggan.
+  6. Pelanggan secara mandiri menekan tombol "Kirim" (*Send*) pada aplikasi WhatsApp mereka.
+- **Catatan Batas Sistem:**
+  - Website tidak menerima atau menyimpan pesanan hanya karena WhatsApp berhasil dibuka.
+  - Seluruh konfirmasi ketersediaan bahan, kesepakatan harga final, pembayaran transfer/e-wallet, DP 50%, dan pengiriman Samarinda dilanjutkan di WhatsApp.
 
 ---
 
-### UC-08: Melakukan Konfirmasi Pembayaran
+### UC-08: Mengakses Konsultasi Buket Custom via WhatsApp
 - **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan menyatakan telah mentransfer dana ke rekening resmi agar admin memverifikasi mutasi.
-- **Prakondisi:** Pelanggan telah mentransfer dana dan berada di halaman petunjuk pembayaran.
-- **Pascakondisi:** Status pesanan beralih ke `ST-04 Menunggu Konfirmasi Pembayaran`.
+- **Deskripsi:** Pelanggan menghubungi pemilik usaha melalui WhatsApp untuk mendiskusikan permintaan rancangan buket di luar katalog.
+- **Prakondisi:** Pelanggan berada pada beranda, katalog, atau bagian panduan buket custom.
+- **Pascakondisi:** Aplikasi WhatsApp terbuka dengan draf pesan pembuka konsultasi desain custom.
 - **Alur Utama:**
-  1. Pelanggan mengklik tombol "Saya Sudah Melakukan Transfer".
-  2. Sistem memperbarui status pesanan menjadi `ST-04 Menunggu Konfirmasi Pembayaran` dan mencatat riwayat status.
-  3. Sistem menampilkan notifikasi: *"Terima kasih! Pembayaran Anda sedang diverifikasi secara manual oleh pemilik usaha."*
+  1. Pelanggan membaca panduan konsultasi buket custom pada website.
+  2. Pelanggan mengklik tombol "Konsultasi Buket Custom via WhatsApp".
+  3. Sistem mengambil nomor WhatsApp toko dari `business_settings` dan menyusun draf salam konsultasi custom.
+  4. Sistem membuka URL protokol `wa.me`.
+  5. Pelanggan mengirim pesan di WhatsApp, mengirim foto referensi buket dari ponsel mereka, dan berdiskusi langsung mengenai bahan, warna, dan harga bersama pemilik usaha (Nabila Febriyani).
 
 ---
 
-### UC-09: Mengajukan Permohonan Pembatalan
-- **Aktor Utama:** Customer (Guest)
-- **Deskripsi:** Pelanggan mengajukan permohonan pembatalan pesanan sebelum buket masuk tahap pembuatan fisik.
-- **Prakondisi:** Pesanan masih berada dalam status awal (`ST-01`, `ST-02`, atau `ST-03`).
-- **Pascakondisi:** Permohonan pembatalan tercatat di antrean peninjauan admin.
-- **Alur Utama:**
-  1. Pelanggan membuka rincian pesanan dan mengklik "Ajukan Pembatalan".
-  2. Sistem memvalidasi status pesanan saat ini.
-  3. Pelanggan mengetikkan alasan pembatalan dan menekan "Kirim Permohonan".
-  4. Sistem menyimpan permohonan pembatalan ke antrean peninjauan admin.
-- **Alur Alternatif:**
-  - *A1 (Pesanan Sudah Dibuat/Selesai):* Tombol pembatalan dinonaktifkan dengan peringatan: *"Pesanan sudah masuk tahap perangkaian dan tidak dapat dibatalkan"*.
+## 4. Spesifikasi Use Case Domain Administrator (Admin Domain)
 
----
-
-## 4. Spesifikasi Lengkap Use Case Domain Administrator (Admin Domain)
-
-### UC-10: Login Administrator
+### UC-09: Login Administrator (Single Admin Account)
 - **Aktor Utama:** Admin (Nabila Febriyani)
-- **Deskripsi:** Otentikasi satu pintu untuk mengakses dashboard administrasi.
-- **Prakondisi:** Admin membuka URL `/admin/login`.
-- **Pascakondisi:** Sesi otentikasi admin aktif dan dialihkan ke dashboard utama.
+- **Deskripsi:** Otentikasi satu pintu yang aman untuk mengakses dashboard administrasi.
+- **Prakondisi:** Admin membuka halaman login `/admin/login`.
+- **Pascakondisi:** Sesi login administrator terotentikasi dan dialihkan ke dashboard admin.
 - **Alur Utama:**
   1. Admin membuka halaman login admin.
-  2. Admin memasukkan email terdaftar dan password.
-  3. Sistem memverifikasi token CSRF dan mencocokkan hash password Bcrypt pada tabel `admins`.
-  4. Sistem meregenerasi ID sesi dan mengarahkan admin ke `/admin/dashboard`.
+  2. Admin memasukkan alamat email terdaftar dan kata sandi.
+  3. Sistem memvalidasi token CSRF dan mencocokkan hash password Bcrypt pada tabel `admins` (hanya ada 1 akun admin aktif milik pemilik usaha).
+  4. Sistem meregenerasi ID sesi (`Session::regenerate()`) dan mengarahkan admin ke `/admin/dashboard`.
 - **Alur Pengecualian:**
-  - *E1 (Kredensial Keliru):* Sistem menolak login dan menampilkan alert merah: *"Email atau kata sandi tidak cocok"*.
+  - *E1 (Kredensial Salah):* Sistem menolak akses dan menampilkan pesan error: *"Email atau kata sandi tidak cocok"*.
+  - *E2 (Rate Limiting):* Jika terjadi percobaan login berulang yang gagal (> 5 kali), sistem mengunci sementara form login selama 60 detik.
 
 ---
 
-### UC-11: Melihat Dashboard & Metrik Operasional
+### UC-10: Melihat Dashboard & Ringkasan Etalase Digital
 - **Aktor Utama:** Admin
-- **Deskripsi:** Memantau kartu metrik statistik dan antrean transaksi terkini.
-- **Prakondisi:** Admin terautentikasi (`auth:admin`).
+- **Deskripsi:** Memantau metrik ringkasan kesehatan etalase produk dan konfigurasi toko.
+- **Prakondisi:** Admin telah login (`auth:admin`).
+- **Pascakondisi:** Dashboard menampilkan kartu statistik etalase digital secara tepat.
 - **Alur Utama:**
-  1. Admin mengakses menu Dashboard.
-  2. Sistem menghitung total pesanan masuk, pesanan menunggu bayar, custom baru, dan pesanan sedang dibuat.
-  3. Sistem menyajikan kartu metrik ringkasan dan tabel 10 transaksi teranyar.
+  1. Admin membuka halaman dashboard.
+  2. Sistem menghitung: total produk aktif (`products`), total kategori (`categories`), total opsi personalisasi (`personalization_options`), total add-on aktif (`add_ons`), dan nomor WhatsApp toko aktif (`business_settings`).
+  3. Sistem menyajikan kartu metrik ringkasan dan tautan cepat ke modul manajemen katalog.
 
 ---
 
-### UC-12: Mengelola Kategori Produk (CRUD)
+### UC-11: Mengelola Kategori Produk (CRUD & Proteksi Relasi)
 - **Aktor Utama:** Admin
-- **Deskripsi:** Mengelola kategori buket (Buket Bunga, Buket Uang, Buket Snack, dll.).
-- **Alur Utama (Tambah Kategori):**
-  1. Admin membuka menu Kategori dan mengklik "Tambah Kategori".
+- **Deskripsi:** Menambah, melihat, mengedit, dan menghapus kategori buket dengan proteksi referensial.
+- **Prakondisi:** Admin berada pada menu Kategori (`/admin/categories`).
+- **Pascakondisi:** Data kategori diperbarui pada tabel `categories`.
+- **Alur Utama (Tambah/Edit):**
+  1. Admin mengklik "Tambah Kategori" atau memilih kategori untuk diedit.
   2. Admin memasukkan nama kategori dan deskripsi singkat.
-  3. Sistem memvalidasi nama unik, membuat slug otomatis, dan menyimpan record ke tabel `categories`.
+  3. Sistem memvalidasi nama unik, membuat slug URL secara otomatis, dan menyimpan data ke tabel `categories`.
 - **Alur Alternatif (Hapus Kategori):**
-  1. Admin mengklik tombol hapus pada sebuah kategori.
+  1. Admin mengklik tombol hapus pada suatu kategori.
   2. Sistem memeriksa apakah kategori masih memiliki produk aktif di tabel `products`.
-  3. Jika masih ada produk, sistem menolak penghapusan dengan alert: *"Kategori tidak dapat dihapus karena masih memuat produk aktif"*. Jika kosong, kategori dihapus.
+  3. Jika masih memiliki produk, sistem menolak penghapusan dan menampilkan alert: *"Kategori tidak dapat dihapus karena masih memuat produk buket aktif"*. Jika kosong, kategori dihapus dari database.
 
 ---
 
-### UC-13: Mengelola Produk Katalog (CRUD & Upload Foto)
+### UC-12: Mengelola Master Produk Buket (CRUD & Toggle Stok)
 - **Aktor Utama:** Admin
-- **Deskripsi:** Mengelola data buket katalog, harga, deskripsi, upload foto, dan ketersediaan stok.
-- **Alur Utama (Tambah Produk):**
-  1. Admin membuka menu Produk dan mengklik "Tambah Produk".
-  2. Admin mengisi nama buket, memilih kategori, mengisi harga (IDR), deskripsi komposisi bunga, dan mengunggah foto produk.
-  3. Sistem memvalidasi berkas gambar (JPG/PNG ≤ 5MB), menyimpan foto ke `storage/app/public/products/`, dan menyimpan data ke tabel `products`.
-  4. Produk baru langsung tampil di katalog publik.
+- **Deskripsi:** Menambah, mengedit informasi produk buket, mengatur harga dasar, dan mengubah status ketersediaan secara cepat.
+- **Prakondisi:** Admin berada pada menu Produk (`/admin/products`).
+- **Pascakondisi:** Data produk buket tersimpan di tabel `products`.
+- **Alur Utama (Tambah/Edit Produk):**
+  1. Admin membuka form Tambah/Edit Produk.
+  2. Admin memilih kategori, memasukkan nama buket, harga dasar (IDR) `[Perlu Konfirmasi Owner]`, deskripsi rangkaian bunga, dan mengunggah foto utama.
+  3. Sistem memvalidasi data form request, menyimpan foto ke storage lokal, dan menyimpan record produk.
 - **Alur Alternatif (Toggle Ketersediaan Stok):**
-  1. Admin mengklik switch status stok buket dari *In Stock* menjadi *Out of Stock*.
-  2. Sistem memperbarui kolom `is_available = 0` secara instan.
+  1. Admin mengklik sakelar (*toggle switch*) ketersediaan pada baris produk di tabel.
+  2. Sistem secara instan memperbarui nilai `is_available` (1 = Tersedia, 0 = Habis) tanpa perlu membuka form edit lengkap.
+  3. Perubahan status langsung tercermin di etalase katalog publik.
 
 ---
 
-### UC-14: Mengelola Antrean Pesanan & Detail
+### UC-13: Mengelola Galeri Multi-Foto Produk
 - **Aktor Utama:** Admin
-- **Deskripsi:** Memantau antrean seluruh pesanan masuk dan melihat rincian detail kartu ucapan serta alamat pengiriman.
+- **Deskripsi:** Mengunggah beberapa foto detail buket sekaligus, menentukan urutan foto, menetapkan foto sampul utama (*primary*), dan menghapus foto lama.
+- **Prakondisi:** Admin berada pada tab Galeri Foto di halaman detail produk admin.
+- **Pascakondisi:** Berkas foto tersimpan di penyimpanan lokal dan tercatat pada tabel `product_images`.
 - **Alur Utama:**
-  1. Admin membuka menu Pesanan.
-  2. Sistem menampilkan antrean pesanan terurut berdasarkan tanggal kebutuhan terdekat.
-  3. Admin dapat memfilter daftar berdasarkan status operasional (ST-01 s/d ST-08).
-  4. Admin mengklik "Lihat Detail" untuk memeriksa pesan kartu ucapan dan detail pemesan.
+  1. Admin memilih satu atau beberapa berkas foto dari perangkat (JPG/PNG ≤ 2MB per berkas).
+  2. Sistem memvalidasi tipe MIME dan ukuran berkas.
+  3. Sistem menyimpan foto dengan nama hash acak (UUID) di folder `storage/app/public/products/`.
+  4. Sistem menyimpan record path ke tabel `product_images` dengan relasi `product_id`.
+  5. Admin dapat menandai salah satu foto sebagai foto sampul utama (`is_primary = 1`).
+  6. Foto-foto tersebut langsung tayang pada slider galeri halaman detail produk publik.
+- **Alur Alternatif (Hapus Foto):**
+  1. Admin mengklik ikon hapus pada salah satu foto galeri.
+  2. Sistem menghapus record dari tabel `product_images` dan menghapus berkas fisik dari storage lokal.
 
 ---
 
-### UC-15: Meninjau Permintaan Custom & Foto
+### UC-14: Mengelola Opsi Personalisasi & Nilai Variasi
 - **Aktor Utama:** Admin
-- **Deskripsi:** Meninjau tiket pengajuan buket custom dan memeriksa berkas foto referensi yang diunggah pelanggan.
+- **Deskripsi:** Mengonfigurasi opsi variasi (wrapping paper, pita satin) dan nilai opsinya beserta kode warna HEX dan biaya tambahan.
+- **Prakondisi:** Admin berada pada menu Personalisasi (`/admin/personalizations`).
+- **Pascakondisi:** Opsi personalisasi tersimpan pada tabel `personalization_options`, `personalization_values`, dan ditautkan ke produk pada `product_personalization_options`.
 - **Alur Utama:**
-  1. Admin membuka menu "Permintaan Custom".
-  2. Admin memilih tiket custom yang berstatus `ST-01`.
-  3. Sistem menyajikan rincian jenis bunga, palet warna, tema, catatan khusus, dan galeri foto referensi acuan.
+  1. Admin membuat tipe opsi personalisasi baru (misal: *Warna Kertas Wrapping*, tipe: `color_swatch`).
+  2. Admin menambahkan nilai variasi pada opsi tersebut (misal: *Blush Pink*, hex: `#E99AAF`, biaya tambahan: Rp0).
+  3. Admin menambahkan variasi premium jika berlaku (misal: *Korean Floral Cellophane*, biaya tambahan: +Rp15.000 `[Perlu Konfirmasi Owner]`).
+  4. Admin menautkan opsi personalisasi tersebut ke produk buket yang bersangkutan melalui tabel pivot `product_personalization_options`.
+  5. Opsi swatch warna tersebut langsung tampil interaktif pada konfigurator buket publik.
 
 ---
 
-### UC-16: Menetapkan Usulan Harga Custom
+### UC-15: Mengelola Master Item Add-on & Relasi Produk
 - **Aktor Utama:** Admin
-- **Deskripsi:** Menginput nominal harga penawaran buket kustom secara manual setelah menaksir ketersediaan bahan.
-- **Prakondisi:** Admin berada di halaman detail permintaan custom (status `ST-01`).
-- **Pascakondisi:** Status pesanan beralih ke `ST-02 Menunggu Persetujuan Harga`.
+- **Deskripsi:** Menambah master data item add-on (kartu ucapan khusus, cokelat, boneka, lampu LED) dan menautkannya ke produk buket.
+- **Prakondisi:** Admin berada pada menu Add-on (`/admin/addons`).
+- **Pascakondisi:** Data add-on tersimpan pada tabel `add_ons` dan relasi produk pada `product_add_ons`.
 - **Alur Utama:**
-  1. Admin menaksir biaya bahan bunga dan mengetikkan nominal harga pada kolom "Harga Penawaran" (misal: Rp275.000).
-  2. Admin mengklik "Simpan & Kirim Penawaran".
-  3. Sistem memperbarui kolom `proposed_price` dan menggeser status pesanan menjadi `ST-02 Menunggu Persetujuan Harga`.
+  1. Admin membuka menu Add-on dan mengklik "Tambah Add-on".
+  2. Admin memasukkan nama item, harga satuan (IDR) `[Perlu Konfirmasi Owner]`, deskripsi singkat, mengunggah thumbnail foto, dan status ketersediaan.
+  3. Sistem menyimpan data ke tabel `add_ons`.
+  4. Pada manajemen produk buket, admin mencentang add-on mana saja yang diizinkan untuk dipilih bersama produk tersebut.
+  5. Pilihan add-on tersebut langsung muncul sebagai pilihan tambahan di halaman detail produk publik.
 
 ---
 
-### UC-17: Memverifikasi Pembayaran Manual Mutasi Rekening
+### UC-16: Mengelola Pengaturan Bisnis & WhatsApp Toko
 - **Aktor Utama:** Admin
-- **Deskripsi:** Memverifikasi mutasi rekening bank atau e-wallet fisik dan menandai transaksi pesanan telah lunas.
-- **Prakondisi:** Pesanan berstatus `ST-04 Menunggu Konfirmasi Pembayaran`.
-- **Pascakondisi:** Status pesanan beralih ke `ST-05 Pembayaran Dikonfirmasi`.
+- **Deskripsi:** Memperbarui nomor WhatsApp resmi toko dan teks draf pesan pada tabel `business_settings`.
+- **Prakondisi:** Admin berada pada menu Pengaturan Bisnis (`/admin/settings`).
+- **Pascakondisi:** Data pengaturan toko diperbarui pada tabel `business_settings`.
 - **Alur Utama:**
-  1. Admin membuka menu Pembayaran di dashboard.
-  2. Admin memeriksa data mutasi rekening m-banking resmi BLOOMÉ.
-  3. Dana terbukti masuk dan nominal cocok dengan tagihan.
-  4. Admin mengklik tombol "Verifikasi Pembayaran".
-  5. Sistem mencatat waktu verifikasi di tabel `payments`, memperbarui status menjadi `ST-05 Pembayaran Dikonfirmasi`, dan mencatat histori audit.
+  1. Admin membuka menu Pengaturan Bisnis.
+  2. Admin memperbarui nomor kontak WhatsApp bisnis resmi BLOOMÉ `[Perlu Konfirmasi Owner]`.
+  3. Admin memperbarui template salam pembuka pesan WhatsApp dan informasi alamat butik di Samarinda (`Jl. Cipto Mangunkusumo, Simpang Tiga, Loa Janan Ilir, Samarinda`).
+  4. Sistem memvalidasi format nomor internasional (format diawali `62`) dan menyimpan nilai konfigurasi ke tabel `business_settings`.
+  5. Seluruh generator tautan WhatsApp publik otomatis menggunakan nomor kontak dan konfigurasi terbaru tersebut.
 
 ---
 
-### UC-18: Mengelola Siklus Status Pesanan & Audit Trail
+### UC-17: Logout Administrator
 - **Aktor Utama:** Admin
-- **Deskripsi:** Memperbarui progres pengerjaan buket fisik secara bertahap mematuhi aturan mesin status.
-- **Pascakondisi:** Status diperbarui dan `<<include>>` UC-18.1 riwayat audit tercatat otomatis.
+- **Deskripsi:** Mengakhiri sesi login administrator secara aman.
+- **Prakondisi:** Admin sedang berada dalam sesi terotentikasi.
+- **Pascakondisi:** Sesi dihapus dan browser dialihkan ke halaman login admin.
 - **Alur Utama:**
-  1. Bunga mulai dirangkai: Admin memilih status `ST-06 Sedang Dibuat`. Sistem mencatat audit trail.
-  2. Rangkaian selesai dan diserahkan ke pelanggan/kurir: Admin memilih status `ST-07 Selesai`. Sistem mencatat audit trail dan mengunci status transaksi (*terminal state*).
-
----
-
-### UC-19: Meninjau & Memutuskan Pembatalan Pesanan
-- **Aktor Utama:** Admin
-- **Deskripsi:** Mengevaluasi permohonan pembatalan dari pemesan dan mengambil keputusan persetujuan atau penolakan.
-- **Alur Utama:**
-  1. Admin membuka menu Pembatalan.
-  2. Admin membaca alasan pembatalan dan memeriksa status buket saat ini.
-  3. Jika disetujui: Admin mengklik "Setujui Pembatalan", status pesanan berubah menjadi `ST-08 Dibatalkan`.
-  4. Jika ditolak: Admin mengklik "Tolak Pembatalan", status aktif pesanan sebelumnya dipertahankan.
-
----
-
-### UC-20: Logout Administrator
-- **Aktor Utama:** Admin
-- **Deskripsi:** Mengakhiri sesi administrasi secara aman.
-- **Alur Utama:**
-  1. Admin mengklik tombol "Logout" di header panel admin.
-  2. Sistem menghapus sesi otentikasi admin, menginvalidasi token, dan mengalihkan halaman ke form login admin.
+  1. Admin mengklik tombol "Logout" pada header panel admin.
+  2. Sistem memproses request logout, menghancurkan data sesi di server (`Auth::logout()`, `Session::invalidate()`, `Session::regenerateToken()`).
+  3. Sistem mengarahkan admin kembali ke halaman login (`/admin/login`) dengan pesan sukses logout.
 
 ---
 
 ## 5. Kesimpulan & Rekomendasi
 
 ### 5.1 Status Task ANA-002
-Task **ANA-002 (Use Case Description)** telah selesai dilaksanakan:
-- 20 Use Case lengkap telah dideskripsikan menggunakan format standar baku (Aktor, Pre/Post-conditions, Main Flow, Alternative Flows, Exception Flows).
-- Seluruh spesifikasi selaras 100% dengan kebutuhan SRS (`requirement.md`) dan diagram use case (`ANA-001`).
-- Kriteria penyelesaian (*Definition of Done*) terpenuhi.
+Task **ANA-002 (Use Case Descriptions)** telah selesai dilaksanakan:
+- 17 Use Case lengkap telah dideskripsikan secara komprehensif menggunakan format standar baku (Aktor, Pre/Post-conditions, Main Flow, Alternative Flows, Exception Flows).
+- Seluruh spesifikasi selaras 100% dengan kebutuhan SRS (`requirement.md` v1.1), PRD (`prd.md` v1.1), skema database (`database-design.md` v1.1), dan diagram use case (`ANA-001`).
+- Seluruh Use Case usang checkout web, verifikasi mutasi transfer web, dan approval status pesanan web telah dihilangkan sepenuhnya.
+- Kriteria penyelesaian (*Definition of Done*) terpenuhi 100%.
 
 ### 5.2 Rekomendasi Langkah Berikutnya:
-Melanjutkan ke task pemodelan diagram aktivitas berikutnya pada sub-fase 5.2:
-- **`ANA-003 — Activity Diagram pemesanan katalog.`**
-
+Melanjutkan ke pemodelan diagram aktivitas alur katalog dan pemesanan WhatsApp:
+- **`ANA-003 — Activity Diagram katalog, personalisasi, dan pemesanan WhatsApp.`**

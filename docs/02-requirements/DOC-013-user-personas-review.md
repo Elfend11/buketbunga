@@ -3,17 +3,17 @@
 **Task ID:** DOC-013  
 **Fase:** Phase 1 — Project Initiation and Documentation (Sub-fase 4.3 Product Documentation)  
 **Penanggung Jawab:** Jayanti Firdasari (Project Manager & System Analyst) & Riya Monika (UI/UX Designer)  
-**Tanggal Peninjauan:** 13 November 2026  
+**Tanggal Peninjauan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dependensi:** DOC-012 — Meninjau product vision (Selesai)  
+**Dependensi:** DOC-012 — Meninjau product vision (Selesai dan Diselaraskan)  
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-Peninjauan Persona Pengguna (Task DOC-013) dilakukan untuk memvalidasi representasi profil pengguna nyata yang menjadi target utama website **BLOOMÉ — Flowers & Stories**. Melalui penyusunan persona berbasis empati (*Empathy Mapping*), tim pengembang memastikan bahwa setiap keputusan tata letak UI, navigasi form, alur pemesanan, dan fungsionalitas dashboard admin secara nyata menjawab kebutuhan, motivasi, serta titik frustrasi (*pain points*) pengguna di Samarinda.
+Peninjauan Persona Pengguna (Task DOC-013) dilakukan untuk memvalidasi representasi profil pengguna nyata yang menjadi target utama website **BLOOMÉ — Flowers & Stories**. Melalui penyusunan persona berbasis empati (*Empathy Mapping*), tim pengembang memastikan bahwa setiap keputusan tata letak UI, navigasi katalog, konfigurator personalisasi, integrasi WhatsApp hand-off, dan fungsionalitas dashboard admin secara nyata menjawab kebutuhan, motivasi, serta titik frustrasi (*pain points*) pengguna di Samarinda.
 
-Hasil peninjauan memetakan dua tipe persona pembeli (*Customer Personas*) dan satu persona pengelola usaha (*Administrator Persona*).
+Sesuai dengan konsep sistem terbaru (v1.1), sistem informasi BLOOMÉ berfungsi sebagai **katalog interaktif dan media personalisasi buket bunga, sedangkan proses pemesanan, konfirmasi harga, pembayaran, negosiasi, dan pengiriman dilanjutkan secara langsung melalui WhatsApp**. Hasil peninjauan memetakan dua tipe persona pembeli (*Customer Personas*) dan satu persona pengelola usaha (*Administrator Persona*).
 
 ---
 
@@ -22,50 +22,48 @@ Hasil peninjauan memetakan dua tipe persona pembeli (*Customer Personas*) dan sa
 ### 2.1 Persona 1: Dinda Kirana — Pembeli Katalog Cepat (The Fast & Aesthetic Buyer)
 - **Demografi:** 22 tahun, Mahasiswi Tingkat Akhir, Kota Samarinda.
 - **Profil Perilaku:** Pengguna aktif smartphone, menyukai visual estetik di Instagram dan Pinterest, sangat sibuk mempersiapkan sidang skripsi dan menghadiri perayaan wisuda teman-temannya.
-- **Skenario Penggunaan:** Ingin memesan buket bunga segar atau buket uang untuk sahabatnya yang sidang besok lusa.
+- **Skenario Penggunaan:** Ingin memesan buket bunga segar atau buket uang untuk sahabatnya yang sidang besok lusa tanpa proses yang berbelit-belit.
 - **Tujuan Utama (Goals):**
-  - Melihat katalog buket siap pesan beserta harganya secara instan tanpa perlu repot bertanya di chat.
-  - Memilih buket yang sesuai bujet (rentang Rp100.000 – Rp300.000) dan memastikan ketersediaannya.
-  - Melakukan checkout dalam waktu singkat tanpa registrasi akun yang membuang waktu.
-  - Menuliskan ucapan selamat kelulusan yang dicetak rapi pada kartu ucapan buket.
+  - Melihat katalog buket siap pesan beserta harganya secara transparan 24/7 tanpa perlu repot bertanya harga dasar di chat.
+  - Memilih kombinasi warna wrapping dan pita yang manis secara visual melalui *color swatches*.
+  - Menambahkan kartu ucapan selamat kelulusan dan melihat estimasi total harga secara instan.
+  - Melakukan pemesanan langsung ke WhatsApp tanpa perlu membuat akun, tanpa password, dan tanpa mengisi formulir checkout web yang panjang.
 - **Titik Frustrasi (Pain Points):**
   - Toko bunga yang tidak mencantumkan harga dan lambat membalas chat WhatsApp.
   - Situs web dengan form pendaftaran akun panjang yang mewajibkan verifikasi email/kata sandi.
-  - Penulisan kartu ucapan yang salah ketik (*typo*) oleh penjual karena obrolan chat yang tercecer.
+  - Penulisan kartu ucapan yang salah ketik (*typo*) oleh penjual karena obrolan chat tercecer.
 
 ---
 
 ### 2.2 Persona 2: Reza Pratama — Pembeli Personalisasi Custom (The Thoughtful Custom Gift Giver)
 - **Demografi:** 26 tahun, Karyawan Swasta, Samarinda Ilir.
 - **Profil Perilaku:** Teliti, menghargai hubungan personal, ingin memberikan kado spesial di hari perayaan (*anniversary*) pasangannya, terbiasa mencari inspirasi foto buket kustom dari internet.
-- **Skenario Penggunaan:** Membawa foto referensi buket elegan bernuansa warna pastel lembut dan ingin florist BLOOMÉ merangkai buket serupa sesuai preferensi pasangannya.
+- **Skenario Penggunaan:** Ingin memesan buket dengan kombinasi warna khusus dan add-on cokelat/boneka, atau membawa ide rangkaian bunga unik di luar katalog dan ingin berdiskusi langsung dengan florist.
 - **Tujuan Utama (Goals):**
-  - Mengunggah foto referensi buket dari galeri ponsel secara mudah tanpa batas rumit.
-  - Menyampaikan spesifikasi warna bunga favorit pasangan dan catatan khusus perangkaian.
-  - Mendapatkan kejelasan nominal harga resmi yang diusulkan oleh florist sebelum melakukan transfer.
-  - Mentransfer dana melalui bank transfer/e-wallet dengan nomor rekening resmi yang terpercaya.
+  - Mengeksplorasi opsi variasi warna wrapping, jenis pita, serta add-on pendukung dengan kepastian penyesuaian harga yang transparan.
+  - Menghubungi florist secara langsung melalui tombol "Konsultasi Buket Custom via WhatsApp" untuk mendiskusikan desain unik, mengirim referensi gambar di chat, dan menyepakati penawaran harga.
+  - Melakukan pembayaran transfer bank atau e-wallet resmi dengan instruksi yang terpercaya dan fleksibilitas negosiasi atau DP 50%.
 - **Titik Frustrasi (Pain Points):**
-  - Florist yang menerima foto referensi tetapi hasil akhirnya sangat melenceng dari ekspektasi.
-  - Pembengkakan harga di akhir transaksi tanpa persetujuan awal.
-  - Kekhawatiran apakah uang transfer telah diverifikasi dan pesanan benar-benar sedang diproses.
+  - Florist yang kaku atau sistem otomatis yang tidak bisa diajak berdiskusi tentang detail custom.
+  - Kenaikan harga mendadak di akhir tanpa penjelasan komponen variasi.
+  - Formulir kustomisasi web yang rumit dan tidak fleksibel menampung keinginan desain non-standar.
 
 ---
 
 ## 3. Profil Persona Pengelola (Administrator Persona)
 
-### 3.1 Nabila Febriyani — Pemilik Usaha & Florist Artisan (The Multi-Tasking Florist)
-- **Demografi:** 24 tahun, Pemilik Usaha BLOOMÉ, Samarinda.
-- **Profil Perilaku:** Kreatif, teliti dalam merangkai bunga, mengelola bisnis secara mandiri (*solopreneur*), sering mengakses sistem melalui laptop di meja kerja butik maupun smartphone saat berbelanja bahan bunga.
+### 3.1 Nabila Febriyani — Pemilik Usaha & Florist Artisan (The Multi-Tasking Florist / Solopreneur)
+- **Demografi:** 24 tahun, Pemilik Usaha & Florist BLOOMÉ, Samarinda.
+- **Profil Perilaku:** Kreatif, teliti dalam merangkai bunga, mengelola bisnis secara mandiri (*solopreneur*), sering mengakses sistem melalui laptop di butik maupun smartphone saat berbelanja bunga di pasar/suplier.
 - **Tujuan Utama (Goals):**
-  - Melihat seluruh antrean pesanan pelanggan secara terorganisasi berdasarkan tanggal pengiriman/kebutuhan.
-  - Meninjau spesifikasi custom dan foto referensi dari layar dashboard untuk menaksir ketersediaan bahan baku dan menetapkan nominal harga secara mandiri.
-  - Melakukan verifikasi manual mutasi pembayaran transfer bank atau e-wallet sebelum bunga segar dipotong dan dirangkai.
-  - Mengubah status pesanan secara sistematis (*Pending* → *Sedang Dibuat* → *Selesai*) untuk mencegah pesanan terlewat.
+  - Mengelola etalase digital secara mandiri: menambah buket baru, mengunggah multi-foto galeri, mengubah status ketersediaan stok (*Tersedia* / *Habis*) secara cepat agar pelanggan tidak memesan bahan yang kosong.
+  - Mengonfigurasi pilihan variasi personalisasi (warna wrapping, pita) dan item add-on beserta penyesuaian harganya.
+  - Mengatur nomor WhatsApp resmi bisnis toko (`business_settings`) agar seluruh permintaan pemesanan masuk ke nomor yang tepat.
+  - Menerima pesan masuk di WhatsApp yang sudah terstruktur rapi dari web (nama produk, variasi, add-on, catatan ucapan, estimasi harga), sehingga menghemat waktu tanya-jawab berulang dan memungkinkannya fokus merangkai bunga serta melayani pelanggan secara hangat.
 - **Titik Frustrasi (Pain Points):**
-  - Pesanan pelanggan bercampur aduk dengan pesan pribadi di WhatsApp.
-  - Lupa detail permintaan khusus pembeli (misal: warna pita atau teks kartu ucapan).
-  - Pengecekan bukti mutasi pembayaran yang memakan waktu dan berisiko salah catat.
-  - Kesulitan memantau berapa banyak buket yang harus diselesaikan untuk jadwal besok pagi.
+  - Obrolan chat WhatsApp yang berantakan karena pelanggan tidak tahu apa yang ingin dipesan atau menanyakan warna kertas yang habis.
+  - Waktu terbuang menjelaskan ulang rincian harga dasar dan biaya tambahan satu per satu.
+  - Sistem rumit yang membebaninya untuk mengelola status transaksi teknis di web saat tangannya sedang sibuk merangkai bunga basah.
 
 ---
 
@@ -74,41 +72,41 @@ Hasil peninjauan memetakan dua tipe persona pembeli (*Customer Personas*) dan sa
 ### 4.1 Empathy Map: Pelanggan (Customer)
 | Kuadran | Hasil Analisis Empati Pelanggan |
 |---|---|
-| **What they THINK & FEEL?** | *"Saya ingin memberikan kado terbaik yang berkesan tanpa buang waktu; saya butuh kepastian harga dan tanggal pesanan."* |
-| **What they SEE?** | Foto buket menawan di media sosial, ragam pilihan buket bunga/uang/snack, palet warna lembut yang estetik. |
-| **What they HEAR?** | Rekomendasi teman tentang BLOOMÉ di Samarinda; keluhan pembeli lain yang pesanannya di tempat lain salah ucapan atau telat kirim. |
-| **What they SAY & DO?** | Menjelajahi katalog via HP, memilih buket, menuliskan pesan kartu ucapan yang personal, mentransfer dana via mobile banking / e-wallet. |
-| **PAINS (Titik Sakit)** | Respon admin lambat di WA, kewajiban registrasi akun baru, ketidakpastian harga custom. |
-| **GAINS (Kebutuhan Nilai)** | Checkout langsung sebagai *guest*, kepastian harga custom sebelum bayar, buket tiba tepat waktu dengan kartu ucapan rapi. |
+| **What they THINK & FEEL?** | *"Saya ingin memberikan kado buket terbaik tanpa buang waktu; saya butuh kepastian harga, warna yang pas, dan bisa langsung memesan ke WhatsApp toko."* |
+| **What they SEE?** | Etalase buket menawan di web, palet warna pastel yang estetik, pilihan add-on cokelat/boneka, tombol pesan WhatsApp yang jelas. |
+| **What they HEAR?** | Rekomendasi butik buket di Samarinda; keluhan teman yang pesanannya salah ucapan atau warna kertasnya tidak sesuai saat pesan via DM media sosial. |
+| **What they SAY & DO?** | Menjelajahi katalog via HP, memilih variasi warna wrapping, menambahkan add-on, mengetik pesan kartu ucapan, meninjau estimasi harga, lalu menekan "Pesan via WhatsApp". |
+| **PAINS (Titik Sakit)** | Keharusan membuat akun/login, form checkout web yang kaku, ketidakjelasan harga dasar, salah ketik kartu ucapan. |
+| **GAINS (Kebutuhan Nilai)** | Eksplorasi bebas tanpa login, swatch warna visual interaktif, teks WhatsApp tersusun rapi otomatis, kemudahan berkonsultasi langsung dengan florist. |
 
 ---
 
 ### 4.2 Empathy Map: Pengelola (Admin / Nabila)
 | Kuadran | Hasil Analisis Empati Pemilik Usaha |
 |---|---|
-| **What they THINK & FEEL?** | *"Saya ingin fokus merangkai bunga yang indah dengan tenang tanpa stres memikirkan chat yang berantakan atau pesanan yang terlewat."* |
-| **What they SEE?** | Bunga segar di butik, antrean pesanan harian, bukti transfer masuk di m-banking, foto referensi kustom pelanggan. |
-| **What they HEAR?** | Pertanyaan berulang pelanggan di WA tentang harga, komplain jika kartu ucapan salah, apresiasi kepuasan pelanggan saat buket selesai. |
-| **What they SAY & DO?** | Memperbarui katalog dan stok, meninjau foto referensi custom, menetapkan harga sesuai bahan, mengecek mutasi transfer, merangkai buket. |
-| **PAINS (Titik Sakit)** | Rekapitulasi pesanan manual di buku/catatan, risiko salah baca detail ucapan, chat tenggelam. |
-| **GAINS (Kebutuhan Nilai)** | Dashboard sentral yang menampilkan jadwal pengerjaan, detail ucapan tersimpan paten, verifikasi mutasi bayar yang terstruktur. |
+| **What they THINK & FEEL?** | *"Saya ingin fokus merangkai bunga yang indah dengan tenang tanpa lelah menjawab pertanyaan dasar yang sama berulang kali di chat WhatsApp."* |
+| **What they SEE?** | Stok bunga segar di butik, pesan WhatsApp pelanggan yang sudah rapi memuat detail pesanan dari website, mutasi transfer masuk di mobile banking. |
+| **What they HEAR?** | Kepuasan pelanggan yang senang pesanannya sesuai warna impian, apresiasi atas respons chat yang cepat dan terarah. |
+| **What they SAY & DO?** | Memperbarui katalog dan foto produk di web admin, mengatur toggle ketersediaan stok, menyapa pelanggan yang masuk dari tautan WhatsApp web, mengonfirmasi pembayaran DP/lunas, dan mengoordinasikan jadwal kurir. |
+| **PAINS (Titik Sakit)** | Mengetik format pesanan manual berulang-ulang, salah paham warna buket di chat, repot mengelola sistem web yang terlalu birokratis. |
+| **GAINS (Kebutuhan Nilai)** | Panel admin yang ringan dan fokus pada etalase & stok, format pesan WhatsApp yang terstruktur baku dari web, fleksibilitas penanganan transaksi di chat. |
 
 ---
 
 ## 5. Dampak Peninjauan Persona terhadap Rancangan UI/UX & Fitur Sistem
 
-Peninjauan persona menghasilkan keputusan desain yang mengunci kemudahan pengguna:
+Peninjauan persona menghasilkan keputusan desain konkret yang menjamin kepuasan pengguna:
 
-1. **Peniadaan Form Registrasi (Menjawab Frustrasi Dinda & Reza):**
-   - Mengadopsi *Guest Checkout* murni (BR-001). Pelanggan hanya memasukkan nama, nomor telepon/WhatsApp, dan alamat saat submit pesanan.
-2. **Preview Kartu Ucapan Interaktif (Menjawab Kebutuhan Dinda):**
-   - Kolom teks kartu ucapan disediakan secara khusus dengan indikator batasan karakter yang jelas dan pratinjau sebelum submit agar bebas salah ketik (*zero typo*).
-3. **Modul Unggah Referensi Sederhana (Menjawab Kebutuhan Reza):**
-   - Formulir unggah gambar *drag-and-drop* yang intuitif dengan batasan ukuran 5 MB dan format JPG/PNG yang ramah ponsel.
-4. **Alur Persetujuan Harga Transparan (Menjawab Kekhawatiran Reza):**
-   - Menghadirkan halaman review harga custom dengan dua tombol tegas: *Setujui Harga* atau *Tolak*, menjamin transparansi tanpa biaya siluman.
-5. **Dashboard Bersih & Ramah Mobile (Menjawab Kebutuhan Nabila):**
-   - Dashboard admin mengutamakan kartu metrik dan tabel antrean pesanan terurut tanggal pengerjaan (*due date*), serta tata letak responsif yang nyaman dibuka di smartphone Nabila saat di pasar bunga.
+1. **Zero-Login & Peniadaan Form Checkout Web (Menjawab Kebutuhan Dinda):**
+   - Pelanggan tidak dibebani form registrasi atau alur checkout multi-tahap di web. Transaksi dialihkan secara alami ke WhatsApp yang merupakan aplikasi percakapan sehari-hari.
+2. **Konfigurator Visual & Pratinjau Catatan Ucapan (Menjawab Kebutuhan Dinda & Reza):**
+   - Pemilihan variasi wrapping dan pita disajikan menggunakan pemilih visual (*color swatches*) yang intuitif. Kolom catatan khusus dan kartu ucapan dilengkapi counter karakter untuk mencegah salah ketik.
+3. **Kalkulasi Estimasi Harga Real-Time (Menjawab Transparansi Dinda & Reza):**
+   - Kartu ringkasan pesanan secara otomatis menghitung `Harga Dasar + Penyesuaian Variasi + Total Add-on` secara live di layar antarmuka pengguna sebelum dialihkan ke WhatsApp.
+4. **Tombol Konsultasi Custom Khusus (Menjawab Kebutuhan Desain Unik Reza):**
+   - Disediakan tombol khusus "Konsultasi Buket Custom via WhatsApp" dengan template pesan pembuka yang mengundang diskusi personal, pengiriman referensi foto di chat, dan penawaran harga fleksibel.
+5. **Panel Admin Ringkas & Fokus Etalase (Menjawab Kenyamanan Kerja Nabila):**
+   - Dashboard admin difokuskan sepenuhnya pada pengelolaan master etalase: produk, kategori, galeri foto, variasi personalisasi, item add-on, toggle ketersediaan stok instan, dan konfigurasi nomor WhatsApp bisnis (`business_settings`).
 
 ---
 
@@ -116,11 +114,10 @@ Peninjauan persona menghasilkan keputusan desain yang mengunci kemudahan penggun
 
 ### 6.1 Status Task DOC-013
 Task **DOC-013 (Meninjau user personas)** telah selesai dilaksanakan:
-- 3 Persona representatif (Dinda Kirana, Reza Pratama, Nabila Febriyani) telah ditinjau mendalam lengkap dengan peta empati.
-- Seluruh kebutuhan, motivasi, dan titik frustrasi pengguna telah diterjemahkan menjadi spesifikasi fitur dan keputusan UI/UX konkret.
-- Kriteria penyelesaian terpenuhi.
+- 3 Persona representatif (Dinda Kirana, Reza Pratama, Nabila Febriyani) telah ditinjau mendalam lengkap dengan peta empati (*Empathy Map*) dan penyesuaian kebutuhan v1.1.
+- Seluruh keputusan UI/UX dan batasan fungsional selaras dengan model pemesanan WhatsApp terintegrasi.
+- Kriteria penyelesaian terpenuhi 100%.
 
 ### 6.2 Rekomendasi Langkah Berikutnya:
 Melanjutkan ke task peninjauan berikutnya pada sub-fase 4.3:
 - **`DOC-014 — Meninjau user stories.`**
-

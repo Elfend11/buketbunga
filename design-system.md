@@ -1,4 +1,4 @@
-# DESIGN SYSTEM & UI COMPONENT SPECIFICATIONS
+# DESIGN SYSTEM & UI COMPONENT SPECIFICATIONS (v1.1)
 # BLOOMÉ — Flowers & Stories
 
 ## 1. Document Information
@@ -9,10 +9,10 @@
 - **Lead UI/UX Designer & Frontend Developer:** Riya Monika
 - **Lead System Analyst & Project Manager:** Jayanti Firdasari
 - **Backend Developer & Database Administrator:** Elsa Futri
-- **Project Sponsor:** Nabila Febriyani
-- **Tema Desain:** *Elegant Floral Boutique*
-- **Versi Dokumen:** 1.0 (Official UI/UX Design System Baseline)
-- **Tanggal Efektif:** 13 November 2026
+- **Project Sponsor / Owner:** Nabila Febriyani
+- **Tema Desain:** *Elegant Floral Boutique (Soft Feminine, Modern, Minimalist, Premium)*
+- **Versi Dokumen:** 1.1 (Refined Design System Baseline — Interactive Catalog & WhatsApp Ordering)
+- **Tanggal Efektif:** 20 November 2026
 - **Status Dokumen:** Approved Baseline
 
 ---
@@ -20,21 +20,21 @@
 ## 2. Design Philosophy & Visual Concept
 
 ### 2.1 Filosofi Visual: *Flowers & Stories*
-Desain antarmuka **BLOOMÉ** diciptakan untuk memancarkan keanggunan, kehangatan emosional, dan ketenangan layaknya melangkah masuk ke dalam butik bunga artisan di Kota Samarinda.
+Desain antarmuka **BLOOMÉ** diciptakan untuk memancarkan keanggunan, kehangatan emosional, dan ketenangan layaknya melangkah masuk ke dalam butik bunga artisan di Kota Samarinda:
 - **Elegan & Feminin Lembut:** Memadukan palet warna mawar pastel (*blush pink*), latar belakang krem hangat (*warm white*), serta aksen hijau botani (*sage green*).
-- **Tipografi Bertutur:** Mengkombinasikan keanggunan klasik *Playfair Display* (serif) untuk judul-judul yang membangkitkan rasa perayaan dan kemewahan, dengan ketajaman fungsional *Poppins* (sans-serif) untuk keterbacaan teks transaksi yang tinggi.
-- **Ruang & Napas (*Spacious & Clean*):** Menghindari tata letak yang padat; memberikan ruang negatif (*white space*) yang lapang agar produk buket menjadi fokus visual utama (*hero focus*).
-- **Bentuk Organik Lembut:** Menggunakan sudut-sudut membulat (*rounded cards & buttons*) untuk memberikan kesan ramah dan menyenangkan bagi pembeli.
+- **Tipografi Bertutur:** Mengombinasikan keanggunan klasik *Playfair Display* (serif) untuk judul-judul yang membangkitkan rasa perayaan dan kemewahan, dengan ketajaman fungsional *Poppins* (sans-serif) untuk keterbacaan teks katalog dan form yang tinggi.
+- **Ruang & Napas (*Spacious & Clean*):** Memberikan ruang negatif (*white space*) yang lapang agar produk buket menjadi fokus visual utama (*hero visual focus*).
+- **Bentuk Organik Lembut:** Menggunakan sudut-sudut membulat (*rounded cards & buttons*) untuk memberikan kesan ramah, menyenangkan, dan estetik bagi pembeli.
 
 ---
 
 ## 3. Token Warna Baku (Locked Color Tokens)
 
-Seluruh komponen antarmuka publik dan dashboard admin wajib menggunakan token warna terstandarisasi berikut:
+Seluruh komponen antarmuka publik dan dashboard admin wajib menggunakan token warna terstandarisasi berikut tanpa menyimpang:
 
 ```mermaid
 graph LR
-    subgraph Brand_Palette ["Palet Utama (Brand & Surface)"]
+    subgraph Brand_Palette ["Palet Utama (Brand & Canvas)"]
         C1["Primary Pink<br>#E99AAF"]
         C2["Primary Hover<br>#D98296"]
         C3["Soft Pink<br>#F6DDE3"]
@@ -56,155 +56,160 @@ graph LR
         C13["Warning<br>#E8B85B"]
         C14["Danger<br>#D96B75"]
         C15["Information<br>#9B83B9"]
+        C16["WhatsApp Brand<br>#25D366"]
     end
 ```
 
 ### 3.1 Spesifikasi Nilai Hex & Peran Warna
 | Token Name | Hex Code | Peran Penggunaan dalam Antarmuka |
 |---|---|---|
-| **`color-primary`** | `#E99AAF` | Warna aksen utama merek, tombol Call-to-Action utama, tautan aktif. |
+| **`color-primary`** | `#E99AAF` | Warna aksen utama merek, tombol Call-to-Action utama, batas aktif. |
 | **`color-primary-hover`**| `#D98296` | Warna saat kursor mengarah (*hover/active*) pada tombol utama. |
-| **`color-primary-soft`** | `#F6DDE3` | Latar belakang elemen sekunder, badge status lembut, container sorotan. |
-| **`color-bg-body`** | `#FFF5F6` | Latar belakang kanvas utama seluruh halaman website (Blush White). |
+| **`color-primary-soft`** | `#F6DDE3` | Latar belakang elemen sekunder, badge ketersediaan lembut, container sorotan. |
+| **`color-bg-body`** | `#FFF5F6` | Latar belakang kanvas utama seluruh halaman website (Blush Pink). |
 | **`color-bg-surface`** | `#FFFCFB` | Latar belakang putih hangat untuk kartu produk, container form, dan modal. |
 | **`color-burgundy`** | `#642D36` | Warna teks judul utama (Heading H1/H2) dan logo aksen eksklusif. |
 | **`color-text-main`** | `#493335` | Warna teks utama untuk paragraf, label form, dan tabel (*high contrast*). |
-| **`color-text-sub`** | `#898080` | Warna teks sekunder, subjudul kartu, metadata tanggal, dan keterangan. |
+| **`color-text-sub`** | `#898080` | Warna teks sekunder, subjudul kartu, rincian add-on, dan keterangan. |
 | **`color-text-muted`** | `#B09A9C` | Warna placeholder form input, teks nonaktif (*disabled*), dan breadcrumbs. |
-| **`color-botanical`** | `#A8B5A0` | Warna aksen dedaunan botani (*sage green*), penanda kategori bunga segar. |
+| **`color-botanical`** | `#A8B5A0` | Warna aksen dedaunan botani (*sage green*), penanda kategori buket bunga. |
 | **`color-border`** | `#F0E1E4` | Garis tepi (*border*) tipis untuk kartu, pemisah baris tabel, dan input form. |
-| **`color-success`** | `#6EAD70` | Status lunas, pembayaran dikonfirmasi, pesanan selesai, stok tersedia. |
-| **`color-warning`** | `#E8B85B` | Menunggu verifikasi pembayaran, pesanan sedang dirangkai, peringatan form. |
-| **`color-danger`** | `#D96B75` | Status dibatalkan, harga custom ditolak, error validasi, stok habis. |
-| **`color-info`** | `#9B83B9` | Menunggu peninjauan admin, menunggu persetujuan harga, instruksi panduan. |
+| **`color-success`** | `#6EAD70` | Lencana status *Tersedia*, notifikasi data berhasil disimpan. |
+| **`color-warning`** | `#E8B85B` | Lencana slot pengerjaan hampir penuh, peringatan validasi input. |
+| **`color-danger`** | `#D96B75` | Lencana status *Habis / Slot Penuh*, tombol hapus, pesan error validasi. |
+| **`color-info`** | `#9B83B9` | Informasi petunjuk pemesanan, tips memilih variasi buket. |
+| **`color-whatsapp`** | `#25D366` | Aksen tombol pemesanan WhatsApp dan ikon resmi chat WhatsApp. |
 
 ---
 
 ## 4. Tipografi Sistem (Typography Scale)
 
 ### 4.1 Pemilihan Font
-1. **Heading Font (Display):** `Playfair Display`, serif modern, anggun, memberikan sentuhan butik premium.
-2. **Body & UI Font (Interface):** `Poppins`, sans-serif geometris, modern, sangat nyaman dibaca di layar smartphone.
+1. **Heading Font (Display & Judul):** `Playfair Display`, serif modern, anggun, memberikan sentuhan butik floral eksklusif.
+2. **Body & UI Font (Interface & Form):** `Poppins`, sans-serif geometris, modern, sangat nyaman dibaca di layar smartphone.
 
 ### 4.2 Skala Hirarki Tipografi
 | Tingkat | Font Family | Ukuran / Line Height | Font Weight | Contoh Penggunaan |
 |---|---|---|:---:|---|
 | **Display H1** | Playfair Display | 36px / 44px (Mobile: 28px/36px) | 700 (Bold) | Hero Title Beranda, Judul Besar Page |
-| **Heading H2** | Playfair Display | 28px / 36px (Mobile: 24px/32px) | 600 (SemiBold) | Judul Bagian Katalog, Judul Section |
-| **Heading H3** | Poppins | 22px / 28px (Mobile: 18px/24px) | 600 (SemiBold) | Nama Produk di Detail, Judul Form |
-| **Heading H4** | Poppins | 18px / 24px | 600 (SemiBold) | Nama Produk di Kartu Katalog, Sub-panel |
+| **Heading H2** | Playfair Display | 28px / 36px (Mobile: 24px/32px) | 600 (SemiBold) | Judul Seksi Katalog, Judul Section |
+| **Heading H3** | Poppins | 22px / 28px (Mobile: 18px/24px) | 600 (SemiBold) | Nama Produk di Halaman Detail, Judul Panel |
+| **Heading H4** | Poppins | 18px / 24px | 600 (SemiBold) | Nama Produk di Kartu Katalog, Label Opsi |
 | **Body Large** | Poppins | 16px / 24px | 400 (Regular) / 500 (Medium) | Paragraf Pengantar, Teks Tombol Utama |
-| **Body Text** | Poppins | 14px / 22px | 400 (Regular) | Teks Paragraf Umum, Label Form Input |
-| **Caption/Small**| Poppins | 12px / 16px | 400 (Regular) / 500 (Medium) | Status Badge, Hint Form, Footer Copyright |
+| **Body Text** | Poppins | 14px / 22px | 400 (Regular) | Teks Deskripsi Produk, Label Form Input |
+| **Caption/Small**| Poppins | 12px / 16px | 400 (Regular) / 500 (Medium) | Badge Ketersediaan, Hint Form, Footer Copyright |
 
 ---
 
-## 5. Sistem Jarak, Grid, & Elevasi (Spacing, Grid, & Shadows)
+## 5. Sistem Jarak, Radius, & Elevasi (Spacing, Radius, & Shadows)
 
-### 5.1 Skala Spacing (Sistem Kelipatan 4/8pt)
+### 5.1 Skala Spacing (Kelipatan 4/8pt)
 - `space-1` : 4px (Jarak mikro, padding badge kecil).
-- `space-2` : 8px (Jarak antar ikon dan teks).
-- `space-3` : 12px (Padding tombol reguler, jarak form field kecil).
-- `space-4` : 16px (Padding kartu standar, margin antar paragraf).
-- `space-6` : 24px (Padding kartu besar, jarak antar section kecil).
-- `space-8` : 32px (Margin antar bagian formulir).
+- `space-2` : 8px (Jarak antar ikon dan teks label).
+- `space-3` : 12px (Padding tombol reguler, jarak antar swatch warna).
+- `space-4` : 16px (Padding kartu produk standar, margin antar elemen form).
+- `space-6` : 24px (Padding kartu besar, jarak antar kolom opsi personalisasi).
+- `space-8` : 32px (Margin antar bagian konfigurator detail).
 - `space-12`: 48px (Jarak vertikal antar section beranda).
 - `space-16`: 64px (Pemisah section utama halaman besar).
 
 ### 5.2 Sudut Lengkung Komponen (Border Radius Tokens)
-- **Large Card & Modal:** `18px` (`border-radius: 18px;`)
-- **Medium Card (Product Card):** `16px` (`border-radius: 16px;`)
+- **Large Container & Modal:** `18px` (`border-radius: 18px;`)
+- **Product Card & Add-on Card:** `16px` (`border-radius: 16px;`)
 - **Small Container & Table Row:** `12px` (`border-radius: 12px;`)
 - **Button (Semua Tombol):** `12px` (`border-radius: 12px;`)
 - **Input Field & Select:** `10px` (`border-radius: 10px;`)
-- **Badges / Status Pills:** `9999px` (`border-radius: 9999px;`)
+- **Color Swatch Selector:** `50%` (`border-radius: 50%;` bulat sempurna)
+- **Badges / Lencana Ketersediaan:** `9999px` (`border-radius: 9999px;` bentuk kapsul)
 
-### 5.3 Sistem Elevasi & Bayangan (Shadows)
-- **Elevation 1 (Kartu Default):** `box-shadow: 0 4px 20px rgba(73, 51, 53, 0.05);`
-- **Elevation 2 (Kartu Hover / Dropdown):** `box-shadow: 0 8px 30px rgba(73, 51, 53, 0.08);`
-- **Elevation 3 (Modal Dialog / Sticky Header):** `box-shadow: 0 12px 40px rgba(73, 51, 53, 0.12);`
+### 5.3 Sistem Elevasi & Bayangan (Soft Shadows)
+- **Elevation 1 (Kartu Default):** `box-shadow: 0 4px 20px rgba(100, 45, 54, 0.05);`
+- **Elevation 2 (Kartu Hover / Sticky Summary):** `box-shadow: 0 8px 30px rgba(100, 45, 54, 0.08);`
+- **Elevation 3 (Modal Dialog / Floating Header):** `box-shadow: 0 12px 40px rgba(100, 45, 54, 0.12);`
+*(Dilarang menggunakan bayangan hitam pekat / harsh black shadow).*
 
 ---
 
 ## 6. Spesifikasi Komponen Antarmuka (UI Components Library)
 
 ### 6.1 Tombol (Button Components)
-1. **Primary Button:** Latar belakang `#E99AAF`, teks putih `#FFFFFF`, padding `12px 24px`, radius `12px`, font Poppins Medium (14px). Saat hover bertransisi mulus ke `#D98296`.
-2. **Secondary Button:** Latar belakang transparan, border `1.5px solid #E99AAF`, teks `#E99AAF`, radius `12px`. Saat hover latar berubah menjadi `#F6DDE3`.
-3. **Danger Button:** Latar belakang `#D96B75`, teks putih, untuk aksi penolakan (*Reject*) atau pembatalan pesanan.
-4. **Disabled Button:** Latar belakang `#F0E1E4`, teks `#B09A9C`, kursor `not-allowed`.
+1. **WhatsApp Order Button (Tombol CTA Utama):**
+   - Latar belakang: `#E99AAF` (atau varian hijau WhatsApp `#25D366`), teks putih `#FFFFFF`, ikon WhatsApp SVG di sisi kiri, padding `14px 24px`, radius `12px`, font Poppins SemiBold (15px).
+   - Efek hover: Transisi halus ke `#D98296` (atau `#20BA5A`) dengan sedikit peningkatan elevasi (*transform: translateY(-2px)*).
+2. **Secondary Button:**
+   - Latar transparan, border `1.5px solid #E99AAF`, teks `#E99AAF`, radius `12px`. Hover bertransisi ke background `#F6DDE3`.
+3. **Disabled Button:**
+   - Latar belakang `#F0E1E4`, teks `#B09A9C`, kursor `not-allowed`, tombol tidak dapat diklik saat produk berstatus habis.
 
-### 6.2 Formulir & Input (Form Components)
-1. **Text Input & Number:** Latar belakang `#FFFFFF`, border `1.5px solid #F0E1E4`, radius `10px`, padding `12px 16px`, warna teks `#493335`. Saat fokus (*focus state*), border berubah menjadi `#E99AAF` dengan *box-shadow: 0 0 0 3px rgba(233, 154, 175, 0.2)*.
-2. **Greeting Card Textarea:** Didesain khusus menyerupai kartu pos buket dengan tinggi minimum 120px, font handwriting/poppins, dilengkapi penghitung karakter (*character counter*) di pojok kanan bawah.
-3. **File Upload Dropzone:** Area bergaris putus-putus (`border: 2px dashed #E99AAF; background: #FFF5F6;`), radius `14px`, padding `32px 16px`, dilengkapi ikon unggah bunga, teks panduan format berkas (JPG/PNG maks 5MB), dan area pratinjau foto (*thumbnail preview*) jika berkas telah dipilih.
+### 6.2 Komponen Personalisasi & Add-on
+1. **Color Swatch Selector (Pemilih Warna Wrapping / Pita):**
+   - Lingkaran warna berdiameter `32px` dengan border halus `2px solid #F0E1E4`.
+   - Status terpilih (*active state*): Border menjadi `3px solid #642D36` disertai efek cincin fokus (*ring offset*) dan ikon centang kecil.
+2. **Add-on Checkbox Card (Kartu Pilihan Add-on):**
+   - Kartu kecil persegi panjang dengan radius `12px`, border `1.5px solid #F0E1E4`, latar `#FFFCFB`.
+   - Memuat: Checkbox custom di kiri, thumbnail add-on 48×48px, nama add-on, dan label harga tambahan (`+Rp 15.000`).
+   - Saat dicentang: Border berubah menjadi `#E99AAF`, background menjadi `#FFF5F6`.
+3. **Catatan Khusus Textarea:**
+   - Input textarea dengan radius `10px`, border `1.5px solid #F0E1E4`, placeholder lembut untuk instruksi ucapan kartu.
 
-### 6.3 Kartu Produk (Product Card Component)
-- Ukuran kartu simetris dengan radius `16px`, latar belakang `#FFFCFB`, border `1px solid #F0E1E4`, elevasi 1.
-- Rasio foto buket persegi `1:1` atau `4:5` dengan *object-fit: cover* dan efek zoom halus `scale(1.03)` saat kartu di-hover.
-- Penempatan badge kategori di pojok kiri atas foto buket.
-- Penempatan nama produk (H4), harga buket (IDR tebal), dan tombol "Pesan" atau "Lihat Detail" di bagian bawah.
+### 6.3 Kartu Ringkasan Estimasi Harga (Interactive Sticky Summary)
+- Kartu ringkasan dengan latar belakang `#FFFCFB`, border `1.5px solid #F0E1E4`, radius `18px`, elevasi 2.
+- Menampilkan rincian baris:
+  - *Harga Dasar Buket* : Rp xxx.xxx
+  - *Variasi Pilihan* : Nama Warna Wrapping / Pita (Rp 0 / +Rp xx.xxx)
+  - *Add-on Terpilih* : Daftar item add-on beserta harga masing-masing
+  - *Garis Pemisah Halus* : `#F0E1E4`
+  - *Estimasi Total* : Font Poppins SemiBold (20px) berwarna `#642D36` (Burgundy)
+  - *Teks Disclaimer* : "Estimasi harga produk. Konfirmasi ongkir Samarinda & jadwal pengiriman akan disepakati di WhatsApp."
 
-### 6.4 Status Badges (Pill Component)
-Badge berbentuk kapsul (*full rounded 9999px*) dengan teks tebal 12px dan kontras ramah:
-- `ST-01 Menunggu Peninjauan:` Background `#F3EDF8`, Teks `#9B83B9`.
-- `ST-02 Menunggu Persetujuan Harga:` Background `#F6EDD9`, Teks `#B8882B`.
-- `ST-03 Menunggu Pembayaran:` Background `#F6DDE3`, Teks `#C45A75`.
-- `ST-04 Menunggu Konfirmasi:` Background `#FBF0DA`, Teks `#D49520`.
-- `ST-05 Pembayaran Dikonfirmasi:` Background `#E5F4E7`, Teks `#4E8E50`.
-- `ST-06 Sedang Dibuat:` Background `#EBF1FE`, Teks `#3E68B8`.
-- `ST-07 Selesai:` Background `#E5F4E7`, Teks `#3B7E3E`.
-- `ST-08 Dibatalkan:` Background `#FCE8E9`, Teks `#C94A55`.
+### 6.4 Kartu Produk Katalog (Product Card Component)
+- Kartu simetris beradius `16px`, latar `#FFFCFB`, border `1px solid #F0E1E4`, elevasi 1.
+- Foto buket rasio `1:1` atau `4:5` dengan efek zoom halus `scale(1.03)` saat di-hover.
+- Lencana kategori di pojok kiri atas foto.
+- Lencana ketersediaan di pojok kanan atas foto:
+  - *Tersedia* : Background `#E5F4E7`, Teks `#4E8E50` (Hijau).
+  - *Habis / Slot Penuh* : Background `#FCE8E9`, Teks `#C94A55` (Merah).
+- Judul produk (H4), harga dasar (IDR tebal), dan tombol "Pilih & Personalisasi".
 
 ### 6.5 Navigasi (Navigation Components)
-1. **Customer Navbar:** Desain mengambang (*sticky floating header*), latar belakang putih transparan dengan efek kaca (*backdrop-filter: blur(10px); background: rgba(255, 252, 251, 0.95);*), logo teks BLOOMÉ Burgundy, menu tautan (Beranda, Katalog, Custom Bouquet, Tentang Kami, Kontak).
-2. **Customer Footer:** Nuansa lembut `#642D36` (Burgundy mewah) atau `#F6DDE3` (Soft Pink), menampilkan jam operasional butik Samarinda, alamat Jalan Cipto Mangunkusumo, nomor kontak WhatsApp resmi, dan tautan sosial media.
-3. **Admin Layout:** Sidebar tetap di sisi kiri dengan latar belakang `#F6DDE3` (Soft Pink), teks dan ikon aktif `#642D36`, container konten putih `#FFFCFB`, dan header ringkas yang memuat profil Nabila Febriyani serta tombol logout aman.
+1. **Customer Navbar:** Header mengambang (*sticky floating header*), latar putih transparan dengan efek kaca (*backdrop-filter: blur(10px); background: rgba(255, 252, 251, 0.95);*), logo BLOOMÉ Burgundy, tautan navigasi (Beranda, Katalog, Custom Bouquet, Tentang Kami, Kontak).
+2. **Customer Footer:** Nuansa anggun `#642D36` (Burgundy) atau `#FFF5F6`, memuat alamat butik Samarinda (Jl. Cipto Mangunkusumo), jam kerja operasional, dan tautan sosial media resmi.
+3. **Admin Dashboard Layout:** Sidebar tetap di sisi kiri dengan latar `#F6DDE3` (Soft Pink), teks dan ikon aktif `#642D36`, container konten putih `#FFFCFB`, dan header ringkas yang menampilkan profil Nabila Febriyani serta tombol logout aman.
 
 ---
 
 ## 7. Penanganan Kondisi UI Multi-State (UI States)
 
 1. **Empty State:**
-   - Tampilan jika katalog kosong atau tidak ada pesanan di dashboard: Ilustrasi vas bunga kosong bergaris lembut dengan teks ramah: *"Belum ada buket di kategori ini. Jelajahi kategori lainnya atau ajukan buket custom impianmu!"*
+   - Jika kategori katalog tidak memiliki produk aktif: Ilustrasi vas bunga kosong bergaris lembut dengan pesan: *"Belum ada buket di kategori ini. Silakan jelajahi kategori lain atau konsultasikan buket custom impianmu via WhatsApp!"*
 2. **Loading State:**
-   - Tombol submit berubah menjadi kondisi *loading spinner* dan teks *"Memproses pesanan..."* untuk mencegah klik ganda (*double submit*).
-   - Card katalog menggunakan animasi *shimmer skeleton* bernuansa pink saat memuat data.
+   - Kartu katalog menggunakan animasi *shimmer skeleton* bernuansa soft pink saat memuat gambar atau data.
 3. **Error State:**
-   - Banner alert merah lembut (`#FCE8E9` border `#D96B75`) di atas formulir dengan ikon peringatan dan pesan berbahasa Indonesia yang jelas.
+   - Banner alert merah lembut (`#FCE8E9` border `#D96B75`) di atas formulir dengan ikon peringatan dan pesan validasi berbahasa Indonesia yang jelas.
 4. **Success State:**
-   - Banner hijau lembut (`#E5F4E7` border `#6EAD70`) atau modal konfirmasi ramah dengan confetti floral saat pesanan berhasil tersimpan.
+   - Banner hijau lembut (`#E5F4E7` border `#6EAD70`) saat data produk, kategori, atau konfigurasi berhasil disimpan di admin.
 
 ---
 
 ## 8. Panduan Desain Responsif (Responsive Breakpoints)
 
-```mermaid
-flowchart LR
-    M["Mobile Device<br>Viewport: ≤ 576px<br>Kartu: 1 Kolom<br>Nav: Hamburger / Drawer"] --> T["Tablet Device<br>Viewport: 768px - 992px<br>Kartu: 2 Kolom<br>Nav: Compact Header"]
-    T --> D["Desktop Screen<br>Viewport: ≥ 1024px<br>Kartu: 3 - 4 Kolom<br>Nav: Full Sticky Header"]
-```
-
 - **Mobile View (≤ 576px):**
-  - Padding sisi layar 16px.
-  - Kartu produk buket ditampilkan 1 kolom penuh (lebar 100%) untuk foto yang jelas.
-  - Target sentuh tombol minimum 44px × 44px agar ramah jempol.
-  - Tabel admin dapat di-scroll secara horizontal tanpa merusak layout.
+  - Kartu produk buket ditampilkan 1 kolom penuh (lebar 100%) untuk tampilan foto yang maksimal.
+  - Kartu ringkasan estimasi harga dapat diposisikan sebagai *sticky bottom bar* di layar smartphone agar tombol WhatsApp selalu terlihat dan mudah ditekan (*thumb-friendly*).
 - **Tablet View (768px – 992px):**
-  - Padding sisi layar 24px.
   - Kartu buket ditampilkan 2 kolom simetris.
 - **Desktop View (≥ 1024px):**
-  - Lebar container konten maksimum 1200px terpusat (*margin: 0 auto;*).
+  - Lebar container konten maksimum 1200px terpusat.
   - Kartu katalog ditampilkan 3 atau 4 kolom.
-  - Panel admin memiliki sidebar tetap di sisi kiri selebar 260px.
+  - Halaman detail menampilkan tata letak 2 kolom: galeri foto di kolom kiri dan konfigurator personalisasi beserta ringkasan estimasi di kolom kanan.
 
 ---
 
 ## 9. Kesimpulan & Pengesahan
 
-Panduan Desain Sistem ini telah ditinjau dan dinyatakan memenuhi seluruh kebutuhan estetika merek, ramah pengguna, mudah diimplementasikan ke dalam komponen CSS/Blade, serta konsisten di seluruh halaman pelanggan dan admin.
+Panduan Desain Sistem v1.1 ini telah diselaraskan secara konsisten dengan konsep katalog interaktif dan pemesanan WhatsApp, mempertahankan keanggunan identitas visual BLOOMÉ, serta siap diimplementasikan ke dalam komponen CSS dan Blade templates.
 
 **Disahkan Oleh:**  
 **Riya Monika** (UI/UX Designer & Frontend Developer)  
 **Jayanti Firdasari** (Project Manager & System Analyst)  
-Tanggal: 13 November 2026
+Tanggal: 20 November 2026

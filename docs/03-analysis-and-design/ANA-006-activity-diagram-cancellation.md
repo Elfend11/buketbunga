@@ -1,23 +1,28 @@
-# ACTIVITY DIAGRAM ALUR PENGAJUAN & PENANGANAN PEMBATALAN
+# ACTIVITY DIAGRAM ALUR PENGAJUAN & PENANGANAN PEMBATALAN VIA WHATSAPP
 ## BLOOMÉ — Flowers & Stories
 **Task ID:** ANA-006  
 **Fase:** Phase 2 — System Analysis and Design (Sub-fase 5.2 System Modeling)  
 **Penanggung Jawab:** Jayanti Firdasari (Lead System Analyst & Project Manager)  
-**Tanggal Penyusunan:** 13 November 2026  
+**Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dependensi:** ANA-005 — Activity Diagram pembayaran (Selesai)  
+**Dependensi:** ANA-005 — Activity Diagram alur pembayaran via WhatsApp (Selesai dan Diselaraskan)  
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-Pemodelan Diagram Aktivitas Pembatalan (Task ANA-006) dilakukan untuk memetakan alur kerja pengajuan permohonan pembatalan pesanan oleh pelanggan serta proses evaluasi dan keputusan persetujuan oleh pemilik usaha pada website **BLOOMÉ — Flowers & Stories**.
+Pemodelan Diagram Aktivitas Pembatalan (Task ANA-006) dilakukan untuk menggambarkan alur komunikasi pengajuan pembatalan pesanan atau perubahan detail oleh pelanggan serta proses evaluasi dan keputusan oleh pemilik usaha (Nabila Febriyani) melalui saluran obrolan WhatsApp untuk pesanan buket **BLOOMÉ — Flowers & Stories**.
 
-Sesuai aturan bisnis **BR-013** (*Pembatalan hanya dapat diajukan sebelum pesanan diproses*) dan **BR-014** (*Pembatalan wajib memerlukan persetujuan admin*), sistem menerapkan aturan pembatas (*guard conditions*) ketat agar pembeli tidak dapat membatalkan pesanan secara sepihak setelah bunga segar dipotong atau dirangkai fisik di butik.
+Sesuai dengan keputusan proses bisnis terbaru (v1.1):
+- **Website TIDAK memiliki modul pembatalan atau pengubahan pesanan.**
+- **Website TIDAK menyimpan status pesanan aktif atau memproses pengembalian dana (*refund*).**
+- **Seluruh permohonan pembatalan, revisi ucapan kartu, maupun perubahan jadwal pengiriman dibicarakan dan dikoordinasikan secara langsung melalui WhatsApp.**
+
+Sesuai aturan bisnis **BR-013** (*Pembatalan hanya dapat disetujui jika bunga segar belum dipotong atau dirangkai fisik*) dan **BR-014** (*Keputusan pembatalan berada penuh di tangan pemilik usaha*), diagram ini memodelkan pertimbangan florist terhadap kondisi fisik bahan baku sebelum menyetujui pembatalan.
 
 ---
 
-## 2. Diagram Aktivitas Pembatalan Pesanan (Swimlane Activity Diagram)
+## 2. Diagram Aktivitas Penanganan Pembatalan via WhatsApp (Swimlane Activity Diagram)
 
 ```mermaid
 flowchart TD
@@ -26,137 +31,86 @@ flowchart TD
 
     %% Customer Swimlane
     subgraph Lane_Customer ["Partisipan: Customer (Guest)"]
-        C1["Pelanggan Buka Halaman Rincian Pesanan"]
-        C2["Klik Tombol 'Ajukan Pembatalan'"]
-        C3["Ketik Alasan Pembatalan di Formulir"]
-        C4["Klik 'Kirim Permohonan Pembatalan'"]
-        C5["Menunggu Peninjauan Admin"]
-        C6["Menerima Notifikasi Pesanan Telah Dibatalkan (ST-08)"]
-        C7["Menerima Notifikasi Permohonan Ditolak<br>(Pesanan Tetap Diproses)"]
+        C1["Pelanggan Buka Chat WhatsApp Toko BLOOMÉ"]
+        C2["Kirim Pesan Pengajuan Pembatalan:<br>- Sebutkan Nama & Rincian Buket Dipesan<br>- Sampaikan Alasan Pembatalan Pesanan"]
+        C3["Menunggu Peninjauan oleh Pemilik Toko"]
+        C4["Terima Pemberitahuan: Pembatalan Disetujui"]
+        C5["Sampaikan Nomor Rekening untuk Pengembalian Dana (Refund)"]
+        C6["Terima Bukti Transfer Refund dari Pemilik Usaha"]
+        C7["Terima Penjelasan Santun: Pembatalan Ditolak<br>(Bunga Segar Telah Dirangkai Fisik)"]
+        C8["Pesanan Tetap Diproses & Diantar Sesuai Jadwal"]
     end
 
-    %% System Swimlane
-    subgraph Lane_System ["Partisipan: Sistem Web BLOOMÉ"]
-        S1{"Validasi Status Pesanan:<br>Masih ST-01, ST-02, atau ST-03?"}
-        S2["Tolak Pengajuan:<br>Tombol Pembatalan Dinonaktifkan<br>'Pesanan Sudah Masuk Tahap Produksi'"]
-        S3["Tampilkan Formulir Alasan Pembatalan"]
-        S4{"Validasi Alasan Pembatalan Diisi?"}
-        S5["Tampilkan Error: 'Alasan pembatalan wajib diisi'"]
-        S6["Simpan Permohonan Pembatalan ke Antrean Admin"]
-        S7["Tampilkan Notifikasi: 'Permohonan Sedang Ditinjau Admin'"]
-        S8["Notifikasi Permohonan Pembatalan Baru di Dashboard"]
-        S9["DB Transaction:<br>1. Update Status Pesanan -> ST-08 Dibatalkan<br>2. Catat Keputusan & Admin ID ke 'order_status_histories'<br>3. Kunci Status (Terminal State)"]
-        S10["Tampilkan Status Dibatalkan pada Halaman Pesanan"]
-        S11["Pertahankan Status Aktif Pesanan Sebelumnya<br>Catat Penolakan Pembatalan di Histori Audit"]
-        S12["Tampilkan Status Aktif & Catatan Penolakan ke Pemesan"]
-    end
-
-    %% Admin Swimlane
-    subgraph Lane_Admin ["Partisipan: Admin (Nabila Febriyani)"]
-        A1["Buka Menu 'Pembatalan' di Dashboard"]
-        A2["Baca Alasan Pembatalan dari Pemesan"]
-        A3["Periksa Progres Fisik Bunga di Butik"]
-        A4{"Apakah Pembatalan Disetujui?"}
-        A5["Klik Tombol 'Setujui Pembatalan' (Approve)"]
-        A6["Klik Tombol 'Tolak Pembatalan' (Reject)"]
-        A7{"Apakah Ada Dana Transfer yang Perlu Di-refund?"}
-        A8["Admin Lakukan Refund Manual via M-Banking ke Rekening Pemesan"]
-        A9["Selesai Tanpa Refund (Belum Ada Pembayaran)"]
+    %% WhatsApp & Owner Swimlane (Outside Web)
+    subgraph Lane_Owner ["Partisipan: WhatsApp & Pemilik Usaha (Nabila)"]
+        W1["Terima Pesan Pengajuan Pembatalan di WhatsApp"]
+        W2["Periksa Progres Fisik Pengerjaan Buket di Butik Samarinda"]
+        W3{"Apakah Bunga Segar Sudah Dipotong / Dirangkai Fisik?"}
+        W4["Sampaikan Penolakan Pembatalan secara Sopan:<br>'Bunga segar sudah dipotong dan tidak dapat dikembalikan'"]
+        W5["Setujui Pembatalan Pesanan"]
+        W6{"Apakah Sudah Ada Dana Masuk (DP 50% / Lunas)?"}
+        W7["Konfirmasi Pembatalan Tuntas (Belum Ada Pembayaran)"]
+        W8["Hitung Besaran Refund Sesuai Kebijakan Toko [Perlu Konfirmasi Owner]"]
+        W9["Minta Rekening Bank / E-Wallet Pelanggan"]
+        W10["Lakukan Transfer Pengembalian Dana via M-Banking"]
+        W11["Kirim Bukti Transfer Refund di Chat WhatsApp"]
     end
 
     %% Final Nodes
-    EndBlocked((◎))
-    EndCancelled((◎))
+    EndApprovedNoPay((◎))
+    EndApprovedRefund((◎))
     EndRejected((◎))
 
     %% Connections across Swimlanes
     C1 --> C2
-    C2 --> S1
+    C2 --> W1
+    W1 --> W2
+    W2 --> W3
     
-    S1 -- "Tidak (Sudah ST-05 / ST-06 / ST-07)" --> S2
-    S2 --> EndBlocked
+    W3 -- "Sudah Dipotong / Dirangkai" --> W4
+    W4 --> C7
+    C7 --> C8
+    C8 --> EndRejected
     
-    S1 -- "Ya (Status Awal)" --> S3
-    S3 --> C3
-    C3 --> C4
-    C4 --> S4
+    W3 -- "Belum Dipotong (Bahan Masih Utuh)" --> W5
+    W5 --> W6
     
-    S4 -- "Kosong" --> S5
-    S5 --> C3
+    W6 -- "Belum Bayar" --> W7
+    W7 --> C4
+    C4 --> EndApprovedNoPay
     
-    S4 -- "Valid" --> S6
-    S6 --> S7
-    S6 --> S8
-    S7 --> C5
-    S8 --> A1
-    
-    A1 --> A2
-    A2 --> A3
-    A3 --> A4
-    
-    A4 -- "Setuju (Approve)" --> A5
-    A5 --> S9
-    S9 --> S10
-    S10 --> A7
-    
-    A7 -- "Ada Dana" --> A8
-    A8 --> C6
-    A7 -- "Belum Bayar" --> A9
-    A9 --> C6
-    C6 --> EndCancelled
-    
-    A4 -- "Tolak (Reject)" --> A6
-    A6 --> S11
-    S11 --> S12
-    S12 --> C7
-    C7 --> EndRejected
+    W6 -- "Ada Pembayaran Masuk" --> W8
+    W8 --> W9
+    W9 --> C4
+    C4 --> C5
+    C5 --> W10
+    W10 --> W11
+    W11 --> C6
+    C6 --> EndApprovedRefund
 ```
 
 ---
 
-## 3. Analisis Jalur Aktivitas (*Path Analysis*)
+## 3. Penjelasan Batas Sistem & Kebijakan Bunga Segar
 
-### 3.1 Jalur Utama: Pembatalan Disetujui (*Approved Cancellation*)
-1. Pelanggan membuka rincian pesanan dan mengklik "Ajukan Pembatalan".
-2. Sistem memeriksa status pesanan saat ini. Karena pesanan masih berada pada status awal (`ST-01`, `ST-02`, atau `ST-03`), sistem mengizinkan pembatalan dan membuka formulir alasan.
-3. Pelanggan mengetikkan alasan (misal: *"Acara wisuda diundur bulan depan"*) dan mengirimkan permohonan.
-4. Sistem mencatat permohonan ke antrean admin dan menampilkan notifikasi *"Permohonan pembatalan Anda sedang ditinjau"*.
-5. Admin (Nabila) membuka menu Pembatalan di dashboard, membaca alasan, dan memeriksa bahwa bahan bunga belum dirangkai.
-6. Admin mengklik tombol *"Setujui Pembatalan"*.
-7. Sistem memperbarui status pesanan menjadi `ST-08 Dibatalkan` (*Terminal State*), mencatat riwayat audit, dan mengunci transaksi dari perubahan lanjutan.
-8. Jika pemesan sempat mentransfer dana (status sebelumnya `ST-04` atau `ST-05`), admin melakukan pengembalian dana (*refund*) secara manual melalui transfer bank ke rekening pemesan.
-9. Pelanggan menerima pembaruan bahwa pesanan resmi dibatalkan.
+### 3.1 Mengapa Pembatalan Tidak Dilakukan di Website?
+1. **Sifat Produk yang Mudah Rusak (*Perishable Goods*):** Bunga segar (*fresh cut flowers*) yang telah dipotong dari batangnya memiliki masa simpan terbatas dan tidak dapat dijual kembali kepada pelanggan lain jika pesanan dibatalkan sepihak. Tombol pembatalan otomatis di website berisiko merugikan butik secara finansial jika ditekan saat buket sudah setengah jadi.
+2. **Kebutuhan Diskusi Alternatif:** Sering kali pelanggan membatalkan pesanan bukan karena tidak ingin buketnya, melainkan karena jadwal acara wisuda yang bergeser. Melalui obrolan WhatsApp, florist Nabila dapat menawarkan solusi penjadwalan ulang (*reschedule*) waktu pengiriman alih-alih pembatalan total.
 
-### 3.2 Jalur Alternatif: Pembatalan Ditolak (*Rejected Cancellation*)
-1. Admin memeriksa permohonan pembatalan, namun mendapati bahwa bunga segar khusus pesanan custom tersebut telah dipotong atau dirangkai sebagian.
-2. Admin mengklik tombol *"Tolak Pembatalan"* dan menginput catatan alasan penolakan (misal: *"Mohon maaf, bunga pesanan custom Anda telah dipotong dan sedang dalam tahap perangkaian"*).
-3. Sistem mempertahankan status aktif pesanan sebelumnya (misal tetap `ST-03` atau status relevan) dan mencatat jejak penolakan di audit trail.
-4. Pelanggan menerima notifikasi bahwa permohonan ditolak dan pesanan buket tetap akan diselesaikan sesuai jadwal.
-
-### 3.3 Jalur Pemblokiran Sistem (*Guard Condition Blocked*)
-1. Jika pelanggan mencoba membatalkan pesanan yang telah mencapai status `ST-06 Sedang Dibuat` atau `ST-07 Selesai`, sistem secara otomatis menyembunyikan tombol pembatalan.
-2. Jika endpoint diakses langsung via URL, controller backend melempar respon HTTP 403 (*Action Forbidden*) dengan penjelasan bahwa pesanan yang telah diproduksi tidak dapat dibatalkan.
+### 3.2 Ketentuan Pengembalian Dana (Refund Policy)
+- **Status Kebijakan:** Kebijakan persentase pengembalian dana uang muka (DP) apabila pembatalan dilakukan jauh hari (misal: H-2 sebelum pembuatan) masih berstatus **`[Perlu Konfirmasi Owner]`**.
+- **Eksekusi Pengembalian Dana:** Seluruh pengembalian dana ditransfer secara manual oleh Nabila Febriyani melalui mobile banking langsung ke rekening atau nomor e-wallet yang diberikan pelanggan di chat WhatsApp.
 
 ---
 
-## 4. Kepatuhan Terhadap Aturan Bisnis Proyek
+## 4. Kesimpulan & Rekomendasi
 
-Alur aktivitas pembatalan ini menjamin penerapan aturan bisnis secara mutlak:
-- **BR-013 (Batas Waktu Pengajuan):** Pengajuan dibatasi ketat sebelum pesanan masuk tahap perangkaian fisik florist.
-- **BR-014 (Kewenangan Pembatalan):** Pelanggan tidak memiliki wewenang membatalkan transaksi secara mandiri; keputusan final murni hak prerogatif admin pemilik usaha.
-- **Terminal State Guard:** Pesanan yang berstatus `ST-08 Dibatalkan` tidak dapat diaktifkan kembali secara sepihak untuk mencegah kekacauan data inventaris dan keuangan.
+### 4.1 Status Task ANA-006
+Task **ANA-006 (Activity Diagram Pembatalan)** telah selesai diselaraskan:
+- Seluruh logika form pembatalan di website, tabel riwayat pembatalan, dan mesin status `ST-08` di web telah dieliminasi.
+- Alur pengajuan pembatalan manual, verifikasi status fisik bunga segar, dan pengembalian dana via WhatsApp telah dimodelkan secara realistis.
+- Kriteria penyelesaian terpenuhi 100%.
 
----
-
-## 5. Kesimpulan & Rekomendasi
-
-### 5.1 Status Task ANA-006
-Task **ANA-006 (Activity Diagram pembatalan)** telah selesai dilaksanakan:
-- Diagram aktivitas alur pengajuan pembatalan, peninjauan admin, eksekusi persetujuan/penolakan, serta penanganan refund manual telah dimodelkan menggunakan format visual Mermaid.
-- Aturan pembatas (*guard condition*) dan pencatatan audit histori terpetakan lengkap.
-- Kriteria penyelesaian (*Definition of Done*) terpenuhi.
-
-### 5.2 Rekomendasi Langkah Berikutnya:
-Melanjutkan ke task pemodelan diagram sekuensial berikutnya pada sub-fase 5.2:
-- **`ANA-007 — Sequence Diagram pemesanan.`**
-
+### 4.2 Rekomendasi Langkah Berikutnya:
+Melanjutkan ke pemodelan diagram sekuensial (Sequence Diagrams):
+- **`ANA-007 — Sequence Diagram eksplorasi katalog, konfigurasi personalisasi, dan WhatsApp hand-off.`**

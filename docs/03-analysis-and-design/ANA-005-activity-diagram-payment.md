@@ -1,65 +1,70 @@
-# ACTIVITY DIAGRAM ALUR PEMBAYARAN & VERIFIKASI (PAYMENT VERIFICATION WORKFLOW)
+# ACTIVITY DIAGRAM ALUR PEMBAYARAN & KONFIRMASI VIA WHATSAPP
 ## BLOOMÉ — Flowers & Stories
 **Task ID:** ANA-005  
 **Fase:** Phase 2 — System Analysis and Design (Sub-fase 5.2 System Modeling)  
 **Penanggung Jawab:** Jayanti Firdasari (Lead System Analyst & Project Manager)  
-**Tanggal Penyusunan:** 13 November 2026  
+**Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dependensi:** ANA-003 & ANA-004 (Selesai)  
+**Dependensi:** ANA-003 & ANA-004 (Selesai dan Diselaraskan)  
 
 ---
 
 ## 1. Ringkasan Eksekutif
 
-Pemodelan Diagram Aktivitas Pembayaran (Task ANA-005) dilakukan untuk memetakan alur kerja transaksi pembayaran manual, mekanisme konfirmasi pelanggan, serta proses audit verifikasi mutasi dana oleh pemilik usaha pada website **BLOOMÉ — Flowers & Stories**.
+Pemodelan Diagram Aktivitas Pembayaran (Task ANA-005) dilakukan untuk menggambarkan alur penyelesaian transaksi pembayaran, pengiriman bukti transfer, dan konfirmasi keabsahan dana oleh pemilik usaha (Nabila Febriyani) melalui saluran komunikasi WhatsApp untuk pesanan buket **BLOOMÉ — Flowers & Stories**.
 
-Sesuai dengan keputusan arsitektur (ADR-04) dan aturan bisnis (BR-010 & BR-011), sistem tidak menggunakan payment gateway otomatis, melainkan mengandalkan **pembayaran transfer manual (Bank Transfer & E-Wallet)** dengan **verifikasi mutasi fisik oleh admin di dashboard**. Diagram ini memastikan titik temu yang jelas antara aksi pembeli, pembaruan status sistem, dan validasi dana oleh florist sebelum proses perangkaian bunga dimulai.
+Sesuai dengan keputusan arsitektur (ADR-04) dan aturan bisnis (**BR-010 & BR-011**), website BLOOMÉ:
+- **TIDAK menyediakan payment gateway otomatis.**
+- **TIDAK menyimpan mutasi atau rekaman pembayaran di basis data web.**
+- **TIDAK menyediakan formulir unggah bukti transfer di dalam website.**
+
+Sebaliknya, website hanya memberikan estimasi total harga di muka melalui kalkulator live. Seluruh penyampaian nomor rekening bank resmi, akun e-wallet, kesepakatan uang muka (DP 50%) `[Perlu Konfirmasi Owner]`, penyerahan bukti transfer, dan verifikasi mutasi riil diselesaikan secara personal melalui **WhatsApp**.
 
 ---
 
-## 2. Diagram Aktivitas Pembayaran & Verifikasi Manual (Swimlane Activity Diagram)
+## 2. Diagram Aktivitas Pembayaran & Verifikasi via WhatsApp (Swimlane Activity Diagram)
 
 ```mermaid
 flowchart TD
     %% Initial Node
-    StartNode((●)) --> S1
-
-    %% System Swimlane (Start)
-    subgraph Lane_System ["Partisipan: Sistem Web BLOOMÉ"]
-        S1["Tampilkan Halaman Instruksi Pembayaran<br>(Pesanan Status ST-03 Menunggu Pembayaran)"]
-        S2["Tampilkan Rincian Tagihan & Rekening Resmi:<br>- Rekening BCA / BRI / Mandiri<br>- E-Wallet DANA / GoPay<br>- Total Nominal Pembayaran"]
-        S3["Terima Aksi Konfirmasi Pemesan"]
-        S4["1. Catat Data ke Tabel 'payments'<br>2. Update Status -> ST-04 Menunggu Konfirmasi<br>3. Catat Histori ke 'order_status_histories'"]
-        S5["Tampilkan Notifikasi:<br>'Pembayaran Sedang Diverifikasi Admin'"]
-        S6["Notifikasi Antrean Pembayaran Baru di Dashboard Admin"]
-        S7["Update Tabel 'payments' (verification_status='verified')<br>Update Status Pesanan -> ST-05 Pembayaran Dikonfirmasi<br>Catat Audit Perubahan Status"]
-        S8["Tampilkan Status Lunas pada Detail Pesanan"]
-        S9["Update Tabel 'payments' (verification_status='rejected')<br>Kembalikan Status Pesanan -> ST-03 Menunggu Pembayaran<br>Catat Alasan Penolakan di Histori"]
-        S10["Tampilkan Notifikasi Pembayaran Belum Terverifikasi ke Pemesan"]
-    end
+    StartNode((●)) --> C1
 
     %% Customer Swimlane
     subgraph Lane_Customer ["Partisipan: Customer (Guest)"]
-        C1["Buka Halaman Instruksi Pembayaran"]
-        C2["Salin Nomor Rekening / E-Wallet Resmi"]
-        C3["Lakukan Transfer Dana Manual via M-Banking / ATM / E-Wallet"]
-        C4["Kembali ke Halaman Web BLOOMÉ"]
-        C5["Klik Tombol 'Saya Sudah Melakukan Transfer'"]
-        C6["Menunggu Verifikasi Admin"]
-        C7["Menerima Konfirmasi Pembayaran Sah (Status Lunas)"]
-        C8["Menerima Pemberitahuan Dana Belum Masuk / Hubungi Admin"]
+        C1["Dapatkan Ringkasan Estimasi Biaya di Website"]
+        C2["Alihkan Pemesanan ke WhatsApp dengan Pesan Terformat"]
+        C3["Kirim Pesan Pemesanan ke WhatsApp Resmi Toko"]
+        C4["Terima Rincian Tagihan Final & Nomor Rekening dari Pemilik Toko"]
+        C5["Pilih Metode Pembayaran:<br>- Transfer Bank (BCA / BRI / Mandiri)<br>- E-Wallet (DANA / GoPay)"]
+        C6{"Pilih Skema Pembayaran?<br>[Perlu Konfirmasi Owner]"}
+        C7["Lakukan Pembayaran DP 50% via M-Banking / E-Wallet"]
+        C8["Lakukan Pembayaran Penuh (100% Lunas) via M-Banking"]
+        C9["Ambil Tangkapan Layar (Screenshot) Resi Transfer"]
+        C10["Kirimkan Berkas Resi Bukti Transfer ke Chat WhatsApp"]
+        C11["Terima Konfirmasi Pembayaran Sah & Jadwal Pengiriman"]
+        C12["Kirim Ulang Bukti Sah / Selesaikan Selisih Dana"]
     end
 
-    %% Admin Swimlane
-    subgraph Lane_Admin ["Partisipan: Admin (Nabila Febriyani)"]
-        A1["Buka Menu 'Pembayaran' di Dashboard"]
-        A2["Periksa Detail Tagihan & Nama Pemesan"]
-        A3["Buka Aplikasi Mobile Banking / E-Wallet Butik"]
-        A4["Periksa Mutasi Rekening Masuk"]
-        A5{"Apakah Dana Masuk & Nominal Sesuai?"}
-        A6["Klik Tombol 'Verifikasi Pembayaran' (Sah)"]
-        A7["Klik Tombol 'Tolak Verifikasi' / Hubungi Pemesan via WA"]
-        A8["Florist Mulai Persiapan Bahan Bunga (Siap ke ST-06)"]
+    %% System Swimlane (Boundary Line)
+    subgraph Lane_System ["Partisipan: Sistem Web BLOOMÉ"]
+        S1["Hitung Subtotal Estimasi Harga Real-Time"]
+        S2["Sertakan Rincian Estimasi pada Parameter URL wa.me"]
+        S3["Arahkan Pelanggan ke WhatsApp<br>*Batas Sistem Web Berakhir di Sini*"]
+    end
+
+    %% WhatsApp & Owner Swimlane (Outside Web)
+    subgraph Lane_Owner ["Partisipan: WhatsApp & Pemilik Usaha (Nabila)"]
+        W1["Terima Pesan Pemesanan Terformat di WhatsApp"]
+        W2["Konfirmasi Ketersediaan Bahan Bunga & Jadwal Pengerjaan"]
+        W3["Kirim Rincian Tagihan Resmi & Rekening Bank / E-Wallet"]
+        W4["Sampaikan Aturan DP 50% & Waktu Pelunasan [Perlu Konfirmasi Owner]"]
+        W5["Terima Berkas Foto / Screenshot Bukti Transfer di Chat"]
+        W6["Buka Aplikasi Mobile Banking / E-Wallet Butik"]
+        W7["Periksa Riwayat Mutasi Dana Masuk di M-Banking"]
+        W8{"Apakah Dana Masuk & Nominal Sesuai?"}
+        W9["Kirim Pesan Pembayaran Belum Masuk / Nominal Kurang"]
+        W10["Kirim Pesan Konfirmasi: 'Pembayaran Sah / Lunas'"]
+        W11["Catat Jadwal Pengerjaan & Siapkan Bunga Segar di Butik"]
     end
 
     %% Final Nodes
@@ -67,81 +72,67 @@ flowchart TD
     EndRetry((◎))
 
     %% Connections across Swimlanes
+    C1 --> S1
     S1 --> S2
-    S2 --> C1
-    C1 --> C2
+    S2 --> S3
+    S3 --> C2
     C2 --> C3
-    C3 --> C4
+    C3 --> W1
+    
+    W1 --> W2
+    W2 --> W3
+    W3 --> W4
+    W4 --> C4
+    
     C4 --> C5
-    C5 --> S3
+    C5 --> C6
     
-    S3 --> S4
-    S4 --> S5
-    S4 --> S6
-    S5 --> C6
-    S6 --> A1
+    C6 -- "Opsi DP 50%" --> C7
+    C6 -- "Opsi Lunas 100%" --> C8
     
-    A1 --> A2
-    A2 --> A3
-    A3 --> A4
-    A4 --> A5
+    C7 --> C9
+    C8 --> C9
+    C9 --> C10
+    C10 --> W5
     
-    A5 -- "Ya (Sah & Sesuai)" --> A6
-    A6 --> S7
-    S7 --> S8
-    S8 --> A8
-    S8 --> C7
-    C7 --> EndSuccess
+    W5 --> W6
+    W6 --> W7
+    W7 --> W8
     
-    A5 -- "Tidak (Belum Masuk / Kurang)" --> A7
-    A7 --> S9
-    S9 --> S10
-    S10 --> C8
-    C8 --> EndRetry
+    W8 -- "Tidak Cocok / Belum Masuk" --> W9
+    W9 --> C12
+    C12 --> EndRetry
+    
+    W8 -- "Dana Masuk Sesuai" --> W10
+    W10 --> W11
+    W10 --> C11
+    C11 --> EndSuccess
 ```
 
 ---
 
-## 3. Analisis Jalur Aktivitas (*Path Analysis*)
+## 3. Penjelasan Keputusan Arsitektur & Operasional Pembayaran
 
-### 3.1 Jalur Utama (*Happy Path: Pembayaran Sah & Dikonfirmasi*)
-1. Pesanan berada dalam status `ST-03 Menunggu Pembayaran` (setelah checkout katalog disetujui atau harga buket custom disepakati).
-2. Pelanggan membuka halaman petunjuk bayar, menyalin nomor rekening bank resmi (BCA/BRI/Mandiri) atau nomor e-wallet (DANA/GoPay) atas nama pemilik usaha.
-3. Pelanggan melakukan transfer fisik melalui aplikasi perbankan peranti seluler (*mobile banking*) atau dompet digital.
-4. Pelanggan kembali ke halaman web dan menekan tombol *"Saya Sudah Melakukan Transfer"*.
-5. Sistem memperbarui status pesanan menjadi `ST-04 Menunggu Konfirmasi Pembayaran`, mencatat timestamp konfirmasi di tabel `payments`, dan mencatat riwayat audit di `order_status_histories`.
-6. Admin membuka menu *Manajemen Pembayaran* di dashboard, mencocokkan data tagihan dengan mutasi rekening m-banking resmi butik.
-7. Dana terbukti masuk dengan nominal yang cocok. Admin mengklik tombol *"Verifikasi Pembayaran"*.
-8. Sistem memperbarui status transaksi menjadi `ST-05 Pembayaran Dikonfirmasi` dan mengunci pencatatan audit verifikasi.
-9. Buket siap masuk ke tahap pengerjaan fisik oleh florist (`ST-06 Sedang Dibuat`).
+### 3.1 Peniadaan Payment Gateway di Web
+1. **Biaya & Kelayakan Skala Usaha:** Penggunaan payment gateway pihak ketiga (seperti Midtrans/Xendit) membebankan biaya transaksi tetap (*fixed fee*) per transaksi dan biaya penarikan berkala yang kurang efisien bagi butik artisan lokal beromzet UMKM di Samarinda.
+2. **Kesesuaian dengan Sifat Bunga Segar:** Transaksi bunga segar tidak dapat diproses secara *instant auto-capture*. Florist wajib memastikan bunga mawar atau aster segar masih tersedia di pendingin butik sebelum menerima uang pelanggan. Jika uang terlanjur ditarik otomatis oleh gateway sementara bunga habis, proses *refund* resmi gateway memakan waktu berhari-hari dan mengecewakan pembeli.
+3. **Kepercayaan Pelanggan Lokal:** Di Samarinda, pelanggan butik bunga personal terbiasa dan lebih merasa aman mentransfer langsung ke rekening bank lokal (BCA, BRI, Mandiri) atau dompet digital (DANA, GoPay) yang dipegang langsung oleh pemilik usaha.
 
-### 3.2 Jalur Alternatif: Penolakan Verifikasi (*Alternative Flow: Payment Rejection*)
-1. Admin memeriksa mutasi rekening, namun dana belum ditemukan masuk atau nominal transfer kurang dari total tagihan.
-2. Admin mengklik tombol *"Tolak Verifikasi"* dan dapat menyertakan catatan penjelasan (misal: *"Dana belum masuk mutasi bank, silakan periksa kembali bukti transfer"*).
-3. Sistem mengembalikan status pesanan ke `ST-03 Menunggu Pembayaran` agar pemesan dapat mengonfirmasi ulang.
-4. Admin dapat menghubungi nomor WhatsApp pemesan untuk konfirmasi personal secara persuasif.
+### 3.2 Penanganan Bukti Transfer Manual di WhatsApp
+1. **Verifikasi Humanis:** Pemilik usaha memeriksa mutasi rekening langsung melalui smartphone secara cepat tanpa birokrasi sistem.
+2. **Fleksibilitas Uang Muka (DP 50%):** Memungkinkan pelanggan membayar uang muka terlebih dahulu untuk mengunci tanggal pengiriman pada musim wisuda atau hari perayaan, dengan pelunasan dilakukan sebelum buket diantar `[Perlu Konfirmasi Owner]`.
+3. **Pemberian Tanda Terima:** Pemilik usaha dapat langsung memberikan konfirmasi penerimaan dana secara ramah melalui balasan chat WhatsApp.
 
 ---
 
-## 4. Kepatuhan Terhadap Aturan Bisnis & Arsitektur
+## 4. Kesimpulan & Rekomendasi
 
-Alur aktivitas ini menjamin penerapan aturan bisnis secara mutlak:
-- **BR-010 (Dukungan Metode Pembayaran):** Sistem membatasi opsi metode pembayaran pada transfer bank dan e-wallet resmi.
-- **BR-011 (Verifikasi Manual):** Penentuan keabsahan pembayaran murni wewenang admin; sistem tidak mengandalkan webhook otomatis payment gateway pihak ketiga.
-- **BR-012 (Ketentuan Pembayaran):** Admin memiliki fleksibilitas operasional dalam memvalidasi pelunasan penuh sebelum bunga segar dipotong.
-- **Integritas Relasional:** Setiap pencatatan pembayaran terikat kuat (*foreign key*) pada tabel `orders` dan perubahan status selalu menghasilkan entri riwayat kronologis di `order_status_histories`.
+### 4.1 Status Task ANA-005
+Task **ANA-005 (Activity Diagram Alur Pembayaran)** telah selesai diselaraskan:
+- Seluruh gambaran transaksi pembayaran di website, tabel `payments`, dan tombol verifikasi di web admin telah dieliminasi.
+- Alur pembayaran transfer manual, pengiriman bukti resi, dan verifikasi fisik di WhatsApp telah dimodelkan dengan batas sistem yang jelas.
+- Kriteria penyelesaian terpenuhi 100%.
 
----
-
-## 5. Kesimpulan & Rekomendasi
-
-### 5.1 Status Task ANA-005
-Task **ANA-005 (Activity Diagram pembayaran)** telah selesai dilaksanakan:
-- Diagram aktivitas alur pembayaran manual dan verifikasi mutasi berbasis swimlane (Customer, Sistem, Admin) telah dimodelkan menggunakan format visual Mermaid.
-- Penanganan alur utama verifikasi sah, penolakan mutasi tidak ditemukan, dan transisi status `ST-03 -> ST-04 -> ST-05` terpetakan lengkap.
-- Kriteria penyelesaian (*Definition of Done*) terpenuhi.
-
-### 5.2 Rekomendasi Langkah Berikutnya:
-Melanjutkan ke task pemodelan diagram aktivitas berikutnya pada sub-fase 5.2:
-- **`ANA-006 — Activity Diagram pembatalan.`**
-
+### 4.2 Rekomendasi Langkah Berikutnya:
+Melanjutkan ke pemodelan diagram aktivitas pembatalan pesanan via WhatsApp:
+- **`ANA-006 — Activity Diagram alur pengajuan & penanganan pembatalan via WhatsApp.`**

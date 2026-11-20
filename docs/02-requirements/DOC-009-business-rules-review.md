@@ -1,9 +1,10 @@
-# LAPORAN PENINJAUAN ATURAN BISNIS (BUSINESS RULES & WORKFLOW LOGIC REVIEW)
+# LAPORAN PENINJAUAN ATURAN BISNIS (BUSINESS RULES & WORKFLOW LOGIC REVIEW) (v1.1)
 ## BLOOMÉ — Flowers & Stories
 **Task ID:** DOC-009  
 **Fase:** Phase 1 — Project Initiation and Documentation (Sub-fase 4.2 Requirements Documentation)  
 **Penanggung Jawab:** Jayanti Firdasari (Project Manager & System Analyst)  
-**Tanggal Peninjauan:** 13 November 2026  
+**Tanggal Peninjauan Awal:** 13 November 2026  
+**Tanggal Revisi Penyelarasan:** 20 November 2026  
 **Status Task:** Completed (`[x]`)  
 **Dependensi:** DOC-008 — Meninjau non-functional requirements (Selesai)  
 
@@ -11,135 +12,110 @@
 
 ## 1. Ringkasan Eksekutif
 
-Peninjauan Aturan Bisnis (Task DOC-009) dilakukan untuk mengunci seluruh logika operasional, batasan hukum transaksi, kebijakan florist, serta matriks transisi status pesanan pada sistem informasi **BLOOMÉ — Flowers & Stories**.
+Peninjauan Aturan Bisnis (Task DOC-009) dilakukan untuk mengunci seluruh logika operasional, batasan hukum transaksi, kebijakan butik florist, serta alur pemesanan sistem informasi **BLOOMÉ — Flowers & Stories**.
 
-Hasil peninjauan mengonfirmasi validitas **20 Aturan Bisnis Wajib (BR-001 s/d BR-020)** dan **8 Siklus Status Pesanan (ST-01 s/d ST-08)**. Dokumen ini menjadi pedoman mutlak (*mandatory guardrails*) bagi pengembang backend (Elsa Futri) dan frontend (Riya Monika) agar tidak terjadi celah logika (*business logic flaws*) dalam proses checkout, penetapan harga custom, konfirmasi transfer manual, maupun pembatalan pesanan.
+Berdasarkan kesepakatan final baseline **v1.1**:
+> **"Website BLOOMÉ berfungsi sebagai katalog interaktif dan media konfigurasi personalisasi buket, sedangkan proses transaksi pemesanan, konfirmasi ketersediaan bahan, negosiasi harga, pembayaran, dan koordinasi pengiriman dilanjutkan secara langsung melalui WhatsApp."**
+
+Hasil peninjauan mengonfirmasi validitas **20 Aturan Bisnis Wajib (BR-001 s/d BR-020)**. Dokumen ini menjadi pedoman mutlak (*mandatory guardrails*) bagi pengembang backend (Elsa Futri) dan frontend (Riya Monika) agar tidak terjadi celah logika (*business logic flaws*) dalam penyusunan draf pesan WhatsApp, penentuan ketersediaan stok, konfigurasi variasi warna, item add-on, dan penanganan transaksi di luar web.
 
 ---
 
-## 2. Rincian & Evaluasi 20 Aturan Bisnis Wajib (Business Rules)
+## 2. Rincian & Evaluasi 20 Aturan Bisnis Wajib (Business Rules v1.1)
 
 Seluruh aturan bisnis dikelompokkan ke dalam 5 domain operasional:
 
-### 2.1 Domain Pengguna & Akun (User & Authentication)
-| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Backend |
+### 2.1 Domain Pengguna & Akses Sistem (User & Access Control)
+| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Sistem |
 |---|---|---|
-| **BR-001** | Pelanggan tidak diwajibkan registrasi atau login akun (*guest checkout*). | Tidak ada tabel/model `users` untuk pelanggan. Formulir pemesanan menampung identitas pemesan langsung ke entitas `customers`. |
-| **BR-002** | Hanya satu akun administrator yang digunakan pada tahap rilis awal. | Tabel `admins` di-seed dengan 1 akun kredensial pemilik usaha. Tidak ada modul manajemen multi-admin atau permission bertingkat. |
-| **BR-019** | Pengguna publik/pelanggan dilarang keras mengakses fungsi administratif. | Rute `/admin/*` diisolasi ketat menggunakan middleware `auth:admin`. Upaya akses ilegal menghasilkan pengalihan (*redirect*) ke login. |
+| **BR-001** | Pelanggan mengakses sistem web sebagai tamu (*guest user*) tanpa proses registrasi akun atau login. | Tidak ada tabel/model akun pelanggan di database web. Pelanggan dapat langsung menjelajahi katalog dan mengonfigurasi personalisasi secara bebas. |
+| **BR-002** | Sistem web hanya menggunakan 1 (satu) akun administrator yang memegang hak kelola penuh katalog dan konten etalase. | Tabel `admins` di-seed dengan 1 akun kredensial pemilik usaha (Nabila Febriyani). Tidak ada modul multi-role admin atau permission bertingkat. |
+| **BR-003** | Website tidak memproses transaksi checkout, tidak menampung pembayaran, dan tidak menyimpan data transaksi di basis data web. | Seluruh pemesanan diteruskan ke WhatsApp melalui tautan URL Scheme `https://wa.me/...`. Tidak ada tabel transaksi pesanan di database web. |
 
-### 2.2 Domain Katalog & Produk (Catalog & Product Management)
-| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Backend |
+### 2.2 Domain Katalog, Personalisasi & Add-on (Catalog & Personalization)
+| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Sistem |
 |---|---|---|
-| **BR-004** | Produk diorganisasikan ke dalam kategori yang dikelola oleh admin. | Tabel `products` berelasi *foreign key* `category_id` ke tabel `categories`. |
-| **BR-005** | Harga produk katalog dikelola dan ditentukan secara tetap oleh admin. | Nilai numerik integer (IDR). Perubahan harga katalog tidak boleh mengubah harga pesanan lama yang sudah terbit. |
-| **BR-020** | Data historis pesanan wajib terlindungi jika data produk diubah atau dihapus. | Tabel `order_details` menyimpan *historical snapshot* (kolom `product_name` dan `price` saat transaksi dibuat), bukan sekadar foreign key. |
+| **BR-004** | Produk wajib dikelompokkan ke dalam kategori yang aktif dan terdaftar di basis data. | Tabel `products` berelasi *foreign key* `category_id` ke tabel `categories`. |
+| **BR-005** | Harga dasar produk buket dan harga item add-on dikelola oleh admin dan dinyatakan dalam mata uang Rupiah. | Format numerik desimal/integer (IDR). Perubahan harga dikelola admin melalui panel dashboard **[Perlu Konfirmasi Owner]**. |
+| **BR-006** | Variasi personalisasi (wrapping, pita, dll.) dan item add-on dapat dikonfigurasikan per produk atau berlaku secara umum. | Relasi many-to-many melalui tabel pivot `product_personalization_options` dan `product_add_ons`. |
+| **BR-007** | Total biaya yang dihitung di web merupakan **estimasi harga produk & variasi**; konfirmasi harga akhir dan ongkos kirim Samarinda disepakati melalui WhatsApp. | Kartu ringkasan pesanan wajib menampilkan teks disclaimer transparan kepada pelanggan. |
 
-### 2.3 Domain Personalisasi Buket Custom (Custom Bouquet Ordering)
-| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Backend |
+### 2.3 Domain Pengalihan WhatsApp & Konsultasi Custom (WhatsApp Dispatch)
+| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Sistem |
 |---|---|---|
-| **BR-006** | Harga buket custom ditentukan secara manual oleh admin, tanpa kalkulator otomatis. | Controller tidak menjalankan algoritma harga. Kolom `proposed_price` diisi secara manual oleh pemilik usaha melalui dashboard. |
-| **BR-007** | Pesanan custom wajib mendapat persetujuan pelanggan atas harga usulan sebelum lanjut ke pembayaran. | Status pesanan tidak dapat bergeser ke *Menunggu Pembayaran* sebelum aksi *Approve Price* dieksekusi oleh pelanggan. |
-| **BR-008** | Usulan harga custom yang ditolak dapat direvisi melalui komunikasi admin atau dibatalkan. | Jika ditolak (*Reject*), status tiket custom mencatat penolakan dan admin dapat mengajukan revisi harga atau membatalkan pesanan. |
-| **BR-009** | Perubahan spesifikasi custom setelah diajukan wajib dilakukan melalui kontak admin. | Pelanggan tidak memiliki akses langsung untuk mengedit rincian tiket custom yang sudah terkirim ke basis data. |
-| **BR-017** | Gambar referensi kustom wajib berformat JPG, JPEG, atau PNG. | Validasi form request: `'reference_images.*' => 'image|mimes:jpg,jpeg,png'`. |
-| **BR-018** | Ukuran setiap berkas gambar referensi tidak boleh melebihi 5 MB. | Validasi form request: `'reference_images.*' => 'max:5120'`. |
+| **BR-008** | Teks pesan WhatsApp disusun otomatis oleh sistem web menggunakan pengkodean URL standar (`wa.me` query string). | Menggunakan helper encoding URL (`encodeURIComponent` di JS / `urlencode` di PHP) dengan format teks terstandarisasi. |
+| **BR-009** | Pelanggan harus menekan tombol kirim secara manual di aplikasi WhatsApp untuk menyelesaikan inisiasi pemesanan. | Website tidak memiliki kuasa mengirimkan pesan otomatis tanpa persetujuan tindakan sadar dari pelanggan. |
+| **BR-010** | Permintaan desain buket custom bebas di luar katalog diarahkan melalui tautan konsultasi chat WhatsApp langsung ke pemilik. | Disediakan tombol CTA khusus di halaman Custom Bouquet yang membuka WhatsApp dengan draf pesan pembuka konsultasi. |
 
-### 2.4 Domain Pembayaran Manual (Manual Payment Processing)
-| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Backend |
+### 2.4 Domain Pembayaran & Kebijakan Transaksi WhatsApp (Off-Web Payment)
+| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Sistem |
 |---|---|---|
-| **BR-010** | Metode pembayaran yang didukung adalah transfer bank dan e-wallet. | Menampilkan rekening bank resmi dan dompet digital pemilik usaha. Tidak menggunakan API payment gateway pihak ketiga. |
-| **BR-011** | Konfirmasi pembayaran dilakukan secara verifikasi manual oleh admin. | Admin memeriksa mutasi rekening fisik/aplikasi, lalu menekan tombol konfirmasi di dashboard untuk mengubah status menjadi *Paid*. |
-| **BR-012** | Syarat dan ketentuan pembayaran ditentukan oleh admin. | Admin dapat menentukan pembayaran lunas penuh (*full payment*) atau kebijakan DP sesuai jenis pesanan. |
+| **BR-011** | Pembayaran dilakukan via transfer bank atau e-wallet melalui informasi nomor rekening yang dikirimkan pemilik via WhatsApp. | Rincian rekening BCA/BRI atau akun e-wallet (DANA, GoPay) diinformasikan langsung oleh pemilik usaha di obrolan WhatsApp **[Perlu Konfirmasi Owner]**. |
+| **BR-012** | Bukti transfer pembayaran dikirimkan oleh pelanggan melalui percakapan WhatsApp dan diverifikasi langsung oleh pemilik. | Tidak ada formulir unggah bukti transfer di website. Verifikasi mutasi dilakukan pemilik melalui aplikasi perbankan miliknya. |
+| **BR-013** | Skema uang muka (DP) 50% diperbolehkan untuk memulai perangkaian buket, dengan pelunasan sesuai kesepakatan. | Kebijakan DP dan batas waktu pelunasan disepakati bersama pemilik usaha di WhatsApp **[Perlu Konfirmasi Owner]**. |
+| **BR-014** | Perubahan spesifikasi pesanan atau negosiasi harga dilakukan secara langsung melalui percakapan WhatsApp. | Website tidak memfasilitasi tawar-menawar harga atau revisi data setelah pesan WhatsApp terkirim. |
 
-### 2.5 Domain Pembatalan & Siklus Status (Order Lifecycle & Cancellation)
-| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Backend |
+### 2.5 Domain Pengantaran, Pembatalan & Pemeliharaan (Delivery, Cancellation & Data)
+| Kode | Pernyataan Aturan Bisnis | Implikasi Teknis & Validasi Sistem |
 |---|---|---|
-| **BR-003** | Setiap pesanan wajib memiliki data identitas pemesan dan kontak yang valid. | Validasi ketat nama lengkap pemesan, nomor telepon/WhatsApp aktif, dan alamat pengiriman/penerima. |
-| **BR-013** | Pelanggan hanya dapat mengajukan permohonan pembatalan sebelum pesanan diproses. | Pengajuan pembatalan hanya dapat dilakukan saat status masih *Menunggu Peninjauan*, *Menunggu Persetujuan Harga*, atau *Menunggu Pembayaran*. |
-| **BR-014** | Pembatalan pesanan memerlukan persetujuan dari admin. | Status tidak langsung berubah menjadi *Dibatalkan*; admin meninjau alasan pembatalan sebelum menyetujui (*Approve*) atau menolak (*Reject*). |
-| **BR-015** | Status pesanan diperbarui secara bertahap oleh admin sesuai progres pengerjaan buket. | Transisi status wajib mengikuti mesin status (*State Machine*) yang sah. |
-| **BR-016** | Perkembangan pengerjaan pesanan dikomunikasikan secara berkala oleh admin. | Admin memperbarui status di web dan dapat memberikan catatan progres kerja. |
+| **BR-015** | Layanan pemesanan buket difokuskan untuk pengantaran langsung (*delivery*) area Samarinda. | Koordinasi alamat, jadwal pengantaran, dan ongkos kirim disepakati di WhatsApp; bukan sistem ambil sendiri (*pickup*) **[Perlu Konfirmasi Owner]**. |
+| **BR-016** | Pembatalan pesanan wajib dibicarakan via WhatsApp sebelum buket mulai dirangkai dan harus disertai alasan yang jelas. | Website tidak mengelola pengajuan pembatalan mandiri. Pembatalan hanya sah jika disetujui langsung oleh pemilik toko di WhatsApp. |
+| **BR-017** | Kebijakan pengembalian dana (*refund policy*) belum ditetapkan secara resmi dan menunggu keputusan pemilik. | Sistem dan dokumentasi dilarang mengarang persentase atau mekanisme refund sebelum disetujui sponsor **[Perlu Konfirmasi Owner]**. |
+| **BR-018** | Nomor tujuan WhatsApp resmi dan parameter kontak toko dikelola secara terpusat pada tabel `business_settings`. | Perubahan nomor WhatsApp di dashboard admin langsung memperbarui link tujuan pemesanan di seluruh website secara otomatis. |
+| **BR-019** | Berkas foto produk yang diunggah admin wajib berformat JPG, JPEG, PNG, atau WebP dengan batas ukuran yang divalidasi server. | Validasi form request di sisi server dengan batas maksimal ukuran berkas **[Perlu Konfirmasi Owner]** (standar: 2–5 MB). |
+| **BR-020** | Kategori tidak dapat dihapus apabila masih memiliki produk yang berelasi aktif di dalamnya (*foreign key restrict*). | Penerapan integritas referensial InnoDB untuk mencegah rusaknya relasi katalog etalase. |
 
 ---
 
-## 3. Spesifikasi Siklus 8 Status Pesanan & Validasi Mesin Status (*State Machine*)
+## 3. Alur Operasional Transaksi di Luar Website (Off-Web Process Workflow)
 
-Sistem menerapkan **8 Status Baku (ST-01 s/d ST-08)**:
-
-| Kode Status | Label Status | Deskripsi Operasional |
-|---|---|---|
-| **ST-01** | `Menunggu Peninjauan Admin` | Pesanan baru (katalog/custom) telah diterima sistem dan menunggu ditinjau oleh admin. |
-| **ST-02** | `Menunggu Persetujuan Harga` | Admin telah menetapkan harga buket custom; menunggu persetujuan dari pemesan. |
-| **ST-03** | `Menunggu Pembayaran` | Pesanan siap dibayar (katalog disetujui atau custom telah di-approve harganya). |
-| **ST-04** | `Menunggu Konfirmasi Pembayaran` | Pelanggan telah menyatakan transfer; menunggu verifikasi manual mutasi oleh admin. |
-| **ST-05** | `Pembayaran Dikonfirmasi` | Admin telah memvalidasi keabsahan dana yang masuk (*Lunas / Sah*). |
-| **ST-06** | `Sedang Dibuat` | Perangkai bunga (*florist*) sedang merangkai buket fisik sesuai spesifikasi. |
-| **ST-07** | `Selesai` | Buket telah selesai dibuat dan diserahkan / dikirimkan ke penerima (*Completed*). |
-| **ST-08** | `Dibatalkan` | Pesanan dibatalkan secara sah melalui persetujuan pembatalan admin (*Cancelled*). |
-
----
-
-## 4. Diagram Alur Transisi Status Pesanan
+Siklus transaksi yang berlangsung setelah pesan WhatsApp diterima oleh pemilik usaha diatur melalui alur operasional berikut:
 
 ```mermaid
-stateDiagram-v2
-    [*] --> ST01: Pesanan Dibuat Pelanggan
+flowchart TD
+    Start([Pelanggan Mengirim Pesan Pemesanan di WhatsApp]) --> CheckSlot{Slot & Bahan Tersedia?}
     
-    note right of ST01: ST-01: Menunggu Peninjauan Admin
+    CheckSlot -- Penuh / Habis --> AltOffer[Pemilik Tawarkan Alternatif Tanggal / Bunga Pengganti]
+    AltOffer --> CustChoice{Pelanggan Setuju?}
+    CustChoice -- Tidak --> OrderDrop([Pemesanan Dibatalkan Ramah])
     
-    ST01 --> ST02: Admin Input Harga Custom (Khusus Custom)
-    ST01 --> ST03: Admin Menyetujui Pesanan (Khusus Katalog)
+    CheckSlot -- Tersedia --> ConfirmDeal[Pemilik Konfirmasi Rincian, Total Harga & Ongkir Samarinda]
+    CustChoice -- Ya --> ConfirmDeal
     
-    ST02 --> ST03: Pelanggan Setujui Usulan Harga
-    ST02 --> ST08: Pelanggan Tolak Harga & Batal
+    ConfirmDeal --> SendBankInfo[Pemilik Kirimkan Nomor Rekening Bank / E-Wallet Resmi]
+    SendBankInfo --> CustTransfer[Pelanggan Mentransfer Pembayaran DP 50% atau Lunas]
+    CustTransfer --> SendReceipt[Pelanggan Mengirimkan Foto Bukti Transfer di Chat WA]
+    SendReceipt --> OwnerVerify[Pemilik Memeriksa Mutasi di Aplikasi M-Banking Toko]
     
-    ST03 --> ST04: Pelanggan Konfirmasi Bayar
-    ST04 --> ST05: Admin Verifikasi Pembayaran Sah
-    ST04 --> ST03: Bukti Bayar Tidak Sah / Ditolak
+    OwnerVerify --> MutationOK{Dana Masuk & Sesuai?}
+    MutationOK -- Belum --> RecheckProof[Konfirmasi Ulang / Minta Tunggu Mutasi Bank]
+    RecheckProof --> SendReceipt
     
-    ST05 --> ST06: Admin Mulai Rangkai Buket
-    ST06 --> ST07: Buket Siap & Diterima Pelanggan
-    
-    ST07 --> [*]: Transaksi Selesai
-    
-    ST01 --> ST08: Pengajuan Batal Disetujui
-    ST03 --> ST08: Pengajuan Batal Disetujui
-    
-    ST08 --> [*]: Transaksi Selesai (Batal)
+    MutationOK -- Sah & Valid --> Crafting[Florist BLOOMÉ Merangkai Buket Fisik]
+    Crafting --> Delivery[Pengantaran Kurir ke Alamat Penerima di Samarinda]
+    Delivery --> Finished([Buket Diterima Penerima — Pemesanan Selesai])
 ```
 
 ---
 
-## 5. Matriks Transisi Status yang Sah (*Valid Transition Matrix*)
+## 4. Evaluasi Konsistensi Logika terhadap Arsitektur Sistem
 
-Untuk mencegah perpindahan status ilegal di level backend, dibuat tabel aturan transisi berikut:
+Peninjauan memvalidasi bahwa seluruh aturan bisnis selaras 100% dengan rancangan sistem v1.1:
 
-| Status Asal | Transisi Status Tujuan yang Diizinkan | Transisi Terlarang (Illegal State Transition) |
-|---|---|---|
-| **ST-01 (Menunggu Peninjauan)** | ST-02 (Custom), ST-03 (Katalog), ST-08 (Batal) | Langsung ke ST-04, ST-05, ST-06, ST-07 |
-| **ST-02 (Persetujuan Harga)** | ST-03 (Setuju), ST-08 (Tolak/Batal) | Langsung ke ST-04, ST-05, ST-06, ST-07 |
-| **ST-03 (Menunggu Pembayaran)** | ST-04 (Konfirmasi Bayar), ST-08 (Batal) | Langsung ke ST-05, ST-06, ST-07 |
-| **ST-04 (Menunggu Konfirmasi)** | ST-05 (Dikonfirmasi), ST-03 (Bukti Gagal) | Langsung ke ST-06, ST-07, ST-08 |
-| **ST-05 (Pembayaran Dikonfirmasi)**| ST-06 (Sedang Dibuat) | Mundur ke ST-01..04, atau langsung ST-07 |
-| **ST-06 (Sedang Dibuat)** | ST-07 (Selesai) | Mundur ke status pembayaran, atau ST-08 |
-| **ST-07 (Selesai)** | *Terminal State* (Tidak ada transisi lanjutan) | Semua perubahan status setelah selesai dilarang |
-| **ST-08 (Dibatalkan)** | *Terminal State* (Tidak ada transisi lanjutan) | Semua perubahan status setelah dibatalkan dilarang |
-
-> **Audit Trail:** Setiap perpindahan status yang sah wajib dicatat pada tabel `order_status_histories` dengan mencatat `order_id`, `status_code`, `changed_by_admin_id`, `notes`, dan timestamp `created_at`.
+1. **Eliminasi Mesin Status di Web:** Penanganan status pesanan tidak lagi dikelola melalui tabel `order_status_histories` di database web, melainkan dijalankan secara fleksibel oleh pemilik toko melalui chat WhatsApp, mengeliminasi beban pemeliharaan sistem backend yang tidak perlu.
+2. **Kemandirian Pengelolaan Nomor Kontak (BR-018):** Tabel `business_settings` memberikan fleksibilitas penuh bagi Nabila Febriyani untuk mengganti nomor WhatsApp toko sewaktu-waktu tanpa harus memodifikasi kode sumber aplikasi.
+3. **Perlindungan Terhadap Klaim Palsu:** Sistem web dilarang menampilkan klaim konfirmasi sepihak seperti *"Pesanan Anda Telah Berhasil Diterima Toko"* saat tombol diklik. Web hanya mengonfirmasi bahwa draf pesan telah disusun dan dialihkan ke WhatsApp.
 
 ---
 
-## 6. Kesimpulan & Rekomendasi
+## 5. Kesimpulan & Rekomendasi
 
-### 6.1 Status Task DOC-009
-Task **DOC-009 (Meninjau business rules)** telah selesai dilaksanakan:
-- 20 Aturan Bisnis Wajib telah ditinjau dan diterjemahkan ke dalam aturan validasi backend konkret.
-- Mesin transisi 8 status pesanan beserta matriks transisi sah telah terkunci rapat.
-- Proteksi data historis produk (BR-020) telah terdefinisi pada level basis data.
-- Kriteria penyelesaian terpenuhi.
+### 5.1 Status Task DOC-009
+Task **DOC-009 (Meninjau business rules)** telah selesai diselaraskan ke baseline **v1.1**:
+- 20 Aturan Bisnis Wajib (BR-001 s/d BR-020) telah didefinisikan secara tegas, konsisten, dan bebas dari konsep transaksi web lama.
+- Batasan tanggung jawab antara website dan komunikasi WhatsApp telah terpetakan jelas.
+- Kriteria penyelesaian (*Definition of Done*) terpenuhi 100%.
 
-### 6.2 Rekomendasi Langkah Berikutnya:
-Melanjutkan ke task penutup sub-fase 4.2:
+### 5.2 Rekomendasi Langkah Berikutnya:
+Melanjutkan ke task peninjauan berikutnya pada sub-fase 4.2:
 - **`DOC-010 — Meninjau acceptance criteria.`**
-
