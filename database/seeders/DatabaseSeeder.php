@@ -8,15 +8,16 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     * Task ID: DB-024 — Database Master Seeder Orchestrator
+     * Sesuai Dokumen Spesifikasi Basis Data v1.1 (Bagian 7)
      */
     public function run(): void
     {
         $this->call([
             AdminSeeder::class,
             CategorySeeder::class,
-            ProductSeeder::class,
+            PersonalizationSeeder::class,
+            AddOnSeeder::class,
+            BusinessSettingSeeder::class,
         ]);
     }
 }
-

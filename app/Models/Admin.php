@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Admin extends Authenticatable
 {
@@ -26,10 +25,4 @@ class Admin extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
-
-    public function statusHistories(): HasMany
-    {
-        return $this->hasMany(OrderStatusHistory::class, 'admin_id');
-    }
 }
-

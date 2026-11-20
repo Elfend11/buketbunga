@@ -3,49 +3,48 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use App\Models\Category;
 
 class CategorySeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * Task ID: DB-024 — Category Master Seeder
+     * Sesuai Dokumen Spesifikasi Basis Data v1.1 (Bagian 7)
      */
     public function run(): void
     {
         $categories = [
             [
-                'name' => 'Buket Bunga Segar',
-                'description' => 'Rangkaian bunga potong segar premium seperti mawar, lily, dan baby\'s breath yang dirangkai segar di Samarinda.',
+                'name' => 'Buket Bunga',
+                'slug' => 'buket-bunga',
+                'description' => 'Koleksi buket bunga segar dan bunga artificial berkualitas tinggi untuk berbagai momen istimewa.',
+                'is_active' => true,
             ],
             [
-                'name' => 'Buket Bunga Kering & Artificial',
-                'description' => 'Buket bunga preserved tahan bertahun-tahun yang abadi untuk momen wisuda dan perayaan khusus.',
+                'name' => 'Buket Uang',
+                'slug' => 'buket-uang',
+                'description' => 'Rangkaian buket uang asli dengan kertas pembungkus cellophane elegan bernilai estetika tinggi.',
+                'is_active' => true,
             ],
             [
-                'name' => 'Buket Uang (Money Bouquet)',
-                'description' => 'Rangkaian buket uang asli bernilai estetika tinggi dengan kertas wrapping cellophane elegan.',
+                'name' => 'Buket Snack',
+                'slug' => 'buket-snack',
+                'description' => 'Buket kreasi makanan ringan, permen, dan cokelat artisan favorit pilihan.',
+                'is_active' => true,
             ],
             [
-                'name' => 'Buket Snack & Cokelat',
-                'description' => 'Hadiah buket manis berisi kombinasi cokelat artisan dan camilan favorit.',
-            ],
-            [
-                'name' => 'Buket Boneka & Wisuda',
-                'description' => 'Buket perayaan wisuda lengkap dengan boneka toga kelulusan dan selempang nama kustom.',
+                'name' => 'Buket Boneka',
+                'slug' => 'buket-boneka',
+                'description' => 'Buket boneka wisuda, ulang tahun, dan karakter spesial untuk hadiah kelulusan atau perayaan.',
+                'is_active' => true,
             ],
         ];
 
         foreach ($categories as $cat) {
             Category::updateOrCreate(
-                ['slug' => Str::slug($cat['name'])],
-                [
-                    'name' => $cat['name'],
-                    'description' => $cat['description'],
-                ]
+                ['slug' => $cat['slug']],
+                $cat
             );
         }
     }
 }
-

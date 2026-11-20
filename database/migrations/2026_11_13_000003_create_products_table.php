@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * Task ID: DB-013 — Migration Products
+     * Task ID: DB-013 — Migration Products (v1.1)
      */
     public function up(): void
     {
@@ -17,13 +17,13 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories')->onDelete('restrict');
             $table->string('name', 150);
             $table->string('slug', 180)->unique();
-            $table->decimal('price', 12, 2);
-            $table->text('description');
-            $table->string('image_path', 255);
-            $table->boolean('is_available')->default(true);
+            $table->decimal('base_price', 12, 2);
+            $table->text('description')->nullable();
+            $table->string('main_image', 255)->nullable();
+            $table->boolean('is_available')->default(true)->index();
             $table->timestamps();
 
-            // Composite Index untuk optimasi kueri katalog etalase (DB-008)
+            // Composite Index untuk optimasi kueri katalog etalase (DB-008 / Kamus Data v1.1)
             $table->index(['is_available', 'category_id']);
         });
     }
@@ -36,4 +36,3 @@ return new class extends Migration
         Schema::dropIfExists('products');
     }
 };
-

@@ -13,11 +13,20 @@ class Category extends Model
         'name',
         'slug',
         'description',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'category_id');
     }
-}
 
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+}

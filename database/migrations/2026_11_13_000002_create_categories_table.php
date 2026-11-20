@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     * Task ID: DB-012 — Migration Categories
+     * Task ID: DB-012 — Migration Categories (v1.1)
      */
     public function up(): void
     {
@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name', 100)->unique();
             $table->string('slug', 120)->unique();
             $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
         });
     }
@@ -29,4 +30,3 @@ return new class extends Migration
         Schema::dropIfExists('categories');
     }
 };
-
