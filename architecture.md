@@ -33,7 +33,7 @@ Sistem dibangun menggunakan pendekatan **Monolithic Modern** berbasis framework 
 |---|---|
 | **Metodologi Pengembangan** | Waterfall (Analisis -> Desain -> Implementasi -> Pengujian -> Deployment). |
 | **Pola Arsitektur** | Three-Layer Architecture (Presentation, Application, Data Layer). |
-| **Backend Framework** | Laravel 10/11 (PHP 8.2+). |
+| **Backend Framework** | Laravel 13.43.0 (PHP 8.5.5; constraint Composer `^8.3`). |
 | **Frontend Stack** | Laravel Blade Templates, Tailwind CSS / Vanilla CSS, JavaScript, Vite Asset Bundler. |
 | **Database Management** | MySQL 8.0+ (Storage Engine: InnoDB, Charset: `utf8mb4_unicode_ci`). |
 | **Object-Relational Mapping** | Eloquent ORM & Laravel Database Migrations. |
@@ -116,7 +116,7 @@ flowchart LR
     WhatsAppApp["Aplikasi WhatsApp<br>(Ponsel Pelanggan)"]
     OwnerWhatsApp["WhatsApp Pemilik Usaha<br>(Nabila Febriyani)"]
 
-    subgraph WebServer ["Web Server Environment (Apache / Nginx + PHP 8.2+)"]
+    subgraph WebServer ["Web Server Environment (Apache / Nginx + PHP 8.5.5)"]
         Router["HTTP Router & Middleware"]
         
         subgraph LaravelApp ["Aplikasi Laravel BLOOMÉ"]

@@ -17,7 +17,7 @@ Sesuai konsep sistem terkini:
 1. **Client Tier:** Mengakomodasi akses publik tanpa akun (*guest*) bagi pelanggan melalui perangkat seluler dan desktop, serta antarmuka back-office untuk satu akun admin pemilik usaha (Nabila Febriyani).
 2. **Network & Perimeter Tier:** Mengamankan kanal transmisi data menggunakan enkripsi wajib HTTPS (TLS 1.3 / Port 443).
 3. **Web Server & Runtime Tier:** Pemanfaatan Nginx/Apache untuk penyajian aset statis berkinerja tinggi serta penerusan request dinamis ke worker pool PHP-FPM 8.2+.
-4. **Application Core Monolith:** Arsitektur monolitik modern berbasis Laravel 10/11 yang mengintegrasikan modul katalog, modul personalisasi interaktif, dan generator tautan WhatsApp.
+4. **Application Core Monolith:** Arsitektur monolitik modern berbasis Laravel 13.43.0 (PHP 8.5.5) yang mengintegrasikan modul katalog, modul personalisasi interaktif, dan generator tautan WhatsApp.
 5. **Data & Storage Tier:** Persistensi relasional pada MySQL 8.0+ (InnoDB Engine) dan penyimpanan foto produk buket resmi di disk storage lokal.
 6. **External Integration Boundary (WhatsApp Hand-off):** Penegasan model tanpa payment gateway (*gateway-less*) dan tanpa bot otomatisasi (*bot-less*), di mana transaksi, pembayaran m-banking, dan koordinasi pengiriman delivery berlangsung langsung di ruang obrolan WhatsApp.
 
@@ -153,7 +153,7 @@ flowchart TB
 - **Nginx / Apache:**
   - Melayani aset CSS, JavaScript terkompilasi Vite, dan berkas foto produk secara langsung dari symlink `public/storage` tanpa membebani thread PHP.
   - Berfungsi sebagai reverse proxy yang meneruskan seluruh permintaan dinamis ke soket FastCGI PHP-FPM.
-- **PHP-FPM (PHP 8.2+):**
+- **PHP-FPM (PHP 8.5.5):**
   - Mengelola worker pool proses PHP untuk mengeksekusi kernel Laravel secara efisien dan terisolasi.
 
 ### 3.4 Application Core Tier (Monolithic Laravel Application)

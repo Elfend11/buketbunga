@@ -9,7 +9,7 @@
 - **Lokasi Usaha:** Jalan Cipto Mangunkusumo, Simpang Tiga, Loa Janan Ilir, Samarinda
 - **Metodologi Pengembangan:** Waterfall
 - **Arsitektur Sistem:** Three-Layer Architecture (Presentation, Application, Data Layer)
-- **Teknologi Utama:** Laravel (PHP 8.2+), MySQL 8.0+, Blade Templating, Vite, Vanilla JavaScript / Tailwind CSS
+- **Teknologi Utama:** Laravel 13.43.0 (PHP 8.5.5; Composer constraint `^8.3`), MySQL 8.0+, Blade Templating, Vite, Vanilla JavaScript / Tailwind CSS
 - **Periode Pelaksanaan:** 13 Oktober – 30 November 2026 (7 Minggu)
 
 ### 1.1 Konsep Sistem Terbaru (Revisi v1.1)

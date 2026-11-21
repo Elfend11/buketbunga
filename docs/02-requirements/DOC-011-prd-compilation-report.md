@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Jayanti Firdasari (Project Manager & System Analyst)  
 **Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026 — Penyelarasan Konsep v1.1)  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [prd.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/prd.md) (Versi 1.1 - Official Product Baseline)  
+**Dokumen Hasil:** [prd.md](../../prd.md) (Versi 1.1 - Official Product Baseline)
 
 ---
 
@@ -52,7 +52,7 @@ Penyusunan `prd.md` mencakup seluruh aspek produk esensial:
 
 ### 3.1 Status Task DOC-011
 Task **DOC-011 (Menyusun prd.md)** telah selesai dilaksanakan:
-- Dokumen master [prd.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/prd.md) telah diselaraskan penuh dengan konsep website katalog & media personalisasi buket bunga dengan pemesanan via WhatsApp.
+- Dokumen master [prd.md](../../prd.md) telah diselaraskan penuh dengan konsep website katalog & media personalisasi buket bunga dengan pemesanan via WhatsApp.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi 100%.
 
 ### 3.2 Rekomendasi Langkah Berikutnya:

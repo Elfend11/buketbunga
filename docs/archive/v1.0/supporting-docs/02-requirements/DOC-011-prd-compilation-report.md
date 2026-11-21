@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Jayanti Firdasari (Project Manager & System Analyst)  
 **Tanggal Penyusunan:** 13 November 2026  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [prd.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/prd.md) (Versi 1.0 - Official Product Baseline)  
+**Dokumen Hasil:** [prd.md](../../prd.md) (Versi 1.0 - Official Product Baseline)  
 
 ---
 
@@ -48,7 +48,7 @@ Penyusunan `prd.md` mencakup seluruh aspek produk esensial:
 
 ### 3.1 Status Task DOC-011
 Task **DOC-011 (Menyusun prd.md)** telah selesai dilaksanakan:
-- File [prd.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/prd.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria PRD profesional.
+- File [prd.md](../../prd.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria PRD profesional.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 3.2 Rekomendasi Langkah Berikutnya:

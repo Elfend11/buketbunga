@@ -13,7 +13,7 @@
 
 Penetapan Three-Layer Architecture (Task ARC-001) dilakukan untuk merumuskan secara tegas dan mengikat pembagian batas tanggung jawab komputasi (*Separation of Concerns - SoC*) dalam pengembangan website **BLOOMÉ — Flowers & Stories**. 
 
-Penerapan pola arsitektur tiga lapis (*Three-Layer Architecture Pattern*) pada ekosistem **Laravel 10/11 (PHP 8.2+)** dan **MySQL 8.0+** diselaraskan dengan konsep arsitektur terkini:
+Penerapan pola arsitektur tiga lapis (*Three-Layer Architecture Pattern*) pada ekosistem **Laravel 13.43.0 (PHP 8.5.5; Composer constraint `^8.3`)** dan **MySQL 8.0+** diselaraskan dengan konsep arsitektur terkini:
 1. **Hakikat Sistem:** Website bertindak sebagai **katalog interaktif dan media personalisasi buket** yang menghubungkan eksplorasi pelanggan secara langsung ke saluran **WhatsApp resmi butik**.
 2. **Peniadaan Transaksi di Website (*Zero-Checkout Architecture*):** Website tidak menyediakan keranjang belanja checkout, tidak menyimpan rekaman transaksi di basis data, dan tidak mengelola pembayaran online. Transaksi, pembayaran manual m-banking, dan konfirmasi pengiriman diselesaikan langsung via WhatsApp.
 3. **Pemisahan Lapisan yang Bersih (*Clean Layer Boundaries*):**

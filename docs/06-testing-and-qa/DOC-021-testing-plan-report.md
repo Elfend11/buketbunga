@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Jayanti Firdasari (Lead QA & PM) didukung Elsa Futri & Riya Monika  
 **Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026)  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [testing-plan.md](file:///c:/Users/jayan/Documents/buketbunga/buketbunga/testing-plan.md) (Versi 1.1 — Penyelarasan Paradigma WhatsApp Hand-off & Zero-Checkout)  
+**Dokumen Hasil:** [testing-plan.md](../../testing-plan.md) (Versi 1.1 — Penyelarasan Paradigma WhatsApp Hand-off & Zero-Checkout)
 
 ---
 

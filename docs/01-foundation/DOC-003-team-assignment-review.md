@@ -57,7 +57,7 @@ graph TD
 
 ### 2.3 Elsa Futri — Backend Developer & Database Administrator
 - **Tanggung Jawab Utama:**
-  - Perancangan arsitektur teknis sistem (`architecture.md`) berbasis Three-Layer Architecture pada framework Laravel (PHP 8.2+).
+  - Perancangan arsitektur teknis sistem (`architecture.md`) berbasis Three-Layer Architecture pada Laravel 13.43.0 dan PHP 8.5.5.
   - Perancangan skema basis data 10 entitas relasional terpadu (`database-design.md`, ERD, normalisasi 3NF, data dictionary).
   - Penyiapan proyek Laravel, konfigurasi `.env`, pembuatan 10 file migrasi database, Eloquent models, dan seeders awal.
   - Pengembangan business logic Laravel: HTTP controllers, form request validation, middleware otentikasi admin (`auth:admin`), dan proteksi CSRF.

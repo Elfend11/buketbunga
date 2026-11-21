@@ -29,66 +29,39 @@ Dokumentasi BLOOMÉ diorganisasikan ke dalam hierarki berkas terstandarisasi seb
 
 ```
 buketbunga/
-├── prompt.md                               # Master Prompt & Directive Revisi Menyeluruh v1.1
-├── requirement.md                          # Master Software Requirements Specification (SRS) v1.1
-├── prd.md                                  # Master Product Requirements Document (PRD) v1.1
-├── architecture.md                         # Master System Architecture Document (SAD) v1.1
-├── database-design.md                      # Master Database Design & Data Dictionary (10 Tabel) v1.1
-├── design-system.md                        # Master Design System & UI Components v1.1
-├── user-flow.md                            # Master User Flow & Navigasi WhatsApp v1.1
-├── implementation-plan.md                  # Master Technical Implementation Plan & Roadmap v1.1
-├── task.md                                 # Master Project Task Management & Checklist v1.1
-├── testing-plan.md                         # Master Software Testing Plan & QA Strategy v1.1
-│
-├── backup-v1.0/                            # Arsip Cadangan Utuh Dokumentasi Baseline Awal v1.0
-│
-└── docs/                                   # Direktori Laporan Analisis & Artefak Pendukung
-    ├── 01-foundation/                      # Deliverable Inisiasi & Fondasi Proyek
-    │   ├── DOC-001-project-charter-review.md
-    │   ├── DOC-002-project-scope-review.md
-    │   ├── DOC-003-team-assignment-review.md
-    │   ├── DOC-004-project-schedule-verification.md
-    │   └── DOC-005-documentation-structure.md
-    │
-    ├── 02-requirements/                    # Laporan Verifikasi Kebutuhan & Aturan Bisnis
-    │   ├── DOC-006-srs-verification-report.md
-    │   ├── DOC-007-functional-requirements-review.md
-    │   ├── DOC-008-non-functional-requirements-review.md
-    │   ├── DOC-009-business-rules-review.md
-    │   ├── DOC-010-acceptance-criteria-review.md
-    │   ├── DOC-011-prd-compilation-report.md
-    │   ├── DOC-012-product-vision-review.md
-    │   ├── DOC-013-user-personas-review.md
-    │   ├── DOC-014-user-stories-review.md
-    │   └── DOC-015-product-priorities-review.md
-    │
-    ├── 03-analysis-and-design/             # Pemodelan Analisis Sistem & Diagram UML
-    │   ├── ANA-001-use-case-diagram.md
-    │   ├── ANA-002-use-case-descriptions.md
-    │   ├── ANA-003-activity-diagram-catalog-order.md
-    │   ├── ANA-004-activity-diagram-custom-order.md
-    │   ├── ANA-005-activity-diagram-payment.md
-    │   ├── ANA-006-activity-diagram-cancellation.md
-    │   ├── ANA-007-sequence-diagram-ordering.md
-    │   ├── ANA-008-sequence-diagram-payment.md
-    │   ├── ANA-009-sequence-diagram-order-management.md
-    │   └── ANA-010-diagram-validation-report.md
-    │
-    ├── 04-technical-and-architecture/     # Rancang Bangun Teknis & Arsitektur Database
-    │   ├── ARC-001-three-layer-architecture.md
-    │   ├── ARC-002-high-level-architecture-diagram.md
-    │   ├── ARC-003-component-diagram.md
-    │   ├── ARC-004-application-modules.md
-    │   ├── DOC-016-architecture-compilation-report.md
-    │   ├── DOC-017-database-design-report.md
-    │   └── DOC-020-implementation-plan-report.md
-    │
-    ├── 05-ui-ux/                           # Laporan Desain Visual & Pengalaman Pengguna
-    │   ├── DOC-018-design-system-report.md
-    │   └── DOC-019-user-flow-report.md
-    │
-    └── 06-testing-and-qa/                  # Laporan Rencana Pengujian & Kualitas
-        └── DOC-021-testing-plan-report.md
+├── README.md
+├── requirement.md
+├── prd.md
+├── architecture.md
+├── database-design.md
+├── implementation-plan.md
+├── task.md
+├── design-system.md
+├── user-flow.md
+├── testing-plan.md
+├── prompt.md
+├── docs/
+│   ├── 01-foundation/
+│   ├── 02-requirements/
+│   ├── 03-analysis-and-design/
+│   ├── 04-technical-and-architecture/
+│   ├── 05-ui-ux/
+│   ├── 06-testing-and-qa/
+│   ├── 07-deployment-and-guides/
+│   └── archive/
+│       └── v1.0/
+├── app/
+├── bootstrap/
+├── config/
+├── database/
+├── public/
+├── routes/
+├── storage/
+├── tests/
+├── composer.json
+├── composer.lock
+├── package.json
+└── vite.config.js
 ```
 
 ---
@@ -136,7 +109,7 @@ Setiap dokumen deliverable yang dibuat dalam direktori `docs/` wajib mencantumka
 
 ## 6. Prosedur Pembaruan Dokumen (*Change Procedure*)
 
-1. **Sumber Kebenaran Tunggal (*Single Source of Truth*):** 10 file dokumen utama di root workspace (`requirement.md`, `prd.md`, `architecture.md`, `database-design.md`, dll.) merupakan acuan hukum tertinggi dari seluruh spesifikasi teknis dan bisnis sistem BLOOMÉ.
+1. **Sumber Kebenaran Tunggal (*Single Source of Truth*):** Dokumen aktif di root workspace (`requirement.md`, `prd.md`, `architecture.md`, `database-design.md`, dan dokumen terkait) merupakan acuan spesifikasi teknis dan bisnis sistem BLOOMÉ. `README.md` menjadi titik masuk navigasi.
 2. Seluruh file laporan pendukung di direktori `docs/` wajib mencerminkan konsep sistem terbaru: **katalog interaktif, konfigurator personalisasi, item add-on, dan pemesanan dialihkan ke WhatsApp**.
 3. Jika terdapat parameter operasional yang belum ditetapkan oleh pemilik usaha, dokumen wajib mencantumkan penanda baku **`[Perlu Konfirmasi Owner]`** tanpa membuat asumsi sepihak.
 
@@ -146,7 +119,8 @@ Setiap dokumen deliverable yang dibuat dalam direktori `docs/` wajib mencantumka
 
 ### 7.1 Status Task DOC-005
 Task **DOC-005 (Menentukan struktur direktori dokumentasi)** telah diselaraskan penuh dengan versi 1.1:
-- Arsitektur hierarki direktori dokumentasi telah mencakup 10 dokumen utama di root dan seluruh laporan pendukung di `docs/`.
+- Dokumentasi historis v1.0 ditempatkan di `docs/archive/v1.0/`; salinan identik yang sudah memiliki dokumen aktif tidak dipertahankan.
+- Struktur aktif mencakup kategori analisis hingga panduan deployment dan arsip.
 - Konvensi penamaan berkas dan standar metadata telah dibakukan.
 - Seluruh sub-fase **Phase 1 — Project Foundation (DOC-001 hingga DOC-005 pada `docs/01-foundation/`) resmi SELESAI 100%**.
 

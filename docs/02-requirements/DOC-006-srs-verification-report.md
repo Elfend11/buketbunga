@@ -58,7 +58,7 @@ Dokumen `requirement.md` telah diaudit terhadap dokumen acuan lainnya:
 
 ### 4.1 Status Task DOC-006
 Task **DOC-006 (Menyusun requirement.md)** telah selesai diselaraskan dan diverifikasi:
-- File [requirement.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/requirement.md) telah berstatus **Approved Requirement Baseline v1.1**.
+- File [requirement.md](../../requirement.md) telah berstatus **Approved Requirement Baseline v1.1**.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi 100%.
 
 ### 4.2 Rekomendasi Langkah Berikutnya:

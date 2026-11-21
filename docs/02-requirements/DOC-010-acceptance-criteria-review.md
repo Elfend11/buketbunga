@@ -74,7 +74,7 @@ Sekaligus, dokumen ini meresmikan kelulusan **Quality Gate 1 (Requirements Appro
 
 | ID Kriteria | Aspek Teknis | Standar Pengujian Kepatuhan |
 |---|---|---|
-| **AC-TEC-01** | Framework & Versi | Aplikasi berjalan stabil pada Laravel 10/11 dan PHP 8.2+ dengan dukungan Vite sebagai asset bundler. |
+| **AC-TEC-01** | Framework & Versi | Aplikasi berjalan pada Laravel 13.43.0 dan PHP 8.5.5 (constraint Composer `^8.3`) dengan dukungan Vite sebagai asset bundler. |
 | **AC-TEC-02** | Koneksi & Migrasi DB | Seluruh 10 migrasi tabel basis data MySQL (`users`, `categories`, `products`, `product_photos`, `personalization_types`, `personalization_values`, `product_personalization_types`, `add_ons`, `product_add_ons`, `business_settings`) tereksekusi tanpa galat dan foreign keys terikat berintegritas. |
 | **AC-TEC-03** | Three-Layer Architecture | Pemisahan Presentation Layer (Blade/Vite), Application Layer (Controllers, Form Requests, Services), dan Data Layer (Eloquent Models) ditaati tanpa bypass layer. |
 | **AC-TEC-04** | Validasi & Keamanan Input | Form Request memvalidasi tipe data, format teks, dan sanitasi payload XSS. Seluruh form POST/PUT/DELETE memiliki proteksi token CSRF aktif. |

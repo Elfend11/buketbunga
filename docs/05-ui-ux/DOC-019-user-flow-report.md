@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Riya Monika (UI/UX Designer) & Jayanti Firdasari (System Analyst)  
 **Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026)  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [user-flow.md](file:///c:/Users/jayan/Documents/buketbunga/buketbunga/user-flow.md) (Versi 1.1 — Penyelarasan Paradigma WhatsApp Hand-off & Zero-Checkout)  
+**Dokumen Hasil:** [user-flow.md](../../user-flow.md) (Versi 1.1 — Penyelarasan Paradigma WhatsApp Hand-off & Zero-Checkout)
 
 ---
 

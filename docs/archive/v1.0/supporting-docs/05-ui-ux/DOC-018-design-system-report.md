@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Riya Monika (UI/UX Designer & Frontend Developer)  
 **Tanggal Penyusunan:** 13 November 2026  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [design-system.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/design-system.md) (Versi 1.0 - Official UI/UX Design System Baseline)  
+**Dokumen Hasil:** [design-system.md](../../design-system.md) (Versi 1.0 - Official UI/UX Design System Baseline)  
 
 ---
 
@@ -37,7 +37,7 @@ Verifikasi memastikan bahwa seluruh elemen panduan desain telah terbakukan:
 
 ### 3.1 Status Task DOC-018
 Task **DOC-018 (Menyusun design-system.md)** telah selesai dilaksanakan:
-- File [design-system.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/design-system.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria panduan desain sistem profesional.
+- File [design-system.md](../../design-system.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria panduan desain sistem profesional.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 3.2 Rekomendasi Langkah Berikutnya:

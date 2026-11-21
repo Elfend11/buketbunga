@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Jayanti Firdasari (Lead QA & PM) didukung Elsa Futri & Riya Monika  
 **Tanggal Penyusunan:** 13 November 2026  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [testing-plan.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/testing-plan.md) (Versi 1.0 - Official Testing Plan Baseline)  
+**Dokumen Hasil:** [testing-plan.md](../../testing-plan.md) (Versi 1.0 - Official Testing Plan Baseline)  
 
 ---
 
@@ -38,7 +38,7 @@ Verifikasi memastikan bahwa seluruh pilar pengujian telah dibakukan:
 
 ### 3.1 Status Task DOC-021
 Task **DOC-021 (Menyusun testing-plan.md)** telah selesai dilaksanakan:
-- File [testing-plan.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/testing-plan.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria strategi pengujian perangkat lunak standar industri.
+- File [testing-plan.md](../../testing-plan.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria strategi pengujian perangkat lunak standar industri.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 3.2 Pencapaian Besar: PHASE 1 RESMI SELESAI 100%
