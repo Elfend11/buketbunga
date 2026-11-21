@@ -308,9 +308,9 @@ Untuk menjamin waktu muat halaman katalog dan detail produk ≤ 1 detik:
 ## 6. Urutan Eksekusi Migrasi Tabel (*Migration Execution Order*)
 
 Migrasi Laravel dijalankan berurutan mematuhi dependensi referensial foreign key:
-1. `2026_11_20_000001_create_admins_table.php`
-2. `2026_11_20_000002_create_categories_table.php`
-3. `2026_11_20_000003_create_products_table.php`
+1. `2026_11_13_000001_create_admins_table.php`
+2. `2026_11_13_000002_create_categories_table.php`
+3. `2026_11_13_000003_create_products_table.php`
 4. `2026_11_20_000004_create_product_images_table.php`
 5. `2026_11_20_000005_create_personalization_options_table.php`
 6. `2026_11_20_000006_create_personalization_values_table.php`

@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Elsa Futri (Backend Developer & Database Administrator)  
 **Tanggal Penyusunan:** 13 November 2026  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [database-design.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/database-design.md) (Versi 1.0 - Official Database Baseline)  
+**Dokumen Hasil:** [database-design.md](../../database-design.md) (Versi 1.0 - Official Database Baseline)
 
 ---
 
@@ -41,7 +41,7 @@ Verifikasi mengonfirmasi bahwa seluruh kebutuhan basis data telah terpenuhi:
 
 ### 3.1 Status Task DOC-017
 Task **DOC-017 (Menyusun database-design.md)** telah selesai dilaksanakan:
-- File [database-design.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/database-design.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria perancangan basis data profesional.
+- File [database-design.md](../../database-design.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria perancangan basis data profesional.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 3.2 Rekomendasi Langkah Berikutnya:

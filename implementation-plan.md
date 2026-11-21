@@ -35,9 +35,9 @@ Tujuan rencana implementasi:
 | Komponen Lingkungan | Spesifikasi Standar yang Digunakan |
 |---|---|
 | **Sistem Operasi Pengembangan** | Windows 10/11 / Linux Environment |
-| **Bahasa Pemrograman Backend** | PHP 8.2+ (Ekstensi: `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `gd`, `fileinfo`) |
+| **Bahasa Pemrograman Backend** | PHP 8.5.5 (Composer constraint: `^8.3`; ekstensi: `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `gd`, `fileinfo`) |
 | **Dependency Manager** | Composer 2.6+ |
-| **Framework Backend** | Laravel 10.x / 11.x |
+| **Framework Backend** | Laravel 13.43.0 (versi terkunci di `composer.lock`) |
 | **Basis Data Relasional** | MySQL 8.0+ (InnoDB Storage Engine, Charset `utf8mb4_unicode_ci`) |
 | **Frontend Tooling** | Node.js v18+ / v20+, NPM, Vite Asset Bundler |
 | **Arsitektur Rendering** | Server-Side Rendering via Laravel Blade Templates + Vanilla JS Interactivity |

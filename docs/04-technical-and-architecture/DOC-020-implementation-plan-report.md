@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Jayanti Firdasari (Project Manager) & Elsa Futri (Lead Developer)  
 **Tanggal Penyusunan:** 13 November 2026  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [implementation-plan.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/implementation-plan.md) (Versi 1.0 - Official Implementation Baseline)  
+**Dokumen Hasil:** [implementation-plan.md](../../implementation-plan.md) (Versi 1.0 - Official Implementation Baseline)
 
 ---
 
@@ -20,7 +20,7 @@ Dipimpin bersama oleh Jayanti Firdasari dan Elsa Futri, dokumen ini mengunci jad
 ## 2. Struktur & Verifikasi Komponen Rencana Implementasi
 
 Verifikasi memastikan bahwa seluruh fase implementasi teknis telah terjadwal secara presisi:
-1. **Standarisasi Lingkungan & Tooling:** PHP 8.2+, Composer 2.6+, Laravel 10/11, MySQL 8.0 InnoDB, Node.js & Vite, serta strategi percabangan Git.
+1. **Standarisasi Lingkungan & Tooling:** PHP 8.5.5 (constraint Composer `^8.3`), Composer 2.6+, Laravel 13.43.0 (versi terkunci), MySQL 8.0 InnoDB, Node.js & Vite, serta strategi percabangan Git.
 2. **Roadmap 9 Fase Implementasi Teknis (Fase 2 s/d Fase 10):**
    - *Phase 2 (Analisis & UML, 19-25 Okt):* Use case, activity diagrams, sequence diagrams.
    - *Phase 3 (UI/UX Design, 26 Okt - 1 Nov):* Wireframes, mockups, clickable prototype.
@@ -38,7 +38,7 @@ Verifikasi memastikan bahwa seluruh fase implementasi teknis telah terjadwal sec
 
 ### 3.1 Status Task DOC-020
 Task **DOC-020 (Menyusun implementation-plan.md)** telah selesai dilaksanakan:
-- File [implementation-plan.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/implementation-plan.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria peta jalan implementasi perangkat lunak profesional.
+- File [implementation-plan.md](../../implementation-plan.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria peta jalan implementasi perangkat lunak profesional.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 3.2 Rekomendasi Langkah Berikutnya:

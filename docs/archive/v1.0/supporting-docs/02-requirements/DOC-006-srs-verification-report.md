@@ -62,7 +62,7 @@ Dokumen `requirement.md` telah diaudit terhadap dokumen acuan lainnya:
 
 ### 4.1 Status Task DOC-006
 Task **DOC-006 (Menyusun requirement.md)** telah selesai dan diverifikasi:
-- File [requirement.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/requirement.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria SRS standar industri.
+- File [requirement.md](../../requirement.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria SRS standar industri.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 4.2 Rekomendasi Langkah Berikutnya:

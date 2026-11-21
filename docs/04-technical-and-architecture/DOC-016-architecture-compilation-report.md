@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Elsa Futri (Backend Developer & Lead Architect) & Jayanti Firdasari (Project Manager & System Analyst)  
 **Tanggal Penyusunan:** 13 November 2026  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [architecture.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/architecture.md) (Versi 1.0 - Official Technical Architecture Baseline)  
+**Dokumen Hasil:** [architecture.md](../../architecture.md) (Versi 1.0 - Official Technical Architecture Baseline)
 
 ---
 
@@ -48,7 +48,7 @@ Penyusunan `architecture.md` memuat 22 bagian arsitektur esensial:
 
 ### 3.1 Status Task DOC-016
 Task **DOC-016 (Menyusun architecture.md)** telah selesai dilaksanakan:
-- File [architecture.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/architecture.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria arsitektur teknis standar industri.
+- File [architecture.md](../../architecture.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria arsitektur teknis standar industri.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 3.2 Rekomendasi Langkah Berikutnya:

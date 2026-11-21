@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Riya Monika (UI/UX Designer) & Jayanti Firdasari (System Analyst)  
 **Tanggal Penyusunan:** 13 November 2026  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [user-flow.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/user-flow.md) (Versi 1.0 - Official User Flow Baseline)  
+**Dokumen Hasil:** [user-flow.md](../../user-flow.md) (Versi 1.0 - Official User Flow Baseline)  
 
 ---
 
@@ -39,7 +39,7 @@ Verifikasi memastikan bahwa seluruh skenario interaksi sistem telah terdefinisi 
 
 ### 3.1 Status Task DOC-019
 Task **DOC-019 (Menyusun user-flow.md)** telah selesai dilaksanakan:
-- File [user-flow.md](file:///c:/Users/Lenovo/OneDrive/ドキュメント/buketbunga/user-flow.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria arsitektur interaksi pengguna standar industri.
+- File [user-flow.md](../../user-flow.md) telah tersusun lengkap, konsisten, dan memenuhi seluruh kriteria arsitektur interaksi pengguna standar industri.
 - Kriteria penyelesaian (*Definition of Done*) terpenuhi.
 
 ### 3.2 Rekomendasi Langkah Berikutnya:

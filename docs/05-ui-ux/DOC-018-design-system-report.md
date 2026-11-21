@@ -5,7 +5,7 @@
 **Penanggung Jawab:** Riya Monika (UI/UX Designer & Frontend Developer)  
 **Tanggal Penyusunan:** 13 November 2026 (Diperbarui: 20 November 2026)  
 **Status Task:** Completed (`[x]`)  
-**Dokumen Hasil:** [design-system.md](file:///c:/Users/jayan/Documents/buketbunga/buketbunga/design-system.md) (Versi 1.1 — Penyelarasan Paradigma WhatsApp Hand-off & Zero-Checkout)  
+**Dokumen Hasil:** [design-system.md](../../design-system.md) (Versi 1.1 — Penyelarasan Paradigma WhatsApp Hand-off & Zero-Checkout)
 
 ---
 
