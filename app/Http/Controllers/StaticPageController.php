@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BusinessSetting;
+
 class StaticPageController extends Controller
 {
     /**
@@ -19,7 +21,13 @@ class StaticPageController extends Controller
      */
     public function contact()
     {
-        return view('customer.static.contact');
+        $contact = [
+            'address' => BusinessSetting::get('shop_address'),
+            'hours' => BusinessSetting::get('operational_hours'),
+            'whatsapp' => BusinessSetting::get('whatsapp_number'),
+        ];
+
+        return view('customer.static.contact', compact('contact'));
     }
 }
 

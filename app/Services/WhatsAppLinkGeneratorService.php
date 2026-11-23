@@ -2,16 +2,88 @@
 
 namespace App\Services;
 
+use App\Models\BusinessSetting;
 use App\Models\Order;
+use App\Models\Product;
 
 class WhatsAppLinkGeneratorService
 {
+    private function getDestinationPhone(): ?string
+    {
+        $phone = BusinessSetting::get('whatsapp_number');
+
+        if (!$phone) {
+            $phone = env('BLOOME_WHATSAPP_NUMBER');
+        }
+
+        if (!is_string($phone) || trim($phone) === '') {
+            return null;
+        }
+
+        $phone = preg_replace('/[^0-9]/', '', trim($phone));
+
+        if ($phone === '' || str_starts_with($phone, '0')) {
+            return $phone && str_starts_with($phone, '0')
+                ? '62' . substr($phone, 1)
+                : null;
+        }
+
+        return $phone;
+    }
+
+    public function generateCatalogOrderLink(
+        Product $product,
+        array $optionNames,
+        array $addOnNames,
+        float $estimatedTotal,
+        ?string $note = null
+    ): ?string {
+        $phone = $this->getDestinationPhone();
+        if (!$phone) {
+            return null;
+        }
+
+        $lines = [
+            'Halo BLOOMÉ Samarinda!',
+            '',
+            'Saya tertarik memesan buket:',
+            "*{$product->name}*",
+            'Estimasi harga: Rp ' . number_format($estimatedTotal, 0, ',', '.'),
+        ];
+
+        if ($optionNames !== []) {
+            $lines[] = 'Personalisasi:';
+            foreach ($optionNames as $name) {
+                $lines[] = '- ' . $name;
+            }
+        }
+
+        if ($addOnNames !== []) {
+            $lines[] = 'Add-on:';
+            foreach ($addOnNames as $name) {
+                $lines[] = '- ' . $name;
+            }
+        }
+
+        if ($note) {
+            $lines[] = 'Catatan: ' . $note;
+        }
+
+        $lines[] = '';
+        $lines[] = 'Mohon konfirmasi ketersediaan, harga akhir, pembayaran, dan pengiriman. Terima kasih.';
+
+        return 'https://wa.me/' . $phone . '?text=' . urlencode(implode("\n", $lines));
+    }
+
     /**
      * Menghasilkan tautan konfirmasi pesanan dari pelanggan ke Florist
      */
     public function generateCustomerOrderLink(Order $order): string
     {
-        $phone = config('app.bloome_whatsapp_number', env('BLOOME_WHATSAPP_NUMBER', '6281255554321'));
+        $phone = $this->getDestinationPhone();
+        if (!$phone) {
+            return '';
+        }
         $totalFormatted = 'Rp ' . number_format($order->total_amount, 0, ',', '.');
         
         $message = "Halo Florist BLOOMÉ Samarinda! 🌸\n\n"

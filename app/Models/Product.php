@@ -15,14 +15,14 @@ class Product extends Model
         'category_id',
         'name',
         'slug',
-        'base_price',
+        'price',
         'description',
-        'main_image',
+        'image_path',
         'is_available',
     ];
 
     protected $casts = [
-        'base_price' => 'decimal:2',
+        'price' => 'decimal:2',
         'is_available' => 'boolean',
     ];
 
