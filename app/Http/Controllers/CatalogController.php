@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\PriceEstimatorService;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
@@ -44,7 +45,16 @@ class CatalogController extends Controller
      */
     public function show(string $slug)
     {
-        $product = Product::with('category')->where('slug', $slug)->firstOrFail();
+        $product = Product::with([
+            'category',
+            'images',
+            'personalizationOptions.values' => function ($query) {
+                $query->where('is_available', true);
+            },
+            'addOns' => function ($query) {
+                $query->where('is_available', true);
+            },
+        ])->where('slug', $slug)->firstOrFail();
 
         // 3 rekomendasi buket serupa dari kategori yang sama
         $relatedProducts = Product::available()
@@ -54,6 +64,29 @@ class CatalogController extends Controller
             ->get();
 
         return view('customer.catalog.show', compact('product', 'relatedProducts'));
+    }
+
+    public function estimate(
+        Request $request,
+        PriceEstimatorService $estimator,
+        string $slug
+    ) {
+        $product = Product::with('category')->where('slug', $slug)->firstOrFail();
+
+        $validated = $request->validate([
+            'option_value_ids' => ['nullable', 'array'],
+            'option_value_ids.*' => ['integer'],
+            'add_on_ids' => ['nullable', 'array'],
+            'add_on_ids.*' => ['integer'],
+        ]);
+
+        $estimation = $estimator->estimate(
+            $product,
+            $validated['option_value_ids'] ?? [],
+            $validated['add_on_ids'] ?? []
+        );
+
+        return response()->json($estimation);
     }
 }
 

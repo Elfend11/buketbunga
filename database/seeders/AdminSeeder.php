@@ -14,13 +14,20 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        $defaultPassword = env('ADMIN_DEFAULT_PASSWORD', 'BloomeSamarinda2026!');
+        $email = env('ADMIN_DEFAULT_EMAIL');
+        $password = env('ADMIN_DEFAULT_PASSWORD');
+
+        if (!is_string($email) || $email === '' || !is_string($password) || $password === '') {
+            throw new \RuntimeException(
+                'Admin seeding requires ADMIN_DEFAULT_EMAIL and ADMIN_DEFAULT_PASSWORD environment variables.'
+            );
+        }
 
         Admin::updateOrCreate(
-            ['email' => env('ADMIN_DEFAULT_EMAIL', 'admin@bloome.com')],
+            ['email' => $email],
             [
                 'name' => env('BLOOME_OWNER_NAME', 'Nabila Febriyani'),
-                'password' => Hash::make($defaultPassword),
+                'password' => Hash::make($password),
             ]
         );
     }

@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\AdminCustomRequestController;
 use App\Http\Controllers\Admin\AdminPaymentController;
 use App\Http\Controllers\Admin\AdminCancellationController;
 use App\Http\Controllers\Admin\AdminSettingController;
+use App\Http\Controllers\Admin\AdminPersonalizationController;
+use App\Http\Controllers\Admin\AdminAddOnController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +37,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Katalog & Detail Produk
 Route::get('/katalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/katalog/{slug}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::post('/katalog/{slug}/estimasi', [CatalogController::class, 'estimate'])->name('catalog.estimate');
 
 // Pemesanan Katalog Siap Pesan (Guest Checkout)
 Route::get('/pesan/{slug}', [OrderController::class, 'create'])->name('order.create');
@@ -114,5 +117,14 @@ Route::prefix('admin')->middleware(['auth:admin'])->group(function () {
     // Pengaturan Akun & Profil Toko
     Route::get('/pengaturan', [AdminSettingController::class, 'index'])->name('admin.settings.index');
     Route::put('/pengaturan', [AdminSettingController::class, 'update'])->name('admin.settings.update');
+
+    Route::get('/personalisasi', [AdminPersonalizationController::class, 'index'])->name('admin.personalization.index');
+    Route::post('/personalisasi', [AdminPersonalizationController::class, 'store'])->name('admin.personalization.store');
+    Route::post('/personalisasi/{optionId}/nilai', [AdminPersonalizationController::class, 'storeValue'])->name('admin.personalization.values.store');
+    Route::delete('/personalisasi/{optionId}', [AdminPersonalizationController::class, 'destroy'])->name('admin.personalization.destroy');
+
+    Route::get('/add-on', [AdminAddOnController::class, 'index'])->name('admin.addons.index');
+    Route::post('/add-on', [AdminAddOnController::class, 'store'])->name('admin.addons.store');
+    Route::delete('/add-on/{id}', [AdminAddOnController::class, 'destroy'])->name('admin.addons.destroy');
 });
 
