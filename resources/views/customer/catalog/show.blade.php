@@ -11,7 +11,7 @@
     <p>{{ $product->description }}</p>
     <p><strong>Harga dasar: Rp {{ number_format((float) $product->price, 0, ',', '.') }}</strong></p>
 
-    <form data-estimator-form action="{{ route('catalog.estimate', $product->slug }}" method="POST">
+    <form data-estimator-form action="{{ route('catalog.estimate', $product->slug) }}" method="POST">
         @csrf
         <div class="form-grid">
             @foreach($product->personalizationOptions as $option)
